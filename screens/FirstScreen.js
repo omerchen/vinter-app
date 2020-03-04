@@ -5,7 +5,7 @@ let FirstScreen = props => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
-      <Text>כותרת מגניבה</Text>
+      <Text style={styles.title}>כותרת !</Text>
       <Button
         title="Create Fixture"
         onPress={() => {
@@ -33,6 +33,9 @@ const styles = StyleSheet.create({
   logo: {
       height: 140,
       resizeMode: 'contain',
+  },
+  title: {
+    fontFamily: 'assistant-bold'
   }
 });
 
