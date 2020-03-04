@@ -1,30 +1,39 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
-
+import React from "react";
+import { StyleSheet, Text, View, Button, Image } from "react-native";
 
 let FirstScreen = props => {
   return (
     <View style={styles.container}>
-      <Text>This is the first screen!</Text>
-      <Button title="Create Fixture" onPress={()=>{
-          props.navigation.navigate("CreateFixture")
-          console.log(props)
-      }}/>
-      <Button title="Previous Fixtures" onPress={()=>{
-          props.navigation.navigate("PreviousFixtures")
-          console.log(props)
-      }}/>
+      <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
+      <Text>כותרת מגניבה</Text>
+      <Button
+        title="Create Fixture"
+        onPress={() => {
+          props.navigation.navigate("CreateFixture");
+        }}
+      />
+      <Button
+        title="Previous Fixtures"
+        onPress={() => {
+          props.navigation.navigate("PreviousFixtures");
+          console.log(props);
+        }}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'blue',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center"
   },
+  logo: {
+      height: 140,
+      resizeMode: 'contain',
+  }
 });
 
-export default FirstScreen
+export default FirstScreen;
