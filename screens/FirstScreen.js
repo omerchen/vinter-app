@@ -2,14 +2,14 @@ import React from "react";
 import { StyleSheet, Text, View, Button, Image } from "react-native";
 import MainButton from '../components/MainButton'
 import SubButton from '../components/SubButton'
+import Colors from '../constants/colors'
 
 let FirstScreen = props => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
-      <Text style={styles.title}>אפליקציית ליגת וינטר</Text>
       <MainButton
-        title="Create Fixture"
+        title="מחזור חדש"
         onPress={() => {
           props.navigation.navigate("CreateFixture");
         }}
@@ -28,17 +28,14 @@ let FirstScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.white,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "space-evenly"
   },
   logo: {
       height: 140,
       resizeMode: 'contain',
   },
-  title: {
-    fontFamily: 'assistant-bold'
-  }
 });
 
 export default FirstScreen;
