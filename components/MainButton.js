@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, StyleSheet, View, TouchableNativeFeedback } from "react-native";
 import Colors from "../constants/colors";
+import Sizes from "../constants/sizes";
 
 let MainButton = props => {
   return (
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   title: {
     color: Colors.white,
     fontFamily: "assistant-semi-bold",
-    fontSize: 20
+    fontSize: Sizes.normal
   }
 });
 

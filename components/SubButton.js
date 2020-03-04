@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import Colors from "../constants/colors"
+import Sizes from "../constants/sizes";
 
 
 let SubButton = props => {
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
         color: Colors.primary,
         textDecorationLine: 'underline',
         fontFamily: 'assistant-semi-bold',
-        fontSize: 20
+        fontSize: Sizes.normal
     }
 })
 
