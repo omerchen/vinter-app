@@ -5,7 +5,7 @@ let FirstScreen = props => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
-      <Text style={styles.title}>כותרת !</Text>
+      <Text style={styles.title}>אפליקציית ליגת וינטר</Text>
       <Button
         title="Create Fixture"
         onPress={() => {
