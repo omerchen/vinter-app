@@ -1,19 +1,21 @@
 import React from "react";
 import { StyleSheet, Text, View, Button, Image } from "react-native";
+import MainButton from '../components/MainButton'
+import SubButton from '../components/SubButton'
 
 let FirstScreen = props => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
       <Text style={styles.title}>אפליקציית ליגת וינטר</Text>
-      <Button
+      <MainButton
         title="Create Fixture"
         onPress={() => {
           props.navigation.navigate("CreateFixture");
         }}
       />
-      <Button
-        title="Previous Fixtures"
+      <SubButton
+        title="למחזורים הקודמים"
         onPress={() => {
           props.navigation.navigate("PreviousFixtures");
           console.log(props);
