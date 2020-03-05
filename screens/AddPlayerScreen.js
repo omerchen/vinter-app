@@ -9,7 +9,7 @@ let AddPlayerScreen = props => {
   const [name, setName] = useState("");
 
   return (
-    <View style={styles.container}>
+    <DismissKeyboardView style={styles.container}>
         {/* <Text>This is the AddPlayerScreen screen!</Text> */}
         <TextInput
           label="Full Name"
@@ -28,7 +28,7 @@ let AddPlayerScreen = props => {
             props.navigation.pop();
           }}
         />
-    </View>
+    </DismissKeyboardView>
   );
 };
 
