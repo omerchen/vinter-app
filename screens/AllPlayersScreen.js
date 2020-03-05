@@ -8,7 +8,7 @@ let AllPlayersScreen = props => {
   let notPlayersExistsView = (
     <Text style={styles.nonPlayersTitle}>לא קיימים שחקנים כרגע במערכת</Text>
   );
-  let playersListView = null;
+let playersListView = <Text style={{width:'70%',textAlign:'center'}}>{JSON.stringify(props.navigation.getParam("players"))}</Text>;
   return (
     <View style={styles.container}>
       {props.navigation.getParam("players").length > 0
@@ -26,7 +26,13 @@ AllPlayersScreen.navigationOptions = navigationData => {
           title="Add Player"
           iconName="ios-add"
           onPress={() => {
-            navigationData.navigation.navigate({routeName:"AddPlayer"})
+            let players = navigationData.navigation.getParam("players")
+            let setPlayers = navigationData.navigation.getParam("setPlayers")
+            console.log(players)
+            navigationData.navigation.navigate({routeName:"AddPlayer", params: {
+              players: players,
+              setPlayers: setPlayers
+            }})
           }}
         />
       </HeaderButtons>

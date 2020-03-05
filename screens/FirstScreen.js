@@ -71,7 +71,17 @@ let FirstScreen = props => {
             props.navigation.navigate({
               routeName: "AllPlayers",
               params: {
-                players: players
+                players: players,
+                setPlayers: (updatedPlayers, callback)=>{
+                  DBCommunicator.setPlayers(updatedPlayers).then((res)=>{
+                    if ((res.status===200))
+                    {
+                      setPlayers(updatedPlayers)
+                      callback(true)
+                    }
+                    else callback(false)
+                  })
+                }
               }
             });
           }}
