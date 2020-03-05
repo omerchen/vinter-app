@@ -28,6 +28,7 @@ AllPlayersScreen.navigationOptions = navigationData => {
           iconName="ios-add"
           onPress={() => {
             console.log("Clicked! :)");
+            navigationData.navigation.navigate({routeName:"AddPlayer"})
           }}
         />
       </HeaderButtons>
