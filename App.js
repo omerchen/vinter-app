@@ -4,7 +4,6 @@ import * as Font from "expo-font";
 import { AppLoading } from "expo";
 
 const fetchFonts = () => {
-  console.log("fetch fonts running!")
   return Font.loadAsync({
     "assistant-bold": require("./assets/fonts/Assistant-Bold.ttf"),
     "assistant-extra-bold": require("./assets/fonts/Assistant-ExtraBold.ttf"),

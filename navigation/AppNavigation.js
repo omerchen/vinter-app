@@ -5,6 +5,7 @@ import FirstScreen from "../screens/FirstScreen";
 import CreateFixtureScreen from "../screens/CreateFixtureScreen";
 import PreviousFixturesScreen from "../screens/PreviousFixturesScreen";
 import ViewFixtureScreen from "../screens/ViewFixtureScreen";
+import AllPlayersScreen from "../screens/AllPlayersScreen"
 
 import Colors from "../constants/colors";
 
@@ -30,6 +31,12 @@ const MainNavigator = createStackNavigator(
     },
     ViewFixture: {
       screen: ViewFixtureScreen,
+    },
+    AllPlayers: {
+      screen: AllPlayersScreen,
+      navigationOptions: {
+        headerTitle: "שחקני הקבוצה"
+      }
     }
   },
   {
