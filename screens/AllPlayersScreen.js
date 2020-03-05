@@ -13,7 +13,7 @@ let AllPlayersScreen = props => {
 let playersListView = <Text style={{width:'70%',textAlign:'center'}}>{JSON.stringify(players)}</Text>;
   return (
     <View style={styles.container}>
-      {players.length > 0
+      {players && players.length > 0
         ? playersListView
         : notPlayersExistsView}
     </View>
