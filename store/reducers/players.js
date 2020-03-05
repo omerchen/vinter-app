@@ -1,6 +1,6 @@
 const initialState = null
 
-const playersReducer = (state, action) => {
+const playersReducer = (state = initialState, action) => {
     return state
 }
 

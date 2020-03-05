@@ -5,10 +5,12 @@ import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
 import DBCommunicator from "../helpers/db-communictor";
 import Sleep from "../helpers/sleep";
+import {useSelector} from 'react-redux'
 
 let FirstScreen = props => {
   const [players, setPlayers] = useState(null);
   const [fixturs, setFixtures] = useState(null);
+  // const players = useSelector(state=>state.players)
   const [dataLoaded, setDataLoaded] = useState(false);
 
   let fetchData = onFinish => {
