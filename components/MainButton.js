@@ -5,7 +5,7 @@ import Sizes from "../constants/sizes";
 
 let MainButton = props => {
   return (
-    <View style={styles.wrapper}>
+    <View style={{...styles.wrapper, ...props.style}}>
       <TouchableNativeFeedback
         style={styles.touchableView}
         onPress={props.onPress}

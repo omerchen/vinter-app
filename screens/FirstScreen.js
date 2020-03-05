@@ -9,9 +9,11 @@ let FirstScreen = props => {
     <View style={styles.container}>
       <Image source={require("../assets/images/colorful-logo-280h.png")} style={styles.logo}/>
       <MainButton
-        title="מחזור חדש"
+        title="למחזור הנוכחי"
         onPress={() => {
-          props.navigation.navigate("CreateFixture");
+          props.navigation.navigate({routeName: "ViewFixture", params : {
+            fixtureNumber: 25
+          }});
         }}
       />
       <SubButton

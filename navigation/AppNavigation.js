@@ -4,6 +4,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import FirstScreen from "../screens/FirstScreen";
 import CreateFixtureScreen from "../screens/CreateFixtureScreen";
 import PreviousFixturesScreen from "../screens/PreviousFixturesScreen";
+import ViewFixtureScreen from "../screens/ViewFixtureScreen";
 
 import Colors from "../constants/colors";
 
@@ -26,6 +27,9 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         headerTitle: "מחזורים קודמים"
       }
+    },
+    ViewFixture: {
+      screen: ViewFixtureScreen,
     }
   },
   {
