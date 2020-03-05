@@ -17,7 +17,7 @@ let AddPlayerScreen = props => {
   const dispatchPlayers = () => {
     let isExist = false;
     for (let i in props.players) {
-      if (props.players[i].name === name && props.players[i].isRemoved === false) {
+      if (props.players[i].name === name.trim() && props.players[i].isRemoved === false) {
         isExist = true;
         Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
         break;
@@ -28,17 +28,18 @@ let AddPlayerScreen = props => {
         id: props.players.length,
         isRemoved: false,
         createTime: Date.now(),
-        name: name,
+        name: name.trim(),
         type: playerType
       };
 
-      let newPlayers = [...props.players]
-      newPlayers.push(newPlayer)
+      let newPlayers = [...props.players, newPlayer]
+      console.log("\n\n")
+      console.log(newPlayers)
       
       DBCommunicator.setPlayers(newPlayers).then((res)=>{
         if (res.status === 200)
         {
-          props.setPlayers([newPlayers])
+          props.setPlayers(newPlayers)
           props.navigation.pop()
         }
         else

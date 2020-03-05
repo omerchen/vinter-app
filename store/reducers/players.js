@@ -6,7 +6,6 @@ const playersReducer = (state = initialState, action) => {
     switch(action.type)
     {
         case SET_PLAYERS:
-            console.log("REDUCER CALLED!")
             return action.newPlayers
         default:
             return state
