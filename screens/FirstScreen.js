@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, Image } from "react-native";
+import { StyleSheet, Alert, View, Image } from "react-native";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
@@ -10,12 +10,16 @@ import { setFixtures } from "../store/actions/fixtures";
 
 let FirstScreen = props => {
   // const [players, setPlayers] = useState(null);
-  const fixtures = useSelector(state => state.fixturs)
+  const fixtures = useSelector(state => state.fixturs);
   const dispatch = useDispatch();
   const [dataLoaded, setDataLoaded] = useState(false);
 
   let fetchData = onFinish => {
     DBCommunicator.getPlayers().then(res => {
+      if (res.status !== 200) {
+        Alert.alert("Connection error (" + res.status + "");
+        return;
+      }
       if (res.data) {
         dispatch(setPlayers(res.data));
       } else {
@@ -23,6 +27,10 @@ let FirstScreen = props => {
       }
 
       DBCommunicator.getFixtures().then(res => {
+        if (res.status !== 200) {
+          Alert.alert("Connection error (" + res.status + "");
+          return;
+        }
         if (res.data) {
           dispatch(setFixtures(res.data));
         } else {

@@ -7,7 +7,7 @@ import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
 import {connect} from 'react-redux'
 import DBCommunicator from '../helpers/db-communictor'
-import {SET_PLAYERS} from '../store/actions/fixtures'
+import {SET_PLAYERS} from '../store/actions/players'
 
 let AddPlayerScreen = props => {
   const [name, setName] = useState("");
