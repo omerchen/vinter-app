@@ -1,14 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { StyleSheet, KeyboardAvoidingView, Alert } from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
+import {connect} from 'react-redux'
+import DBCommunicator from '../helpers/db-communictor'
+import {SET_PLAYERS} from '../store/actions/players'
 
 let AddPlayerScreen = props => {
+  console.log(props)
   const [name, setName] = useState("");
   const [playerType, setPlayerType] = useState(0);
+
+  const dispatchPlayers = () => {
+    let isExist = false;
+    for (let i in props.players) {
+      if (props.players[i].name === name && props.players[i].isRemoved === false) {
+        isExist = true;
+        Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
+        break;
+      }
+    }
+    if (!isExist) {
+      let newPlayer = {
+        id: props.players.length,
+        isRemoved: false,
+        createTime: Date.now(),
+        name: name,
+        type: playerType
+      };
+
+      let newPlayers = [...props.players]
+      newPlayers.push(newPlayer)
+      
+      DBCommunicator.setPlayers(newPlayers).then((res)=>{
+        if (res.status === 200)
+        {
+          props.setPlayers([newPlayers])
+          props.navigation.pop()
+        }
+        else
+        {
+          Alert.alert("תהליך ההוספה נכשל")
+        }
+      })
+    }
+  }
 
   let radio_props = [
     { label: "Standard", value: "standard" },
@@ -44,41 +83,7 @@ let AddPlayerScreen = props => {
           width={250}
           title="שמור במערכת"
           offline={!name}
-          onPress={() => {
-            let isExist = false;
-            let players = props.navigation.getParam("players");
-            console.log(players)
-            for (let i in players) {
-              if (players[i].name === name && players[i].isRemoved === false) {
-                isExist = true;
-                Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
-                break;
-              }
-            }
-            if (!isExist) {
-              let newPlayer = {
-                id: players.length,
-                isRemoved: false,
-                createTime: Date.now(),
-                name: name,
-                type: playerType
-              };
-
-              let newPlayers = [...players]
-              newPlayers.push(newPlayer)
-
-              props.navigation.getParam("setPlayers")(newPlayers, (success)=>{
-                  if (success)
-                  {
-                      props.navigation.pop()
-                  }
-                  else
-                  {
-                      Alert.alert("תהליך ההוספה נכשל")
-                  }
-              })
-            }
-          }}
+          onPress={dispatchPlayers}
         />
       </DismissKeyboardView>
     </KeyboardAvoidingView>
@@ -101,4 +106,12 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AddPlayerScreen;
+
+const mapStateToProps = state => ({ players: state.players })
+
+const mapDispatchToProps = {
+  setPlayers: (players) => ({ type: SET_PLAYERS, newPlayers: players})
+};
+
+
+export default connect(mapStateToProps,mapDispatchToProps)(AddPlayerScreen);

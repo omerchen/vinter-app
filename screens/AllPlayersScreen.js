@@ -3,15 +3,17 @@ import { StyleSheet, Text, View } from "react-native";
 import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/HeaderButton";
+import {useSelector} from 'react-redux'
 
 let AllPlayersScreen = props => {
+  let players = useSelector(state=>state.players)
   let notPlayersExistsView = (
     <Text style={styles.nonPlayersTitle}>לא קיימים שחקנים כרגע במערכת</Text>
   );
-let playersListView = <Text style={{width:'70%',textAlign:'center'}}>{JSON.stringify(props.navigation.getParam("players"))}</Text>;
+let playersListView = <Text style={{width:'70%',textAlign:'center'}}>{JSON.stringify(players)}</Text>;
   return (
     <View style={styles.container}>
-      {props.navigation.getParam("players").length > 0
+      {players.length > 0
         ? playersListView
         : notPlayersExistsView}
     </View>
@@ -26,13 +28,7 @@ AllPlayersScreen.navigationOptions = navigationData => {
           title="Add Player"
           iconName="ios-add"
           onPress={() => {
-            let players = navigationData.navigation.getParam("players")
-            let setPlayers = navigationData.navigation.getParam("setPlayers")
-            console.log(players)
-            navigationData.navigation.navigate({routeName:"AddPlayer", params: {
-              players: players,
-              setPlayers: setPlayers
-            }})
+            navigationData.navigation.navigate({routeName:"AddPlayer"})
           }}
         />
       </HeaderButtons>

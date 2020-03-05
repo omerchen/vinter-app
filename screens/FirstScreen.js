@@ -5,25 +5,26 @@ import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
 import DBCommunicator from "../helpers/db-communictor";
 import Sleep from "../helpers/sleep";
-import {useSelector} from 'react-redux'
+import { useDispatch } from "react-redux";
+import { setPlayers } from "../store/actions/players";
 
 let FirstScreen = props => {
-  const [players, setPlayers] = useState(null);
+  // const [players, setPlayers] = useState(null);
   const [fixturs, setFixtures] = useState(null);
-  // const players = useSelector(state=>state.players)
+  const dispatch = useDispatch();
   const [dataLoaded, setDataLoaded] = useState(false);
 
   let fetchData = onFinish => {
     DBCommunicator.getPlayers().then(res => {
       if (res.data) {
-        setPlayers(res.data);
+        dispatch(setPlayers(res.data));
       } else {
-        setPlayers([]);
+        dispatch(setPlayers([]));
       }
 
       DBCommunicator.getFixtures().then(res => {
         if (res.data) {
-          setFixtures(res.data);
+          setFixtures(res.data.players);
         } else {
           setFixtures([]);
         }
@@ -71,20 +72,7 @@ let FirstScreen = props => {
           offline={!dataLoaded}
           onPress={() => {
             props.navigation.navigate({
-              routeName: "AllPlayers",
-              params: {
-                players: players,
-                setPlayers: (updatedPlayers, callback)=>{
-                  DBCommunicator.setPlayers(updatedPlayers).then((res)=>{
-                    if ((res.status===200))
-                    {
-                      setPlayers(updatedPlayers)
-                      callback(true)
-                    }
-                    else callback(false)
-                  })
-                }
-              }
+              routeName: "AllPlayers"
             });
           }}
         />
