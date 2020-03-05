@@ -19,7 +19,6 @@ let AllPlayersScreen = props => {
 };
 
 AllPlayersScreen.navigationOptions = navigationData => {
-  console.log(navigationData);
   return {
     headerRight: ()=>{
       return <HeaderButtons HeaderButtonComponent={HeaderButton}>
@@ -27,7 +26,6 @@ AllPlayersScreen.navigationOptions = navigationData => {
           title="Add Player"
           iconName="ios-add"
           onPress={() => {
-            console.log("Clicked! :)");
             navigationData.navigation.navigate({routeName:"AddPlayer"})
           }}
         />

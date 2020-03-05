@@ -31,7 +31,6 @@ let ViewFixtureScreen = props => {
 };
 
 ViewFixtureScreen.navigationOptions = navigationData => {
-  console.log(navigationData)
   return {headerTitle: "מחזור "+navigationData.navigation.getParam("fixtureNumber")};
 }
 
