@@ -5,8 +5,9 @@ import Sizes from "../constants/sizes";
 
 let MainButton = props => {
   return (
-    <View style={{...styles.wrapper, ...props.style}}>
+    <View style={{...styles.wrapper, ...props.style, backgroundColor: props.offline?Colors.darkGray:Colors.primary}}>
       <TouchableNativeFeedback
+        disabled={props.offline}
         style={styles.touchableView}
         onPress={props.onPress}
       >
@@ -20,7 +21,6 @@ let MainButton = props => {
 
 const styles = StyleSheet.create({
   view: {
-    backgroundColor: Colors.primary,
     height: 50,
     width: 420,
     justifyContent: "center",

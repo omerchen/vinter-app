@@ -6,15 +6,14 @@ import Sizes from "../constants/sizes";
 
 let SubButton = props => {
     return (
-    <TouchableOpacity onPress={props.onPress} style={props.style}>
-        <Text style={styles.title}>{props.title}</Text>
+    <TouchableOpacity disabled={props.offline} onPress={props.onPress} style={props.style}>
+        <Text style={{...styles.title, color: props.offline?Colors.darkGray:Colors.primary}}>{props.title}</Text>
     </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     title: {
-        color: Colors.primary,
         textDecorationLine: 'underline',
         fontFamily: 'assistant-semi-bold',
         fontSize: Sizes.normal
