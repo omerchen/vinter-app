@@ -2,6 +2,15 @@ import React, { useState } from "react";
 import AppNavigator from "./navigation/AppNavigation";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
+import { createStore, combineReducers } from "redux";
+import playersReducer from "./store/reducers/players";
+import {Provider} from 'react-redux'
+import {enableScreens} from 'react-native-screens'
+
+enableScreens()
+
+const rootReducer = combineReducers({ players: playersReducer });
+const store = createStore(rootReducer);
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -24,11 +33,10 @@ let App = props => {
         onFinish={() => {
           setDataLoaded(true);
         }}
-        onError={(err) => {
-        }}
+        onError={err => {}}
       />
     );
-  else return <AppNavigator />;
+  else return <Provider store={store}><AppNavigator /></Provider>;
 };
 
 export default App;
