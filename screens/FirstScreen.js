@@ -4,13 +4,13 @@ import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
 import DBCommunicator from "../helpers/db-communictor";
-import Sleep from "../helpers/sleep";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setPlayers } from "../store/actions/players";
+import { setFixtures } from "../store/actions/fixtures";
 
 let FirstScreen = props => {
   // const [players, setPlayers] = useState(null);
-  const [fixturs, setFixtures] = useState(null);
+  const fixtures = useSelector(state => state.fixturs)
   const dispatch = useDispatch();
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -24,9 +24,9 @@ let FirstScreen = props => {
 
       DBCommunicator.getFixtures().then(res => {
         if (res.data) {
-          setFixtures(res.data.players);
+          dispatch(setFixtures(res.data));
         } else {
-          setFixtures([]);
+          dispatch(setFixtures([]));
         }
 
         if (onFinish) onFinish();

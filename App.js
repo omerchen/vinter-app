@@ -4,12 +4,13 @@ import * as Font from "expo-font";
 import { AppLoading } from "expo";
 import { createStore, combineReducers } from "redux";
 import playersReducer from "./store/reducers/players";
+import fixturesReducer from "./store/reducers/fixtures";
 import {Provider} from 'react-redux'
 import {enableScreens} from 'react-native-screens'
 
 enableScreens()
 
-const rootReducer = combineReducers({ players: playersReducer });
+const rootReducer = combineReducers({ players: playersReducer, fixtures: fixturesReducer });
 const store = createStore(rootReducer);
 
 const fetchFonts = () => {

@@ -7,10 +7,9 @@ import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
 import {connect} from 'react-redux'
 import DBCommunicator from '../helpers/db-communictor'
-import {SET_PLAYERS} from '../store/actions/players'
+import {SET_PLAYERS} from '../store/actions/fixtures'
 
 let AddPlayerScreen = props => {
-  console.log(props)
   const [name, setName] = useState("");
   const [playerType, setPlayerType] = useState(0);
 
@@ -33,8 +32,6 @@ let AddPlayerScreen = props => {
       };
 
       let newPlayers = [...props.players, newPlayer]
-      console.log("\n\n")
-      console.log(newPlayers)
       
       DBCommunicator.setPlayers(newPlayers).then((res)=>{
         if (res.status === 200)
