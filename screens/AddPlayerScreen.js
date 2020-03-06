@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { StyleSheet, KeyboardAvoidingView, Alert } from "react-native";
+import { StyleSheet, KeyboardAvoidingView, Alert, Dimensions } from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import TextInput from "react-native-material-textinput";
@@ -12,6 +12,7 @@ import {SET_PLAYERS} from '../store/actions/players'
 let AddPlayerScreen = props => {
   const [name, setName] = useState("");
   const [playerType, setPlayerType] = useState(0);
+  const keyboardOffset = Dimensions.get("window").height>500?100:20
 
   const dispatchPlayers = () => {
     let isExist = false;
@@ -56,7 +57,7 @@ let AddPlayerScreen = props => {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior="padding"
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={keyboardOffset}
     >
       <DismissKeyboardView style={styles.container}>
         {/* <Text>This is the AddPlayerScreen screen!</Text> */}

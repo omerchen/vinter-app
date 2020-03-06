@@ -4,6 +4,7 @@ import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/HeaderButton";
 import { useSelector } from "react-redux";
+import PlayerCard from '../components/PlayerCard'
 
 let AllPlayersScreen = props => {
   let players = useSelector(state => state.players);
@@ -16,12 +17,7 @@ let AllPlayersScreen = props => {
       contentContainerStyle={{ alignItems: "center" }}
       data={players}
       keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.playerView}>
-          <Text style={styles.playerTitle}>{item.name}</Text>
-          <Text style={styles.playerSubTitle}>{item.type==0?'משוחרר':'חייל'}</Text>
-        </View>
-      )}
+      renderItem={({ item }) => <PlayerCard player={item}/>}
     />
   );
   return (

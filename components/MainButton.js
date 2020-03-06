@@ -1,8 +1,9 @@
 import React from "react";
-import { Text, StyleSheet, View, TouchableNativeFeedback, Platform } from "react-native";
+import { Text, StyleSheet, View, Platform } from "react-native";
 import Colors from "../constants/colors";
 import Sizes from "../constants/sizes";
 import SubButton from './SubButton'
+import FeedbackTouchable from "./PlatformTouchable"
 
 let MainButton = props => {
   if (Platform.OS == "ios")
@@ -12,7 +13,7 @@ let MainButton = props => {
 
   return (
     <View style={{...styles.wrapper, ...props.style, width:props.width?props.width:420, backgroundColor: props.offline?Colors.darkGray:Colors.primary}}>
-      <TouchableNativeFeedback
+      <FeedbackTouchable
         disabled={props.offline}
         style={styles.touchableView}
         onPress={props.onPress}
@@ -20,7 +21,7 @@ let MainButton = props => {
         <View style={styles.view}>
           <Text style={styles.title}>{props.title}</Text>
         </View>
-      </TouchableNativeFeedback>
+      </FeedbackTouchable>
     </View>
   );
 };
