@@ -1,12 +1,33 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { StyleSheet, View, Dimensions, Text } from "react-native";
 import Colors from "../constants/colors";
 import moment from "moment"
 import {HeaderButtons, Item} from 'react-navigation-header-buttons'
 import {MaterialCommunityIconsHeaderButton} from '../components/HeaderButton'
+import {useSelector} from 'react-redux'
 
 let PlayerSreen = props => {
-  let player = props.navigation.getParam("player");
+  let players = useSelector(state=>state.players)
+  let playerId = props.navigation.getParam("playerId");
+  let player = null
+
+  for (let i in players) {
+    if (players[i].id === playerId && !players[i].isRemoved) {
+      player = players[i]
+      break
+    }
+  }
+
+
+  if (!player) {
+    props.navigation.pop();
+  }
+  else {
+    useEffect(()=>{
+      props.navigation.setParams({"player": player})
+    }, [player])
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.textView}>
@@ -20,6 +41,13 @@ let PlayerSreen = props => {
 
 PlayerSreen.navigationOptions = navigationData => {
   let player = navigationData.navigation.getParam("player")
+
+  if (!player) {
+    return {
+      headerTitle: "שגיאה בהצגת השחקן"
+    }
+  }
+
   return {
     headerTitle: player.name,
     headerRight: () => {
@@ -59,4 +87,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PlayerSreen;
+export default PlayerSreen

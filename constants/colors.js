@@ -5,5 +5,6 @@ export default {
     accent: '#FDCBBE',
     white: '#ffffff',
     black: '#0e0e0e',
-    darkGray: '#707070'
+    darkGray: '#707070',
+    red: '#ff0000'
 }

@@ -15,7 +15,7 @@ let PlayerCard = props => {
           props.navigation.navigate({
             routeName: "Player",
             params: {
-              player: props.player
+              playerId: props.player.id,
             }
           })
         }}
