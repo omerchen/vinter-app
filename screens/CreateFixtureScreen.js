@@ -6,7 +6,8 @@ import {
   ScrollView,
   Alert,
   Dimensions,
-  View
+  View,
+  TextInput as RNTextInput
 } from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
@@ -22,9 +23,11 @@ import {
 } from "../constants/fixture-radio-fields";
 import moment from "moment";
 
+
+let inputLength = 250;
+
 let CreateFixtureScreen = props => {
   let lastFixture = null;
-  let inputLength = 250;
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
 
@@ -32,10 +35,10 @@ let CreateFixtureScreen = props => {
       lastFixture = props.fixtures[ni];
     }
   }
-  const keyboardOffset = Dimensions.get("window").height > 500 ? 100 : 20;
+  const keyboardOffset = Dimensions.get("window").height > 500 ? 20 : 20;
 
   const [fixtureNumber, setFixtureNumber] = useState(
-    lastFixture ? lastFixture.number + 1 : "1"
+    lastFixture ? (lastFixture.number + 1).toString() : "1"
   );
   const [fixtureCourt, setFixtureCourt] = useState(
     lastFixture ? lastFixture.court : 0
@@ -48,6 +51,7 @@ let CreateFixtureScreen = props => {
   const [fixtureTime, setFixtureTime] = useState(
     lastFixture ? lastFixture.startTime : "17:00"
   );
+  const [fixtureList, setFixtureList] = useState("");
 
   return (
     <KeyboardAvoidingView
@@ -148,6 +152,17 @@ let CreateFixtureScreen = props => {
           }}
           style={styles.radio}
         />
+        <RNTextInput
+          value={fixtureList}
+          onChange={text => {
+            setFixtureList(text);
+          }}
+          placeholder="רשימת המחזור"
+          style={styles.listInput}
+          numberOfLines={20}
+          multiline={true}
+        />
+        <MainButton width={inputLength} style={{marginBottom:100}} title="צור מחזור"/>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -163,6 +178,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 10
+  },
+  listInput: {
+    borderColor: Colors.gray,
+    borderWidth: 1,
+    width: inputLength,
+    borderRadius:10,
+    fontFamily: "assistant-semi-bold",
+    textAlignVertical:"top",
+    padding:10,
+    textAlign: "right",
+    marginBottom:20,
+    fontSize:20,
   }
 });
 
