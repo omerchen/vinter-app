@@ -57,9 +57,9 @@ let CreateFixtureScreen = props => {
 
   let createFixture = () => {
     let parsedFixtureList = parseList(fixtureList)
-    if (parsedFixtureList)
+    if (parsedFixtureList !== null)
     {
-      console.log("Success")
+      setFixtureListValidation(true)
     }
     else
     {
