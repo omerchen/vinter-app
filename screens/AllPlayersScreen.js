@@ -22,6 +22,11 @@ let AllPlayersScreen = props => {
     ? players
         .filter(item => !item.isRemoved)
         .filter(item => item.name.indexOf(search.trim()) != -1)
+        .sort(function(a, b){
+          if(a.name < b.name) { return -1; }
+          if(a.name > b.name) { return 1; }
+          return 0;
+      })
     : [];
   let notPlayersExistsView = (
     <View style={{justifyContent:"center", flex:1}}><Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text></View>
@@ -35,6 +40,7 @@ let AllPlayersScreen = props => {
       renderItem={({ item }) => (
         <PlayerCard playerId={item.id} navigation={props.navigation} />
       )}
+      numColumns={3}
     />
   );
   return (
@@ -81,26 +87,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "assistant-semi-bold",
     color: Colors.darkGray,
-  },
-  playerView: {
-    backgroundColor: Colors.primaryBright,
-    borderRadius: 10,
-    width: 300,
-    height: 100,
-    marginVertical: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 10
-  },
-  playerTitle: {
-    fontFamily: "assistant-bold",
-    fontSize: 25,
-    color: Colors.black
-  },
-  playerSubTitle: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 20,
-    color: Colors.primary
   }
 });
 

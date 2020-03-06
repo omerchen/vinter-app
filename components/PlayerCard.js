@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     width: 300,
     height: 100,
-    marginVertical: 20,
+    margin: 20,
   },
   view: {
     backgroundColor: Colors.primaryBright,
