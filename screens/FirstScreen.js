@@ -11,6 +11,14 @@ import { setFixtures } from "../store/actions/fixtures";
 let FirstScreen = props => {
   // const [players, setPlayers] = useState(null);
   const fixtures = useSelector(state => state.fixturs);
+  let currentFixture = null;
+
+  for (let i in fixtures) {
+    if (fixture[i].isOpen && !fixtures[i].isRemoved) {
+      currentFixture = fixture[i];
+      break;
+    }
+  }
   const dispatch = useDispatch();
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -54,22 +62,35 @@ let FirstScreen = props => {
         source={require("../assets/images/colorful-logo-280h.png")}
         style={styles.logo}
       />
-      <MainButton
-        title="למחזור הנוכחי"
-        offline={!dataLoaded}
-        onPress={() => {
-          props.navigation.navigate({
-            routeName: "ViewFixture",
-            params: {
-              fixtureNumber: 25
-            }
-          });
-        }}
-      />
+      {currentFixture ? (
+        <MainButton
+          title="למחזור הנוכחי"
+          offline={!dataLoaded}
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "ViewFixture",
+              params: {
+                fixtureId: currentFixture.id
+              }
+            });
+          }}
+        />
+      ) : (
+        <MainButton
+          title="מחזור חדש"
+          offline={!dataLoaded}
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "CreateFixture",
+            });
+          }}
+        />
+      )}
+
       <View style={{ alignItems: "center" }}>
         <SubButton
           title="למחזורים הקודמים"
-          offline={!dataLoaded}
+          offline={!dataLoaded || !fixtures || fixtures.filter(item=>!item.isRemoved&&!item.isOpen).length > 0}
           onPress={() => {
             props.navigation.navigate("PreviousFixtures");
           }}
