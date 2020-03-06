@@ -60,7 +60,11 @@ let occurrences = (string, subString, allowOverlapping = true) => {
 
 
 let getPlayerId = (playerName, players) => {
+  for (let i in players) {
+    if (players[i].name === playerName && !players[i].isRemoved) return players[i].id
+  }
 
+  return null
 }
 
 let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
@@ -74,7 +78,7 @@ let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
   if (parsedPlayer.isGoalkeeper) {
     let nameWithoutGkPostfixArr = playerString.split(gkIdentifier)
     
-    if (nameWithoutGkPostfixArr.length !== 1)
+    if (nameWithoutGkPostfixArr.length !== 2 || nameWithoutGkPostfixArr[1] != "" )
     {
       Alert.alert("שם לא חוקי לאחד השוערים")
       return null
@@ -90,6 +94,7 @@ let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
 
   if (id == null)
   {
+    console.log("\""+playerName+"\"")
     handleNonExistPlayer(playerName)
     return null
   }
@@ -123,13 +128,14 @@ let parseTeam = (teamString, players, handleNonExistPlayer) => {
   }
 
   for (let i in lines) {
-    if (i === 0) continue;
+    if (i >0) {
+      let parsedPlayer = parsePlayer(lines[i], i == 1, players, handleNonExistPlayer);
 
-    let parsedPlayer = parsePlayer(lines[i], i === 1, players);
-
-    if (parsedPlayer == null) return null;
-
-    team.players.push(parsedPlayer);
+      if (parsedPlayer == null) return null;
+  
+      team.players.push(parsedPlayer);
+    }
+    
   }
 
   return team;
@@ -164,7 +170,7 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
   let parsedList = [];
 
   for (let i in preParseTeams) {
-    let currentParsedTeam = parseTeam(preParseTeams[i], players);
+    let currentParsedTeam = parseTeam(preParseTeams[i], players, handleNonExistPlayer);
 
     if (currentParsedTeam == null) {
       return null;
