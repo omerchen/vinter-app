@@ -1,57 +1,79 @@
 import React, { useState, useCallback } from "react";
-import { StyleSheet, KeyboardAvoidingView, Alert, Dimensions, View, Text } from "react-native";
+import {
+  StyleSheet,
+  KeyboardAvoidingView,
+  Alert,
+  Dimensions,
+  View,
+  Text
+} from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
-import {connect} from 'react-redux'
-import DBCommunicator from '../helpers/db-communictor'
-import {SET_PLAYERS} from '../store/actions/players'
+import { connect } from "react-redux";
+import DBCommunicator from "../helpers/db-communictor";
+import { SET_PLAYERS } from "../store/actions/players";
 
 let EditPlayerScreen = props => {
-  const [name, setName] = useState("");
-  const [playerType, setPlayerType] = useState(0);
-  const keyboardOffset = Dimensions.get("window").height>500?100:20
+  let playerId = props.navigation.getParam("playerId");
+  let player = null;
 
-  const dispatchPlayers = () => {
+  for (let i in props.players) {
+    if (props.players[i].id === playerId && !props.players[i].isRemoved) {
+      player = props.players[i];
+      break;
+    }
+  }
+
+  if (!player) {
+    props.navigation.pop();
+    return <View></View>;
+  }
+
+  const [name, setName] = useState(player.name);
+  const [playerType, setPlayerType] = useState(player.type);
+  const keyboardOffset = Dimensions.get("window").height > 500 ? 100 : 20;
+
+  const dispatchPlayersEdit = () => {
     let isExist = false;
     for (let i in props.players) {
-      if (props.players[i].name === name.trim() && props.players[i].isRemoved === false) {
+      if (
+        props.players[i].name === name.trim() &&
+        props.players[i].id !== player.id &&
+        props.players[i].isRemoved === false
+      ) {
         isExist = true;
         Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
         break;
       }
     }
     if (!isExist) {
-      let newPlayer = {
-        id: props.players.length,
-        isRemoved: false,
-        createTime: Date.now(),
-        name: name.trim(),
-        type: playerType
-      };
+      let newPlayers = [...props.players];
 
-      let newPlayers = [...props.players, newPlayer]
-      
-      DBCommunicator.setPlayers(newPlayers).then((res)=>{
-        if (res.status === 200)
-        {
-          props.setPlayers(newPlayers)
-          props.navigation.pop()
+      for (let i in newPlayers) {
+        if (newPlayers[i].id === player.id) {
+          newPlayers[i].name = name.trim()
+          newPlayers[i].type = playerType
         }
-        else
-        {
-          Alert.alert("תהליך ההוספה נכשל")
+      }
+
+      DBCommunicator.setPlayers(newPlayers).then(res => {
+        if (res.status === 200) {
+          props.setPlayers(newPlayers);
+          props.navigation.pop();
+        } else {
+          Alert.alert("תהליך העדכון נכשל");
         }
-      })
+      });
     }
-  }
+  };
 
   let radio_props = [
-    { label: "Standard", value: "standard" },
-    { label: "Soldier", value: "soldier" }
+    { label: "Standard", value: 0 },
+    { label: "Soldier", value: 1 }
   ];
 
   return (
@@ -61,7 +83,6 @@ let EditPlayerScreen = props => {
       keyboardVerticalOffset={keyboardOffset}
     >
       <DismissKeyboardView style={styles.container}>
-        <Text>{props.navigation.getParam("playerId")}</Text>
         <TextInput
           label="Full Name"
           value={name}
@@ -73,7 +94,7 @@ let EditPlayerScreen = props => {
         />
         <RadioForm
           radio_props={radio_props}
-          initial={0}
+          initial={player.type}
           onPress={value => {
             setPlayerType(value);
           }}
@@ -81,9 +102,9 @@ let EditPlayerScreen = props => {
         />
         <MainButton
           width={250}
-          title="שמור במערכת"
+          title="שמור שינויים"
           offline={!name}
-          onPress={dispatchPlayers}
+          onPress={dispatchPlayersEdit}
         />
       </DismissKeyboardView>
     </KeyboardAvoidingView>
@@ -106,12 +127,10 @@ const styles = StyleSheet.create({
   }
 });
 
-
-const mapStateToProps = state => ({ players: state.players })
+const mapStateToProps = state => ({ players: state.players });
 
 const mapDispatchToProps = {
-  setPlayers: (players) => ({ type: SET_PLAYERS, newPlayers: players})
+  setPlayers: players => ({ type: SET_PLAYERS, newPlayers: players })
 };
 
-
-export default connect(mapStateToProps,mapDispatchToProps)(EditPlayerScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(EditPlayerScreen);

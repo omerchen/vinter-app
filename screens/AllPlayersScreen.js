@@ -17,7 +17,7 @@ let AllPlayersScreen = props => {
       contentContainerStyle={{ alignItems: "center" }}
       data={players}
       keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => <PlayerCard player={item} navigation={props.navigation}/>}
+      renderItem={({ item }) => <PlayerCard playerId={item.id} navigation={props.navigation}/>}
     />
   );
   return (

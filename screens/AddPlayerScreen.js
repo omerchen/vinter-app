@@ -49,8 +49,8 @@ let AddPlayerScreen = props => {
   }
 
   let radio_props = [
-    { label: "Standard", value: "standard" },
-    { label: "Soldier", value: "soldier" }
+    { label: "Standard", value: 0 },
+    { label: "Soldier", value: 1 }
   ];
 
   return (

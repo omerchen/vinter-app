@@ -21,15 +21,17 @@ let PlayerSreen = props => {
 
   if (!player) {
     props.navigation.pop();
+    return <View></View>
   }
   else {
     useEffect(()=>{
       props.navigation.setParams({"player": player})
-    }, [player])
+    }, [player.name])
   }
 
   return (
     <View style={styles.container}>
+        <Text style={styles.title}>{player.name}</Text>
       <View style={styles.textView}>
         <Text style={styles.text}><Text style={styles.categoryText}>מספר שחקן:</Text> <Text style={styles.valueText}>{player.id}</Text></Text>
         <Text style={styles.text}><Text style={styles.categoryText}>סטטוס:</Text> <Text style={styles.valueText}>{player.type==0?"רגיל":"חייל"}</Text></Text>
@@ -40,16 +42,8 @@ let PlayerSreen = props => {
 };
 
 PlayerSreen.navigationOptions = navigationData => {
-  let player = navigationData.navigation.getParam("player")
-
-  if (!player) {
-    return {
-      headerTitle: "שגיאה בהצגת השחקן"
-    }
-  }
-
   return {
-    headerTitle: player.name,
+    headerTitle: "פרטי שחקן",
     headerRight: () => {
       return (
         <HeaderButtons HeaderButtonComponent={MaterialCommunityIconsHeaderButton}>
@@ -57,7 +51,7 @@ PlayerSreen.navigationOptions = navigationData => {
             title="Add Player"
             iconName="circle-edit-outline"
             onPress={() => {
-              navigationData.navigation.navigate({ routeName: "EditPlayer", params: {"playerId": player.id} });
+              navigationData.navigation.navigate({ routeName: "EditPlayer", params: {"playerId": navigationData.navigation.getParam("playerId")} });
             }}
           />
         </HeaderButtons>
@@ -84,6 +78,10 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontFamily: "assistant-semi-bold",
+  },
+  title: {
+    fontFamily: "assistant-bold",
+    fontSize: 30
   }
 });
 

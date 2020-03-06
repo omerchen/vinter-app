@@ -5,9 +5,10 @@ import {
   StyleSheet} from "react-native";
 import Colors from "../constants/colors";
 import PlatformTouchableFeedback from "./PlatformTouchable"
+import {useSelector} from 'react-redux'
 
 let PlayerCard = props => {
-
+  let player = useSelector(state=>state.players[props.playerId])
   return (
     <View style={styles.container}>
       <PlatformTouchableFeedback
@@ -15,15 +16,15 @@ let PlayerCard = props => {
           props.navigation.navigate({
             routeName: "Player",
             params: {
-              playerId: props.player.id,
+              playerId: props.playerId,
             }
           })
         }}
       >
         <View style={styles.view}>
-          <Text style={styles.title}>{props.player.name}</Text>
+          <Text style={styles.title}>{player.name}</Text>
           <Text style={styles.subtitle}>
-            {props.player.type == 0 ? "משוחרר" : "חייל"}
+            {player.type == 0 ? "משוחרר" : "חייל"}
           </Text>
         </View>
       </PlatformTouchableFeedback>
