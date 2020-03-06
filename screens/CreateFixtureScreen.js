@@ -14,7 +14,7 @@ import MainButton from "../components/MainButton";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import DBCommunicator from "../helpers/db-communictor";
 import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
 import {
@@ -28,6 +28,7 @@ let inputLength = 250;
 
 let CreateFixtureScreen = props => {
   let lastFixture = null;
+  let players = useSelector(state=>state.players)
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
 
@@ -56,7 +57,7 @@ let CreateFixtureScreen = props => {
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
 
   let createFixture = () => {
-    let parsedFixtureList = parseList(fixtureList)
+    let parsedFixtureList = parseList(fixtureList, players)
     if (parsedFixtureList !== null)
     {
       setFixtureListValidation(true)

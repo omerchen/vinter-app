@@ -3,6 +3,8 @@ import { Alert } from "react-native";
 let blueSign = "💙";
 let orangeSign = "🧡";
 let greenSign = "💚";
+let gkIdentifier = "(שוער)";
+
 
 let teamColorsArray = ["blue", "orange", "green"];
 
@@ -24,17 +26,6 @@ let determineColor = teamString => {
   let countBlue = occurrences(teamString, blueSign);
   let countOrange = occurrences(teamString, orangeSign);
   let countGreen = occurrences(teamString, greenSign);
-  console.log(
-    "blue(" +
-      countBlue +
-      ")" +
-      " orange(" +
-      countOrange +
-      ")" +
-      " green(" +
-      countGreen +
-      ")"
-  );
 
   if (countBlue + countOrange + countGreen !== 1) return null;
 
@@ -46,46 +37,6 @@ let determineColor = teamString => {
 
   console.log("wierd scenario just happen!");
   return null;
-};
-
-let parsePlayer = (playerString, isCaptain = false) => {};
-
-let parseTeam = teamString => {
-  let lines = teamString.split("\n");
-
-  // validate number of players at a team
-  if (lines.length != 6 /*num of players + header line*/) {
-    Alert.alert("על כל הקבוצות להיות בפורמט של שורת כותרת ו5 שורות לשחקנים");
-    return null;
-  }
-
-  let team = { teamColorCode: determineColor(lines[0]), players: [] };
-
-  // validate color
-  if (team.teamColorCode == null) {
-    Alert.alert("לא ניתן לקבוע את צבע אחת הקבוצות");
-    return null;
-  }
-
-  let gkIdentifier = "(שוער)";
-
-  // validate maximum number of gks
-  if (occurrences(teamString, gkIdentifier) > 1) {
-    Alert.alert("בקבוצה מסויימת יש יותר משוער אחד");
-    return null;
-  }
-
-  for (let i in lines) {
-    if (i === 0) continue;
-
-    let parsedPlayer = parsePlayer(lines[i], i === 1);
-
-    if (parsedPlayer == null) return null;
-
-    team.players.push(parsedPlayer);
-  }
-
-  return team;
 };
 
 let occurrences = (string, subString, allowOverlapping = true) => {
@@ -107,7 +58,85 @@ let occurrences = (string, subString, allowOverlapping = true) => {
   return n;
 };
 
-export default fixtureList => {
+
+let getPlayerId = (playerName, players) => {
+
+}
+
+let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
+  let parsedPlayer = {
+    isCaptain: isCaptain,
+    isGoalkeeper: (occurrences(playerString, gkIdentifier) ===1)
+  }
+
+  let playerName = ""
+
+  if (parsedPlayer.isGoalkeeper) {
+    let nameWithoutGkPostfixArr = playerString.split(gkIdentifier)
+    
+    if (nameWithoutGkPostfixArr.length !== 1)
+    {
+      Alert.alert("שם לא חוקי לאחד השוערים")
+      return null
+    }
+
+    playerName = nameWithoutGkPostfixArr[0].trim()
+
+  } else {
+    playerName = playerString.trim()
+  }
+
+  let id = getPlayerId(playerName, players)
+
+  if (id == null)
+  {
+    handleNonExistPlayer(playerName)
+    return null
+  }
+
+  parsedPlayer.id = id
+
+  return parsedPlayer
+};
+
+let parseTeam = (teamString, players, handleNonExistPlayer) => {
+  let lines = teamString.split("\n");
+
+  // validate number of players at a team
+  if (lines.length != 6 /*num of players + header line*/) {
+    Alert.alert("על כל הקבוצות להיות בפורמט של שורת כותרת ו5 שורות לשחקנים");
+    return null;
+  }
+
+  let team = { teamColorCode: determineColor(lines[0]), players: [] };
+
+  // validate color
+  if (team.teamColorCode == null) {
+    Alert.alert("לא ניתן לקבוע את צבע אחת הקבוצות");
+    return null;
+  }
+
+  // validate maximum number of gks
+  if (occurrences(teamString, gkIdentifier) > 1) {
+    Alert.alert("בקבוצה מסויימת יש יותר משוער אחד");
+    return null;
+  }
+
+  for (let i in lines) {
+    if (i === 0) continue;
+
+    let parsedPlayer = parsePlayer(lines[i], i === 1, players);
+
+    if (parsedPlayer == null) return null;
+
+    team.players.push(parsedPlayer);
+  }
+
+  return team;
+};
+
+
+export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Alert.alert("לא נמצא שחקן בשם: "+playerName)}) => {
   // not empty
   if (fixtureList === "") {
     Alert.alert("רשימה ריקה");
@@ -135,7 +164,7 @@ export default fixtureList => {
   let parsedList = [];
 
   for (let i in preParseTeams) {
-    let currentParsedTeam = parseTeam(preParseTeams[i]);
+    let currentParsedTeam = parseTeam(preParseTeams[i], players);
 
     if (currentParsedTeam == null) {
       return null;
@@ -145,5 +174,6 @@ export default fixtureList => {
   }
 
   Alert.alert("good!");
+  console.log(parsedList)
   return parsedList;
 };
