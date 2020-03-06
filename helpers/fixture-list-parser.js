@@ -179,7 +179,5 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
     }
   }
 
-  Alert.alert("good!");
-  console.log(parsedList)
   return parsedList;
 };
