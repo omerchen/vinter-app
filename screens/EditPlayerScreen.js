@@ -19,22 +19,9 @@ import { SET_PLAYERS } from "../store/actions/players";
 
 let EditPlayerScreen = props => {
   let playerId = props.navigation.getParam("playerId");
-  let player = null;
 
-  for (let i in props.players) {
-    if (props.players[i].id === playerId && !props.players[i].isRemoved) {
-      player = props.players[i];
-      break;
-    }
-  }
-
-  if (!player) {
-    props.navigation.pop();
-    return <View></View>;
-  }
-
-  const [name, setName] = useState(player.name);
-  const [playerType, setPlayerType] = useState(player.type);
+  const [name, setName] = useState(props.players[playerId].name);
+  const [playerType, setPlayerType] = useState(props.players[playerId].type);
   const keyboardOffset = Dimensions.get("window").height > 500 ? 100 : 20;
 
   const dispatchPlayersEdit = () => {
@@ -42,7 +29,7 @@ let EditPlayerScreen = props => {
     for (let i in props.players) {
       if (
         props.players[i].name === name.trim() &&
-        props.players[i].id !== player.id &&
+        props.players[i].id !== playerId &&
         props.players[i].isRemoved === false
       ) {
         isExist = true;
@@ -54,9 +41,9 @@ let EditPlayerScreen = props => {
       let newPlayers = [...props.players];
 
       for (let i in newPlayers) {
-        if (newPlayers[i].id === player.id) {
-          newPlayers[i].name = name.trim()
-          newPlayers[i].type = playerType
+        if (newPlayers[i].id === playerId) {
+          newPlayers[i].name = name.trim();
+          newPlayers[i].type = playerType;
         }
       }
 
@@ -69,6 +56,22 @@ let EditPlayerScreen = props => {
         }
       });
     }
+  };
+
+  const dispatchPlayersDelete = () => {
+    let newPlayers = [...props.players];
+
+    newPlayers[playerId].isRemoved = true
+    newPlayers[playerId].removeTime = Date.now()
+
+    DBCommunicator.setPlayers(newPlayers).then(res => {
+      if (res.status === 200) {
+        props.setPlayers(newPlayers);
+        props.navigation.pop();
+      } else {
+        Alert.alert("תהליך המחיקה נכשל");
+      }
+    });
   };
 
   let radio_props = [
@@ -94,7 +97,7 @@ let EditPlayerScreen = props => {
         />
         <RadioForm
           radio_props={radio_props}
-          initial={player.type}
+          initial={props.players[playerId].type}
           onPress={value => {
             setPlayerType(value);
           }}
@@ -104,7 +107,7 @@ let EditPlayerScreen = props => {
           width={250}
           title="שמור שינויים"
           offline={!name}
-          onPress={dispatchPlayersEdit}
+          onPress={dispatchPlayersDelete}
         />
       </DismissKeyboardView>
     </KeyboardAvoidingView>

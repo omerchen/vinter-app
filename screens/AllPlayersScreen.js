@@ -2,9 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
 import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import {IoniconsHeaderButton} from "../components/HeaderButton";
+import { IoniconsHeaderButton } from "../components/HeaderButton";
 import { useSelector } from "react-redux";
-import PlayerCard from '../components/PlayerCard'
+import PlayerCard from "../components/PlayerCard";
 
 let AllPlayersScreen = props => {
   let players = useSelector(state => state.players);
@@ -13,11 +13,13 @@ let AllPlayersScreen = props => {
   );
   let playersListView = (
     <FlatList
-      style={{ width: "100%"}}
+      style={{ width: "100%" }}
       contentContainerStyle={{ alignItems: "center" }}
-      data={players}
+      data={players.filter(item => !item.isRemoved)}
       keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => <PlayerCard playerId={item.id} navigation={props.navigation}/>}
+      renderItem={({ item }) => (
+        <PlayerCard playerId={item.id} navigation={props.navigation} />
+      )}
     />
   );
   return (
