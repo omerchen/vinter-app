@@ -39,7 +39,7 @@ let App = props => {
         onFinish={() => {
           setDataLoaded(true);
         }}
-        onError={err => {}}
+        onError={err => {console.log(err)}}
       />
     );
   else return <Provider store={store}><AppNavigator /></Provider>;

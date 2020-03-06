@@ -52,6 +52,24 @@ let CreateFixtureScreen = props => {
   );
 
   const [fixtureList, setFixtureList] = useState("");
+  const [fixtureListValidation, setFixtureListValidation] = useState(true);
+
+  let parseList = ()=>{
+    console.log(fixtureList)
+    return null
+  }
+
+  let createFixture = () => {
+    let fixtureList = parseList()
+    if (fixtureList)
+    {
+      console.log("Success")
+    }
+    else
+    {
+      setFixtureListValidation(false)
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -73,6 +91,8 @@ let CreateFixtureScreen = props => {
           fontSize={20}
           keyboardType="numeric"
           alignText="center"
+          labelColor={fixtureNumber!==""?Colors.darkGray:Colors.red}
+          underlineColor={fixtureNumber!==""?Colors.darkGray:Colors.red}
         />
         <DatePicker
           style={{ width: inputLength }}
@@ -158,7 +178,7 @@ let CreateFixtureScreen = props => {
             setFixtureList(e.nativeEvent.text);
           }}
           placeholder="רשימת המחזור"
-          style={styles.listInput}
+          style={{...styles.listInput,...(fixtureListValidation?{}:styles.error)}}
           numberOfLines={20}
           multiline={true}
         />
@@ -166,6 +186,7 @@ let CreateFixtureScreen = props => {
           width={inputLength}
           style={{ marginBottom: 100 }}
           title="צור מחזור"
+          onPress={createFixture}
         />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -194,6 +215,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 20,
     fontSize: 20
+  },
+  error: {
+    borderColor: Colors.red,
+    borderWidth:2,
   }
 });
 
