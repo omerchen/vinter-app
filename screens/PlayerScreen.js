@@ -10,6 +10,7 @@ let PlayerSreen = props => {
   return (
     <View style={styles.container}>
       <View style={styles.textView}>
+        <Text style={styles.text}><Text style={styles.categoryText}>מספר שחקן:</Text> <Text style={styles.valueText}>{player.id}</Text></Text>
         <Text style={styles.text}><Text style={styles.categoryText}>סטטוס:</Text> <Text style={styles.valueText}>{player.type==0?"רגיל":"חייל"}</Text></Text>
         <Text style={styles.text}><Text style={styles.categoryText}>תאריך הוספה למערכת:</Text> <Text style={styles.valueText}>{moment(player.createTime).format("DD.MM.YYYY hh:mm:ss")}</Text></Text>
       </View>
@@ -18,8 +19,9 @@ let PlayerSreen = props => {
 };
 
 PlayerSreen.navigationOptions = navigationData => {
+  let player = navigationData.navigation.getParam("player")
   return {
-    headerTitle: navigationData.navigation.getParam("player").name,
+    headerTitle: player.name,
     headerRight: () => {
       return (
         <HeaderButtons HeaderButtonComponent={MaterialCommunityIconsHeaderButton}>
@@ -27,7 +29,7 @@ PlayerSreen.navigationOptions = navigationData => {
             title="Add Player"
             iconName="circle-edit-outline"
             onPress={() => {
-              navigationData.navigation.navigate({ routeName: "AddPlayer" });
+              navigationData.navigation.navigate({ routeName: "EditPlayer", params: {"playerId": player.id} });
             }}
           />
         </HeaderButtons>
