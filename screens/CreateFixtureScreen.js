@@ -22,6 +22,7 @@ import {
   fixtureTypeRadio
 } from "../constants/fixture-radio-fields";
 import moment from "moment";
+import parseList from "../helpers/fixture-list-parser";
 
 let inputLength = 250;
 
@@ -54,14 +55,9 @@ let CreateFixtureScreen = props => {
   const [fixtureList, setFixtureList] = useState("");
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
 
-  let parseList = ()=>{
-    console.log(fixtureList)
-    return null
-  }
-
   let createFixture = () => {
-    let fixtureList = parseList()
-    if (fixtureList)
+    let parsedFixtureList = parseList(fixtureList)
+    if (parsedFixtureList)
     {
       console.log("Success")
     }
