@@ -31,6 +31,10 @@ let AllPlayersScreen = props => {
   let notPlayersExistsView = (
     <View style={{justifyContent:"center", flex:1}}><Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text></View>
   );
+  let numOfColumn = 1
+  let windowWidth = Dimensions.get("window").width
+  if (windowWidth>500) numOfColumn = 2
+  if (windowWidth>1000) numOfColumn = 3
   let playersListView = (
     <FlatList
       style={{ width: "100%" }}
@@ -40,7 +44,7 @@ let AllPlayersScreen = props => {
       renderItem={({ item }) => (
         <PlayerCard playerId={item.id} navigation={props.navigation} />
       )}
-      numColumns={Dimensions.get("window").width>1000?3:2}
+      numColumns={numOfColumn}
     />
   );
   return (

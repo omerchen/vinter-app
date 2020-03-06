@@ -78,7 +78,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 40
   },
-  textView: {},
+  textView: {
+    alignItems: "flex-start"
+  },
   text: {
     fontSize: 20
   },
