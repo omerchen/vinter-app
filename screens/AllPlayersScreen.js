@@ -40,7 +40,7 @@ let AllPlayersScreen = props => {
       renderItem={({ item }) => (
         <PlayerCard playerId={item.id} navigation={props.navigation} />
       )}
-      numColumns={3}
+      numColumns={Dimensions.get("window").width>1000?3:2}
     />
   );
   return (
