@@ -12,7 +12,8 @@ import playerTypeRadio from '../constants/player-type-radio'
 
 
 let AddPlayerScreen = props => {
-  const [name, setName] = useState("");
+  const initialName = props.navigation.getParam("initialName")
+  const [name, setName] = useState(initialName?initialName.toString():"");
   const [playerType, setPlayerType] = useState(0);
   const keyboardOffset = Dimensions.get("window").height>500?100:20
 

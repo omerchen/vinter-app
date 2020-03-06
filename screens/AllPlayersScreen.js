@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,23 +18,36 @@ import { DismissKeyboardView } from "../components/DismissKeyboardView";
 let AllPlayersScreen = props => {
   let [search, setSearch] = useState("");
   let players = useSelector(state => state.players);
-  let filteredPlayers = players
-    ? players
-        .filter(item => !item.isRemoved)
-        .filter(item => item.name.indexOf(search.trim()) != -1)
-        .sort(function(a, b){
-          if(a.name < b.name) { return -1; }
-          if(a.name > b.name) { return 1; }
-          return 0;
-      })
-    : [];
+
+  let activePlayers = players ? players.filter(item => !item.isRemoved) : [];
+
+  let filteredPlayers = activePlayers
+    .filter(item => item.name.indexOf(search.trim()) != -1)
+    .sort(function(a, b) {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+
+  useEffect(() => {
+    props.navigation.setParams({ initialName: search, amountOfPlayers: activePlayers.length});
+  }, [search, activePlayers.length]);
+
   let notPlayersExistsView = (
-    <DismissKeyboardView style={{justifyContent:"center", flex:1, width:'100%'}}><Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text></DismissKeyboardView>
+    <DismissKeyboardView
+      style={{ justifyContent: "center", flex: 1, alignItems: "strech" }}
+    >
+      <Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text>
+    </DismissKeyboardView>
   );
-  let numOfColumn = 1
-  let windowWidth = Dimensions.get("window").width
-  if (windowWidth>500) numOfColumn = 2
-  if (windowWidth>1000) numOfColumn = 3
+  let numOfColumn = 1;
+  let windowWidth = Dimensions.get("window").width;
+  if (windowWidth > 500) numOfColumn = 2;
+  if (windowWidth > 1000) numOfColumn = 3;
   let playersListView = (
     <FlatList
       style={{ width: "100%" }}
@@ -57,8 +70,8 @@ let AllPlayersScreen = props => {
         marginBottom={-1}
         width={Dimensions.get("window").width - 30}
         activeColor={Colors.primary}
-        onFocus={()=>{
-          setSearch("")
+        onFocus={() => {
+          setSearch("");
         }}
       />
       {filteredPlayers.length > 0 ? playersListView : notPlayersExistsView}
@@ -68,6 +81,7 @@ let AllPlayersScreen = props => {
 
 AllPlayersScreen.navigationOptions = navigationData => {
   return {
+    headerTitle: "שחקני הקבוצה ("+(navigationData.navigation.getParam("amountOfPlayers"))+")",
     headerRight: () => {
       return (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
@@ -75,7 +89,12 @@ AllPlayersScreen.navigationOptions = navigationData => {
             title="Add Player"
             iconName="ios-add"
             onPress={() => {
-              navigationData.navigation.navigate({ routeName: "AddPlayer" });
+              navigationData.navigation.navigate({
+                routeName: "AddPlayer",
+                params: {
+                  initialName: navigationData.navigation.getParam("initialName")
+                }
+              });
             }}
           />
         </HeaderButtons>
@@ -88,12 +107,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    alignItems: "center",
+    alignItems: "center"
   },
   nonPlayersTitle: {
     fontSize: 20,
     fontFamily: "assistant-semi-bold",
-    color: Colors.darkGray,
+    color: Colors.darkGray
   }
 });
 

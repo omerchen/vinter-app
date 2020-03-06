@@ -37,9 +37,6 @@ const MainNavigator = createStackNavigator(
     },
     AllPlayers: {
       screen: AllPlayersScreen,
-      navigationOptions: {
-        headerTitle: "שחקני הקבוצה"
-      }
     },
     AddPlayer: {
       screen: AddPlayerScreen,
