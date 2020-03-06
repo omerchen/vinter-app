@@ -12,8 +12,8 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
 import { useSelector } from "react-redux";
 import PlayerCard from "../components/PlayerCard";
-import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import TextInput from "react-native-material-textinput";
+import { DismissKeyboardView } from "../components/DismissKeyboardView";
 
 let AllPlayersScreen = props => {
   let [search, setSearch] = useState("");
@@ -29,7 +29,7 @@ let AllPlayersScreen = props => {
       })
     : [];
   let notPlayersExistsView = (
-    <View style={{justifyContent:"center", flex:1}}><Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text></View>
+    <DismissKeyboardView style={{justifyContent:"center", flex:1, width:'100%'}}><Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text></DismissKeyboardView>
   );
   let numOfColumn = 1
   let windowWidth = Dimensions.get("window").width
@@ -48,7 +48,7 @@ let AllPlayersScreen = props => {
     />
   );
   return (
-    <DismissKeyboardView style={styles.container}>
+    <View style={styles.container}>
       <TextInput
         label="חיפוש"
         value={search}
@@ -57,9 +57,12 @@ let AllPlayersScreen = props => {
         marginBottom={-1}
         width={Dimensions.get("window").width - 30}
         activeColor={Colors.primary}
+        onFocus={()=>{
+          setSearch("")
+        }}
       />
       {filteredPlayers.length > 0 ? playersListView : notPlayersExistsView}
-    </DismissKeyboardView>
+    </View>
   );
 };
 

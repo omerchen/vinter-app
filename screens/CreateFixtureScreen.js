@@ -1,54 +1,53 @@
-import React, { useState, useCallback } from "react";
-import { StyleSheet, KeyboardAvoidingView, Alert, Dimensions } from "react-native";
+import React, { useState } from "react";
+import DatePicker from "react-native-datepicker";
+import {
+  StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+  Alert,
+  Dimensions,
+  View
+} from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
-import {connect} from 'react-redux'
-import DBCommunicator from '../helpers/db-communictor'
-import {SET_FIXTURES} from '../store/actions/fixtures'
-import playerTypeRadio from '../constants/player-type-radio'
-
+import { connect } from "react-redux";
+import DBCommunicator from "../helpers/db-communictor";
+import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
+import {
+  fixtureCourtRadio,
+  fixtureTypeRadio
+} from "../constants/fixture-radio-fields";
+import moment from "moment";
 
 let CreateFixtureScreen = props => {
-  const [name, setName] = useState("");
-  const [playerType, setPlayerType] = useState(0);
-  const keyboardOffset = Dimensions.get("window").height>500?100:20
+  let lastFixture = null;
+  let inputLength = 250
+  for (let i in props.fixtures) {
+    let ni = props.fixtures.length - i - 1;
 
-  const dispatchPlayers = () => {
-    let isExist = false;
-    for (let i in props.players) {
-      if (props.players[i].name === name.trim() && props.players[i].isRemoved === false) {
-        isExist = true;
-        Alert.alert("אופס!","נראה שכבר קיים במערכת שחקן עם שם זהה", [], {cancelable: true});
-        break;
-      }
-    }
-    if (!isExist) {
-      let newPlayer = {
-        id: props.players.length,
-        isRemoved: false,
-        createTime: Date.now(),
-        name: name.trim(),
-        type: playerType
-      };
-
-      let newPlayers = [...props.players, newPlayer]
-      
-      DBCommunicator.setPlayers(newPlayers).then((res)=>{
-        if (res.status === 200)
-        {
-          props.setPlayers(newPlayers)
-          props.navigation.pop()
-        }
-        else
-        {
-          Alert.alert("תהליך ההוספה נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
-        }
-      })
+    if (!props.fixtures[ni].isRemoved) {
+      lastFixture = props.fixtures[ni];
     }
   }
+  const keyboardOffset = Dimensions.get("window").height > 500 ? 100 : 20;
+
+  const [fixtureNumber, setFixtureNumber] = useState(
+    lastFixture ? lastFixture.number + 1 : "1"
+  );
+  const [fixtureCourt, setFixtureCourt] = useState(
+    lastFixture ? lastFixture.court : 0
+  );
+  const [fixtureType, setFixtureType] = useState(0);
+
+  const [fixtureDate, setFixtureDate] = useState(
+    moment(Date.now()).format("DD.MM.YYYY")
+  );
+  const [fixtureTime, setFixtureTime] = useState(
+    lastFixture ? lastFixture.startTime : "17:00"
+  );
 
   return (
     <KeyboardAvoidingView
@@ -56,31 +55,96 @@ let CreateFixtureScreen = props => {
       behavior="padding"
       keyboardVerticalOffset={keyboardOffset}
     >
-      <DismissKeyboardView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
         <TextInput
-          label="שם מלא"
-          value={name}
-          onChangeText={text => setName(text)}
+          label="מספר מחזור"
+          value={fixtureNumber}
+          onChangeText={text => setFixtureNumber(text)}
           fontFamily="assistant-semi-bold"
-          marginBottom={30}
-          width={200}
+          width={inputLength}
           activeColor={Colors.primary}
+          fontSize={20}
+          keyboardType="numeric"
+          alignText="center"
+        />
+        <DatePicker
+          style={{ width: inputLength }}
+          date={fixtureDate}
+          mode="date"
+          placeholder="תאריך המחזור"
+          format="DD.MM.YYYY"
+          minDate="01.01.2000"
+          maxDate="31.12.2100"
+          customStyles={{
+            dateIcon: {
+              position: "absolute",
+              left: 0,
+              top: 4,
+              marginLeft: 0
+            },
+            dateInput: {
+              marginLeft: 50,
+              borderColor: Colors.white,
+              borderBottomColor: Colors.darkGray,
+              fontFamily: "assistant-bold"
+            },
+            dateText: {
+              fontFamily: "assistant-semi-bold",
+              fontSize: 20
+            }
+          }}
+          onDateChange={date => {
+            setFixtureDate(date);
+          }}
+        />
+        <DatePicker
+          style={{ width: inputLength, marginVertical: 10 }}
+          date={fixtureTime}
+          mode="time"
+          placeholder="תאריך המחזור"
+          format="HH:mm"
+          customStyles={{
+            dateIcon: {
+              position: "absolute",
+              left: 0,
+              top: 4,
+              marginLeft: 0
+            },
+            dateInput: {
+              marginLeft: 50,
+              borderColor: Colors.white,
+              borderBottomColor: Colors.darkGray,
+              fontFamily: "assistant-bold"
+            },
+            dateText: {
+              fontFamily: "assistant-semi-bold",
+              fontSize: 20
+            }
+          }}
+          onDateChange={date => {
+            setFixtureTime(date);
+          }}
         />
         <RadioForm
-          radio_props={playerTypeRadio}
-          initial={0}
+          radio_props={fixtureCourtRadio}
+          initial={fixtureCourt}
           onPress={value => {
-            setPlayerType(value);
+            setFixtureCourt(value);
           }}
           style={styles.radio}
         />
-        <MainButton
-          width={250}
-          title="שמור במערכת"
-          offline={!name}
-          onPress={dispatchPlayers}
+        <RadioForm
+          radio_props={fixtureTypeRadio}
+          initial={fixtureType}
+          onPress={value => {
+            setFixtureType(value);
+          }}
+          style={styles.radio}
         />
-      </DismissKeyboardView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -89,23 +153,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    alignItems: "center",
-    justifyContent: "center"
+    paddingTop: 40,
   },
   radio: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 200,
-    marginBottom: 20
+    marginVertical: 10,
   }
 });
 
-
-const mapStateToProps = state => ({ fixtures: state.fixtures })
+const mapStateToProps = state => ({ fixtures: state.fixtures });
 
 const mapDispatchToProps = {
-  setFixtures: (fixtures) => ({ type: SET_FIXTURES, newFixtures: fixtures})
+  setFixtures: fixtures => ({ type: SET_FIXTURES, newFixtures: fixtures })
 };
 
-
-export default connect(mapStateToProps,mapDispatchToProps)(CreateFixtureScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateFixtureScreen);

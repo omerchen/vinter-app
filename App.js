@@ -12,7 +12,7 @@ import {YellowBox, I18nManager} from 'react-native'
 enableScreens()
 
 // ignore specific warrning messages
-YellowBox.ignoreWarnings(['componentWillReceiveProps']);
+YellowBox.ignoreWarnings(['componentWillReceiveProps', 'TimePickerAndroid', 'DatePickerAndroid']);
 I18nManager.forceRTL(true)
 
 const rootReducer = combineReducers({ players: playersReducer, fixtures: fixturesReducer });
