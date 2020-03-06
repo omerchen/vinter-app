@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, View, Dimensions, Text } from "react-native";
 import Colors from "../constants/colors";
-import { connect } from "react-redux";
-import { SET_PLAYERS } from "../store/actions/players";
 import moment from "moment"
+import {HeaderButtons, Item} from 'react-navigation-header-buttons'
+import {MaterialCommunityIconsHeaderButton} from '../components/HeaderButton'
 
 let PlayerSreen = props => {
   let player = props.navigation.getParam("player");
@@ -19,7 +19,20 @@ let PlayerSreen = props => {
 
 PlayerSreen.navigationOptions = navigationData => {
   return {
-    headerTitle: navigationData.navigation.getParam("player").name
+    headerTitle: navigationData.navigation.getParam("player").name,
+    headerRight: () => {
+      return (
+        <HeaderButtons HeaderButtonComponent={MaterialCommunityIconsHeaderButton}>
+          <Item
+            title="Add Player"
+            iconName="circle-edit-outline"
+            onPress={() => {
+              navigationData.navigation.navigate({ routeName: "AddPlayer" });
+            }}
+          />
+        </HeaderButtons>
+      );
+    }
   };
 };
 
@@ -44,10 +57,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => ({ players: state.players });
-
-const mapDispatchToProps = {
-  setPlayers: players => ({ type: SET_PLAYERS, newPlayers: players })
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(PlayerSreen);
+export default PlayerSreen;

@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
 import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../components/HeaderButton";
+import {IoniconsHeaderButton} from "../components/HeaderButton";
 import { useSelector } from "react-redux";
 import PlayerCard from '../components/PlayerCard'
 
@@ -31,7 +31,7 @@ AllPlayersScreen.navigationOptions = navigationData => {
   return {
     headerRight: () => {
       return (
-        <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           <Item
             title="Add Player"
             iconName="ios-add"
