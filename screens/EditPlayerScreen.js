@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -17,6 +17,8 @@ import { connect } from "react-redux";
 import DBCommunicator from "../helpers/db-communictor";
 import { SET_PLAYERS } from "../store/actions/players";
 import playerTypeRadio from '../constants/player-type-radio'
+import {HeaderButtons, Item} from 'react-navigation-header-buttons'
+import {MaterialCommunityIconsHeaderButton} from '../components/HeaderButton'
 
 let EditPlayerScreen = props => {
   let playerId = props.navigation.getParam("playerId");
@@ -34,7 +36,7 @@ let EditPlayerScreen = props => {
         props.players[i].isRemoved === false
       ) {
         isExist = true;
-        Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
+        Alert.alert("אופס!","נראה שכבר קיים במערכת שחקן עם שם זהה", null, {cancelable: true});
         break;
       }
     }
@@ -53,7 +55,7 @@ let EditPlayerScreen = props => {
           props.setPlayers(newPlayers);
           props.navigation.pop();
         } else {
-          Alert.alert("תהליך העדכון נכשל");
+          Alert.alert("תהליך העדכון נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
       });
     }
@@ -70,12 +72,12 @@ let EditPlayerScreen = props => {
         props.setPlayers(newPlayers);
         props.navigation.pop();
       } else {
-        Alert.alert("תהליך המחיקה נכשל");
+        Alert.alert("תהליך המחיקה נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
       }
     });
   };
 
-  const showDeleteDialog = () => {
+  const showDeleteDialog = useCallback(() => {
     Alert.alert("מחיקת שחקן","האם אתה בטוח שברצונך למחוק את "+props.players[playerId].name+"?",[
       {text: "לא", style: "cancel"},
       {text: "מחק", onPress: dispatchPlayersDelete , style: "destructive"},
@@ -83,7 +85,13 @@ let EditPlayerScreen = props => {
       cancelable: true,
       
     })
-  }
+  },[props.players, props.setPlayers, playerId])
+
+  useEffect(()=>{
+    props.navigation.setParams({
+      deletePlayer: showDeleteDialog
+    })
+  }, [showDeleteDialog])
 
   return (
     <KeyboardAvoidingView
@@ -113,7 +121,7 @@ let EditPlayerScreen = props => {
           width={250}
           title="שמור שינויים"
           offline={!name}
-          onPress={showDeleteDialog}
+          onPress={dispatchPlayersEdit}
         />
       </DismissKeyboardView>
     </KeyboardAvoidingView>
@@ -135,6 +143,25 @@ const styles = StyleSheet.create({
     marginBottom: 20
   }
 });
+
+EditPlayerScreen.navigationOptions = navigationData => {
+  return {
+    headerTitle: "עריכת שחקן",
+    headerRight: () => {
+      return (
+        <HeaderButtons
+          HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
+        >
+          <Item
+            title="Add Player"
+            iconName="delete"
+            onPress={navigationData.navigation.getParam("deletePlayer")}
+          />
+        </HeaderButtons>
+      );
+    }
+  }
+}
 
 const mapStateToProps = state => ({ players: state.players });
 

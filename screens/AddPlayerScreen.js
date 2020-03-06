@@ -21,7 +21,7 @@ let AddPlayerScreen = props => {
     for (let i in props.players) {
       if (props.players[i].name === name.trim() && props.players[i].isRemoved === false) {
         isExist = true;
-        Alert.alert("כבר קיים במערכת שחקן עם שם זהה");
+        Alert.alert("אופס!","נראה שכבר קיים במערכת שחקן עם שם זהה", [], {cancelable: true});
         break;
       }
     }
@@ -44,7 +44,7 @@ let AddPlayerScreen = props => {
         }
         else
         {
-          Alert.alert("תהליך ההוספה נכשל")
+          Alert.alert("תהליך ההוספה נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
       })
     }

@@ -37,7 +37,7 @@ let PlayerSreen = props => {
         <Text style={styles.text}>
           <Text style={styles.categoryText}>תאריך הוספה למערכת:</Text>{" "}
           <Text style={styles.valueText}>
-            {moment(players[playerId].createTime).format("DD.MM.YYYY hh:mm:ss")}
+            {moment(players[playerId].createTime).format("DD.MM.YYYY HH:mm:ss")}
           </Text>
         </Text>
       </View>

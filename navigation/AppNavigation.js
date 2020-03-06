@@ -49,9 +49,6 @@ const MainNavigator = createStackNavigator(
     },
     EditPlayer: {
       screen: EditPlayerScreen,
-      navigationOptions: {
-        headerTitle: "עריכת שחקן"
-      }
     },
     Player: {
       screen: PlayerScreen
