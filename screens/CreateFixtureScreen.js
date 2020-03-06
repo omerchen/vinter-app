@@ -24,7 +24,7 @@ import moment from "moment";
 
 let CreateFixtureScreen = props => {
   let lastFixture = null;
-  let inputLength = 250
+  let inputLength = 250;
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
 
@@ -78,6 +78,8 @@ let CreateFixtureScreen = props => {
           format="DD.MM.YYYY"
           minDate="01.01.2000"
           maxDate="31.12.2100"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
           customStyles={{
             dateIcon: {
               position: "absolute",
@@ -106,6 +108,8 @@ let CreateFixtureScreen = props => {
           mode="time"
           placeholder="תאריך המחזור"
           format="HH:mm"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
           customStyles={{
             dateIcon: {
               position: "absolute",
@@ -153,12 +157,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    paddingTop: 40,
+    paddingTop: 40
   },
   radio: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginVertical: 10,
+    marginVertical: 10
   }
 });
 
