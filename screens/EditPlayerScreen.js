@@ -16,6 +16,7 @@ import RadioForm from "react-native-simple-radio-button";
 import { connect } from "react-redux";
 import DBCommunicator from "../helpers/db-communictor";
 import { SET_PLAYERS } from "../store/actions/players";
+import playerTypeRadio from '../constants/player-type-radio'
 
 let EditPlayerScreen = props => {
   let playerId = props.navigation.getParam("playerId");
@@ -74,10 +75,15 @@ let EditPlayerScreen = props => {
     });
   };
 
-  let radio_props = [
-    { label: "Standard", value: 0 },
-    { label: "Soldier", value: 1 }
-  ];
+  const showDeleteDialog = () => {
+    Alert.alert("מחיקת שחקן","האם אתה בטוח שברצונך למחוק את "+props.players[playerId].name+"?",[
+      {text: "לא", style: "cancel"},
+      {text: "מחק", onPress: dispatchPlayersDelete , style: "destructive"},
+    ], {
+      cancelable: true,
+      
+    })
+  }
 
   return (
     <KeyboardAvoidingView
@@ -87,7 +93,7 @@ let EditPlayerScreen = props => {
     >
       <DismissKeyboardView style={styles.container}>
         <TextInput
-          label="Full Name"
+          label="שם מלא"
           value={name}
           onChangeText={text => setName(text)}
           fontFamily="assistant-semi-bold"
@@ -96,7 +102,7 @@ let EditPlayerScreen = props => {
           activeColor={Colors.primary}
         />
         <RadioForm
-          radio_props={radio_props}
+          radio_props={playerTypeRadio}
           initial={props.players[playerId].type}
           onPress={value => {
             setPlayerType(value);
@@ -107,7 +113,7 @@ let EditPlayerScreen = props => {
           width={250}
           title="שמור שינויים"
           offline={!name}
-          onPress={dispatchPlayersDelete}
+          onPress={showDeleteDialog}
         />
       </DismissKeyboardView>
     </KeyboardAvoidingView>

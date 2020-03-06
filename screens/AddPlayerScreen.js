@@ -8,6 +8,8 @@ import RadioForm from "react-native-simple-radio-button";
 import {connect} from 'react-redux'
 import DBCommunicator from '../helpers/db-communictor'
 import {SET_PLAYERS} from '../store/actions/players'
+import playerTypeRadio from '../constants/player-type-radio'
+
 
 let AddPlayerScreen = props => {
   const [name, setName] = useState("");
@@ -48,11 +50,6 @@ let AddPlayerScreen = props => {
     }
   }
 
-  let radio_props = [
-    { label: "Standard", value: 0 },
-    { label: "Soldier", value: 1 }
-  ];
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -61,7 +58,7 @@ let AddPlayerScreen = props => {
     >
       <DismissKeyboardView style={styles.container}>
         <TextInput
-          label="Full Name"
+          label="שם מלא"
           value={name}
           onChangeText={text => setName(text)}
           fontFamily="assistant-semi-bold"
@@ -70,7 +67,7 @@ let AddPlayerScreen = props => {
           activeColor={Colors.primary}
         />
         <RadioForm
-          radio_props={radio_props}
+          radio_props={playerTypeRadio}
           initial={0}
           onPress={value => {
             setPlayerType(value);
@@ -99,7 +96,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: 200,
-    marginLeft: -20,
     marginBottom: 20
   }
 });

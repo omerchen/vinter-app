@@ -5,13 +5,18 @@ import moment from "moment";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 import { useSelector } from "react-redux";
+import sleep from '../helpers/sleep'
 
 let PlayerSreen = props => {
   let players = useSelector(state => state.players);
   let playerId = props.navigation.getParam("playerId");
 
   if (!players[playerId] || players[playerId].isRemoved) {
-    props.navigation.pop();
+    sleep(0).then(
+      ()=>{
+        props.navigation.pop();
+      }
+    )
   }
 
 

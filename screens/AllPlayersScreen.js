@@ -24,7 +24,7 @@ let AllPlayersScreen = props => {
   );
   return (
     <View style={styles.container}>
-      {players && players.length > 0 ? playersListView : notPlayersExistsView}
+      {players && players.filter(item=>!item.isRemoved).length > 0 ? playersListView : notPlayersExistsView}
     </View>
   );
 };

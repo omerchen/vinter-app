@@ -7,12 +7,13 @@ import playersReducer from "./store/reducers/players";
 import fixturesReducer from "./store/reducers/fixtures";
 import {Provider} from 'react-redux'
 import {enableScreens} from 'react-native-screens'
-import {YellowBox} from 'react-native'
+import {YellowBox, I18nManager} from 'react-native'
 
 enableScreens()
 
 // ignore specific warrning messages
 YellowBox.ignoreWarnings(['componentWillReceiveProps']);
+I18nManager.forceRTL(true)
 
 const rootReducer = combineReducers({ players: playersReducer, fixtures: fixturesReducer });
 const store = createStore(rootReducer);
