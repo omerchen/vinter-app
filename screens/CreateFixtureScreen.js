@@ -28,7 +28,7 @@ let inputLength = 250;
 
 let CreateFixtureScreen = props => {
   let lastFixture = null;
-  let players = useSelector(state=>state.players)
+  let players = useSelector(state => state.players);
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
 
@@ -57,16 +57,30 @@ let CreateFixtureScreen = props => {
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
 
   let createFixture = () => {
-    let parsedFixtureList = parseList(fixtureList, players)
-    if (parsedFixtureList !== null)
-    {
-      setFixtureListValidation(true)
+    let parsedFixtureList = parseList(fixtureList, players, playerName => {
+      Alert.alert(
+        "לא נמצא שחקן בשם: " + playerName,
+        "האם תרצה להוסיף את השחקן למאגר?",
+        [
+          { text: "לא", style: "cancel" },
+          { text: "כן", onPress: () => {
+            props.navigation.navigate({
+              routeName:"AddPlayer",
+              params: {
+                initialName: playerName
+              }
+            })
+          }, style: "default" }
+        ],
+        { cancelable: true }
+      );
+    });
+    if (parsedFixtureList !== null) {
+      setFixtureListValidation(true);
+    } else {
+      setFixtureListValidation(false);
     }
-    else
-    {
-      setFixtureListValidation(false)
-    }
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -88,8 +102,8 @@ let CreateFixtureScreen = props => {
           fontSize={20}
           keyboardType="numeric"
           alignText="center"
-          labelColor={fixtureNumber!==""?Colors.darkGray:Colors.red}
-          underlineColor={fixtureNumber!==""?Colors.darkGray:Colors.red}
+          labelColor={fixtureNumber !== "" ? Colors.darkGray : Colors.red}
+          underlineColor={fixtureNumber !== "" ? Colors.darkGray : Colors.red}
         />
         <DatePicker
           style={{ width: inputLength }}
@@ -175,7 +189,10 @@ let CreateFixtureScreen = props => {
             setFixtureList(e.nativeEvent.text);
           }}
           placeholder="רשימת המחזור"
-          style={{...styles.listInput,...(fixtureListValidation?{}:styles.error)}}
+          style={{
+            ...styles.listInput,
+            ...(fixtureListValidation ? {} : styles.error)
+          }}
           numberOfLines={20}
           multiline={true}
         />
@@ -215,7 +232,7 @@ const styles = StyleSheet.create({
   },
   error: {
     borderColor: Colors.red,
-    borderWidth:2,
+    borderWidth: 2
   }
 });
 
