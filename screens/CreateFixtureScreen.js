@@ -23,7 +23,6 @@ import {
 } from "../constants/fixture-radio-fields";
 import moment from "moment";
 
-
 let inputLength = 250;
 
 let CreateFixtureScreen = props => {
@@ -51,6 +50,7 @@ let CreateFixtureScreen = props => {
   const [fixtureTime, setFixtureTime] = useState(
     lastFixture ? lastFixture.startTime : "17:00"
   );
+
   const [fixtureList, setFixtureList] = useState("");
 
   return (
@@ -154,15 +154,19 @@ let CreateFixtureScreen = props => {
         />
         <RNTextInput
           value={fixtureList}
-          onChange={text => {
-            setFixtureList(text);
+          onChange={e => {
+            setFixtureList(e.nativeEvent.text);
           }}
           placeholder="רשימת המחזור"
           style={styles.listInput}
           numberOfLines={20}
           multiline={true}
         />
-        <MainButton width={inputLength} style={{marginBottom:100}} title="צור מחזור"/>
+        <MainButton
+          width={inputLength}
+          style={{ marginBottom: 100 }}
+          title="צור מחזור"
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -183,13 +187,13 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray,
     borderWidth: 1,
     width: inputLength,
-    borderRadius:10,
+    borderRadius: 10,
     fontFamily: "assistant-semi-bold",
-    textAlignVertical:"top",
-    padding:10,
+    textAlignVertical: "top",
+    padding: 10,
     textAlign: "right",
-    marginBottom:20,
-    fontSize:20,
+    marginBottom: 20,
+    fontSize: 20
   }
 });
 
