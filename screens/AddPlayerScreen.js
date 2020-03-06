@@ -60,7 +60,6 @@ let AddPlayerScreen = props => {
       keyboardVerticalOffset={keyboardOffset}
     >
       <DismissKeyboardView style={styles.container}>
-        {/* <Text>This is the AddPlayerScreen screen!</Text> */}
         <TextInput
           label="Full Name"
           value={name}

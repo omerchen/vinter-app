@@ -12,7 +12,12 @@ let PlayerCard = props => {
     <View style={styles.container}>
       <PlatformTouchableFeedback
         onPress={() => {
-          console.log("click-" + props.player.name);
+          props.navigation.navigate({
+            routeName: "Player",
+            params: {
+              player: props.player
+            }
+          })
         }}
       >
         <View style={styles.view}>

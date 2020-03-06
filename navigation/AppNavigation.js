@@ -6,6 +6,7 @@ import CreateFixtureScreen from "../screens/CreateFixtureScreen";
 import PreviousFixturesScreen from "../screens/PreviousFixturesScreen";
 import ViewFixtureScreen from "../screens/ViewFixtureScreen";
 import AllPlayersScreen from "../screens/AllPlayersScreen"
+import PlayerScreen from "../screens/PlayerScreen"
 import AddPlayerScreen from "../screens/AddPlayerScreen"
 
 import Colors from "../constants/colors";
@@ -44,6 +45,9 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         headerTitle: "הוספת שחקן"
       }
+    },
+    Player: {
+      screen: PlayerScreen
     }
   },
   {
