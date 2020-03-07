@@ -19,6 +19,7 @@ import {
   AntDesign,
   MaterialCommunityIcons
 } from "@expo/vector-icons";
+import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 
 let MatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -31,7 +32,6 @@ let MatchScreen = props => {
     require("../assets/images/green_vest-250h.png")
   ];
   const colorsArray = [Colors.teamBlue, Colors.teamOrange, Colors.teamGreen];
-  console.log(match);
   let iconsSize = 36;
   let plusSize = 80;
 
@@ -74,7 +74,6 @@ let MatchScreen = props => {
   };
 
   let forward = () => {
-    console.log("forward");
     if (!match.startTime) {
       Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
         cancelable: true
@@ -86,7 +85,6 @@ let MatchScreen = props => {
     }
   };
   let backward = () => {
-    console.log("backward");
     if (!match.startTime) {
       Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
         cancelable: true
@@ -101,7 +99,6 @@ let MatchScreen = props => {
     }
   };
   let play = () => {
-    console.log("play");
     let newMatch = { ...match };
 
     if (!match.startTime) {
@@ -115,7 +112,6 @@ let MatchScreen = props => {
     updateMatchState(newMatch);
   };
   let pause = () => {
-    console.log("pause");
     let newMatch = { ...match };
     newMatch.endWhistleTime = Date.now();
 
@@ -191,6 +187,59 @@ let MatchScreen = props => {
     });
   }, [showDeleteDialog]);
 
+  let createEventComponent = (type, time, description, key) => {
+    let title = "";
+    let icon = null;
+    switch (type) {
+      case "goal":
+        title = "גול! ";
+        icon = footballIconTypes.goal;
+        break;
+      case "red":
+        title = "כרטיס אדום! ";
+        icon = footballIconTypes.red;
+        break;
+      case "yellow":
+        title = "כרטיס צהוב ";
+        icon = footballIconTypes.yellow;
+        break;
+      case "secondYellow":
+        title = "צהוב שני! ";
+        icon = footballIconTypes.second_yellow;
+        break;
+      case "wall":
+        title = "הצלה גדולה! ";
+        icon = footballIconTypes.wall;
+        break;
+      default:
+        return null;
+    }
+
+    return (
+      <View style={styles.eventView} key={key}>
+        <FootballIcon source={icon} />
+        <Text style={styles.eventText}>
+          <Text style={styles.regularText}>{time}</Text>
+        </Text>
+        <Text style={styles.eventText}>
+          <Text style={styles.boldText}>{title}</Text>
+          <Text style={styles.regularText}>{description}</Text>
+        </Text>
+      </View>
+    );
+  };
+
+  let homeEvents = [
+    createEventComponent("goal", "01:02", "רתם פינקל (דור זילברמן)", 1),
+    createEventComponent("yellow", "01:46", "יונתם סעאת", 2)
+  ];
+
+  let homeResult = 1;
+
+  let awayEvents = [];
+
+  let awayResult = 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.timeLayer}>
@@ -241,7 +290,7 @@ let MatchScreen = props => {
         <TouchableOpacity onPress={showEndDialog} style={styles.endMatchView}>
           <MaterialCommunityIcons
             name="whistle"
-            size={iconsSize}
+            size={60}
             color={Colors.black}
           />
           <Text style={styles.endMatchText}>שרוק לסיום!</Text>
@@ -255,12 +304,16 @@ let MatchScreen = props => {
               source={vestArray[match.homeId]}
               style={styles.vestImage}
             />
-            <Text style={styles.resultText}>1</Text>
+            <Text style={styles.resultText}>{homeResult}</Text>
           </View>
-          <View style={styles.eventsView}>
-            <Text>גול</Text>
-          </View>
-          <TouchableOpacity style={{...styles.addView,alignSelf:"flex-start", backgroundColor: colorsArray[match.homeId].vest}}>
+          <View style={styles.eventsView}>{homeEvents}</View>
+          <TouchableOpacity
+            style={{
+              ...styles.addView,
+              alignSelf: "flex-start",
+              backgroundColor: colorsArray[match.homeId].vest
+            }}
+          >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
           </TouchableOpacity>
         </View>
@@ -271,12 +324,16 @@ let MatchScreen = props => {
               source={vestArray[match.awayId]}
               style={styles.vestImage}
             />
-            <Text style={styles.resultText}>1</Text>
+            <Text style={styles.resultText}>{awayResult}</Text>
           </View>
-          <View style={styles.eventsView}>
-            <Text>גול</Text>
-          </View>
-          <TouchableOpacity style={{...styles.addView,alignSelf:"flex-end", backgroundColor: colorsArray[match.awayId].vest}}>
+          <View style={styles.eventsView}>{awayEvents}</View>
+          <TouchableOpacity
+            style={{
+              ...styles.addView,
+              alignSelf: "flex-end",
+              backgroundColor: colorsArray[match.awayId].vest
+            }}
+          >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
           </TouchableOpacity>
         </View>
@@ -398,14 +455,29 @@ const styles = StyleSheet.create({
   addView: {
     backgroundColor: Colors.black,
     marginBottom: 30,
-    marginHorizontal:30,
-    height:120,
-    marginTop:-150,
+    marginHorizontal: 30,
+    height: 120,
+    marginTop: -150,
     aspectRatio: 1,
-    justifyContent:"center",
-    alignItems:"center",
-    borderRadius:100,
-    elevation:10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    elevation: 10
+  },
+  eventView: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  eventText: {
+    fontSize: 25,
+    marginStart: 20
+  },
+  regularText: {
+    fontFamily: "assistant-semi-bold"
+  },
+  boldText: {
+    fontFamily: "assistant-bold"
   }
 });
 
