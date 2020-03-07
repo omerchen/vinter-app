@@ -313,6 +313,14 @@ let MatchScreen = props => {
               alignSelf: "flex-start",
               backgroundColor: colorsArray[match.homeId].vest
             }}
+            onPress={()=>{
+              props.navigation.navigate({routeName:"CreateEvent", params:{
+                time: clockTime,
+                isHome:true,
+                matchId: matchId,
+                fixtureId: fixtureId
+              }})
+            }}
           >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
           </TouchableOpacity>
@@ -332,6 +340,14 @@ let MatchScreen = props => {
               ...styles.addView,
               alignSelf: "flex-end",
               backgroundColor: colorsArray[match.awayId].vest
+            }}
+            onPress={()=>{
+              props.navigation.navigate({routeName:"CreateEvent", params:{
+                time: clockTime,
+                isHome:false,
+                matchId: matchId,
+                fixtureId: fixtureId
+              }})
             }}
           >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
