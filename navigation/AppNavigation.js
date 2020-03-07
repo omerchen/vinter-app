@@ -16,9 +16,6 @@ const MainNavigator = createStackNavigator(
   {
     First: {
       screen: FirstScreen,
-      navigationOptions: {
-        headerTitle: ""
-      }
     },
     CreateFixture: {
       screen: CreateFixtureScreen,
