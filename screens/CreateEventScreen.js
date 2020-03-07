@@ -51,7 +51,7 @@ let CreateEventScreen = props => {
           style={styles.radio}
           buttonColor={Colors.darkGray}
           selectedButtonColor={Colors.primary}
-
+          labelStyle={{fontSize:18, marginTop:4}}
           />
       <View style={{width:450}}>
       <Dropdown
@@ -116,13 +116,9 @@ const styles = StyleSheet.create({
   radio: {
     flexDirection: "row",
     justifyContent: "space-evenly",
+    alignItems:"center",
     width: 500,
     marginBottom: 25,
-  }
-});
-const selectStyles = StyleSheet.create({
-  inputAndroid: {
-    fontSize:40,
   }
 });
 
