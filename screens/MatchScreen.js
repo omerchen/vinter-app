@@ -40,7 +40,7 @@ let MatchScreen = props => {
   useEffect(() => {
     let interval = setInterval(() => {
       setClockTime(calculateClock());
-    }, 200);
+    }, 500);
     return () => {
       clearInterval(interval);
     };
@@ -64,6 +64,10 @@ let MatchScreen = props => {
       Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
         cancelable: true
       });
+    } else {
+      let newMatch = { ...match };
+      newMatch.startWhistleTime -= 30*1000
+      updateMatchState(newMatch)
     }
   };
   let backward = () => {
@@ -72,19 +76,26 @@ let MatchScreen = props => {
       Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
         cancelable: true
       });
+    }else {
+      let newMatch = { ...match };
+      let potentialNewTime = match.startWhistleTime+30*1000
+      newMatch.startWhistleTime = match.endWhistleTime?Math.min(potentialNewTime, match.endWhistleTime):Math.min(potentialNewTime,Date.now())
+      updateMatchState(newMatch)
     }
   };
   let play = () => {
     console.log("play");
+    let newMatch = { ...match };
+
     if (!match.startTime) {
-      let newMatch = { ...match };
       newMatch.startWhistleTime = Date.now();
       newMatch.startTime = newMatch.startWhistleTime;
-
-      updateMatchState(newMatch);
     } else {
-      // TODO: complete later
+      newMatch.startWhistleTime =
+        Date.now() + match.startWhistleTime - match.endWhistleTime;
+      newMatch.endWhistleTime = null;
     }
+    updateMatchState(newMatch);
   };
   let pause = () => {
     console.log("pause");
