@@ -4,8 +4,12 @@ import { createStackNavigator } from "react-navigation-stack";
 import FirstScreen from "../screens/FirstScreen";
 import CreateFixtureScreen from "../screens/CreateFixtureScreen";
 import PreviousFixturesScreen from "../screens/PreviousFixturesScreen";
+import FixtureStatisticsScreen from "../screens/FixtureStatisticsScreen";
+import MatchesScreen from "../screens/MatchesScreen";
 import ViewFixtureScreen from "../screens/ViewFixtureScreen";
 import AllPlayersScreen from "../screens/AllPlayersScreen"
+import RequirePasswordScreen from "../screens/RequirePasswordScreen"
+import ManageFixtureScreen from "../screens/ManageFixtureScreen"
 import PlayerScreen from "../screens/PlayerScreen"
 import AddPlayerScreen from "../screens/AddPlayerScreen"
 import EditPlayerScreen from "../screens/EditPlayerScreen"
@@ -27,6 +31,30 @@ const MainNavigator = createStackNavigator(
       screen: PreviousFixturesScreen,
       navigationOptions: {
         headerTitle: "מחזורים קודמים"
+      }
+    },
+    FixtureStatistics: {
+      screen: FixtureStatisticsScreen,
+      navigationOptions: {
+        headerTitle: "נתוני המחזור"
+      }
+    },
+    Matches: {
+      screen: MatchesScreen,
+      navigationOptions: {
+        headerTitle: "משחקי המחזור"
+      }
+    },
+    ManageFixture: {
+      screen: ManageFixtureScreen,
+      navigationOptions: {
+        headerTitle: "ניהול מחזור"
+      }
+    },
+    RequirePassword: {
+      screen: RequirePasswordScreen,
+      navigationOptions: {
+        headerTitle: "משחקי המחזור"
       }
     },
     ViewFixture: {

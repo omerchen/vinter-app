@@ -9,6 +9,7 @@ import { setPlayers } from "../store/actions/players";
 import { setFixtures } from "../store/actions/fixtures";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
+import { SECURE_LEVEL_FOUNDER, SECURE_LEVEL_ADMIN } from "../constants/security-levels";
 
 let FirstScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -98,7 +99,11 @@ let FirstScreen = props => {
           offline={!dataLoaded}
           onPress={() => {
             props.navigation.navigate({
-              routeName: "CreateFixture"
+              routeName: "RequirePassword",
+              params: {
+                routeName: "CreateFixture",
+                level: SECURE_LEVEL_ADMIN
+              }
             });
           }}
         />
@@ -125,7 +130,11 @@ let FirstScreen = props => {
           offline={!dataLoaded}
           onPress={() => {
             props.navigation.navigate({
-              routeName: "AllPlayers"
+              routeName: "RequirePassword",
+              params: {
+                routeName: "AllPlayers",
+                level: SECURE_LEVEL_FOUNDER
+              }
             });
           }}
         />
