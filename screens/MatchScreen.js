@@ -1,10 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Alert, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+  TouchableOpacity,
+  Image
+} from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 import DBCommunicator from "../helpers/db-communictor";
+
 import { SET_FIXTURES } from "../store/actions/fixtures";
 import {
   MaterialIcons,
@@ -17,8 +25,15 @@ let MatchScreen = props => {
   const matchId = props.navigation.getParam("matchId");
   let fixture = props.fixtures[fixtureId];
   let match = fixture.matches[matchId];
+  const vestArray = [
+    require("../assets/images/blue_vest-250h.png"),
+    require("../assets/images/orange_vest-250h.png"),
+    require("../assets/images/green_vest-250h.png")
+  ];
+  const colorsArray = [Colors.teamBlue, Colors.teamOrange, Colors.teamGreen];
   console.log(match);
   let iconsSize = 36;
+  let plusSize = 80;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -40,7 +55,7 @@ let MatchScreen = props => {
   useEffect(() => {
     let interval = setInterval(() => {
       setClockTime(calculateClock());
-    }, 500);
+    }, 1000);
     return () => {
       clearInterval(interval);
     };
@@ -66,8 +81,8 @@ let MatchScreen = props => {
       });
     } else {
       let newMatch = { ...match };
-      newMatch.startWhistleTime -= 30*1000
-      updateMatchState(newMatch)
+      newMatch.startWhistleTime -= 30 * 1000;
+      updateMatchState(newMatch);
     }
   };
   let backward = () => {
@@ -76,11 +91,13 @@ let MatchScreen = props => {
       Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
         cancelable: true
       });
-    }else {
+    } else {
       let newMatch = { ...match };
-      let potentialNewTime = match.startWhistleTime+30*1000
-      newMatch.startWhistleTime = match.endWhistleTime?Math.min(potentialNewTime, match.endWhistleTime):Math.min(potentialNewTime,Date.now())
-      updateMatchState(newMatch)
+      let potentialNewTime = match.startWhistleTime + 30 * 1000;
+      newMatch.startWhistleTime = match.endWhistleTime
+        ? Math.min(potentialNewTime, match.endWhistleTime)
+        : Math.min(potentialNewTime, Date.now());
+      updateMatchState(newMatch);
     }
   };
   let play = () => {
@@ -220,6 +237,7 @@ let MatchScreen = props => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.border} />
         <TouchableOpacity onPress={showEndDialog} style={styles.endMatchView}>
           <MaterialCommunityIcons
             name="whistle"
@@ -229,10 +247,40 @@ let MatchScreen = props => {
           <Text style={styles.endMatchText}>שרוק לסיום!</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.gameLayer}></View>
-      <Text>
-        This is the MatchScreen screen! ({fixture.number + "," + matchId})
-      </Text>
+      <View style={styles.gameLayer}>
+        <View style={styles.teamView}>
+          <View style={styles.teamHeaderView}>
+            <Image
+              resizeMode="contain"
+              source={vestArray[match.homeId]}
+              style={styles.vestImage}
+            />
+            <Text style={styles.resultText}>1</Text>
+          </View>
+          <View style={styles.eventsView}>
+            <Text>גול</Text>
+          </View>
+          <TouchableOpacity style={{...styles.addView,alignSelf:"flex-start", backgroundColor: colorsArray[match.homeId].vest}}>
+            <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.teamView}>
+          <View style={styles.teamHeaderView}>
+            <Image
+              resizeMode="contain"
+              source={vestArray[match.awayId]}
+              style={styles.vestImage}
+            />
+            <Text style={styles.resultText}>1</Text>
+          </View>
+          <View style={styles.eventsView}>
+            <Text>גול</Text>
+          </View>
+          <TouchableOpacity style={{...styles.addView,alignSelf:"flex-end", backgroundColor: colorsArray[match.awayId].vest}}>
+            <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -267,7 +315,6 @@ const styles = StyleSheet.create({
   },
   timeLayer: {
     position: "absolute",
-    zIndex: 99,
     height: "100%",
     width: "100%",
     justifyContent: "space-between",
@@ -316,7 +363,50 @@ const styles = StyleSheet.create({
     fontFamily: "assistant-bold",
     fontSize: 20
   },
-  gameLayer: {}
+  border: {
+    width: 2,
+    flex: 1,
+    backgroundColor: Colors.gray
+  },
+  gameLayer: {
+    flexDirection: "row",
+    flex: 1
+  },
+  teamView: {
+    width: "50%",
+    alignItems: "center"
+  },
+  teamHeaderView: {
+    flex: 5,
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  resultText: {
+    fontFamily: "assistant-bold",
+    fontSize: 60
+  },
+  eventsView: {
+    width: "100%",
+    alignItems: "flex-start",
+    paddingStart: 100,
+    flex: 7
+  },
+  vestImage: {
+    height: 150,
+    marginTop: 20
+  },
+  addView: {
+    backgroundColor: Colors.black,
+    marginBottom: 30,
+    marginHorizontal:30,
+    height:120,
+    marginTop:-150,
+    aspectRatio: 1,
+    justifyContent:"center",
+    alignItems:"center",
+    borderRadius:100,
+    elevation:10,
+  }
 });
 
 const mapStateToProps = state => ({

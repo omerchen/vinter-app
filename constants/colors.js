@@ -8,13 +8,17 @@ export default {
     darkGray: '#707070',
     gray: '#bbbbbb',
     red: '#ff0000',
+    opacityPlus: '#fffa',
     teamBlue: {
-        primary: '#2073D1'
+        primary: '#2073D1',
+        vest: '#7ad9f2'
     },
     teamOrange: {
-        primary: '#F66836'
+        primary: '#F66836',
+        vest: '#F66836'
     },
     teamGreen: {
-        primary: '#54E50A'
+        primary: '#54E50A',
+        vest: '#54E50A'
     },
 }
