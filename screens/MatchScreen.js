@@ -216,7 +216,7 @@ let MatchScreen = props => {
     }
 
     return (
-      <View style={styles.eventView} key={key}>
+      <TouchableOpacity style={styles.eventView} key={key}>
         <FootballIcon source={icon} />
         <Text style={styles.eventText}>
           <Text style={styles.regularText}>{time}</Text>
@@ -225,7 +225,7 @@ let MatchScreen = props => {
           <Text style={styles.boldText}>{title}</Text>
           <Text style={styles.regularText}>{description}</Text>
         </Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
