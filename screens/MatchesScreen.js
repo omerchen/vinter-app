@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {useSelector} from "react-redux"
+import Colors from "../constants/colors"
 
 let MatchesScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId")
@@ -17,7 +18,7 @@ let MatchesScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'orange',
+    backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },

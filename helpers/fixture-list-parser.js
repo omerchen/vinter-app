@@ -178,5 +178,5 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
     }
   }
 
-  return parsedList;
+  return parsedList.sort((a,b)=>a.teamColorCode>b.teamColorCode);
 };

@@ -47,7 +47,7 @@ let RequirePasswordScreen = props => {
       keyboardVerticalOffset={keyboardOffset}
     >
       <DismissKeyboardView style={styles.container}>
-        <Text style={styles.title}>עליך להכניס סיסמה לפני המעבר לדף הבא</Text>
+        <Text style={styles.title}>אנא הכנס את סיסמתך</Text>
         <Text style={styles.securityNote}>
           רמת הרשאות מינימלית: {SECURE_LEVEL_LABELS[securityLevel]}
         </Text>
