@@ -34,12 +34,13 @@ let CreateFixtureScreen = props => {
 
     if (!props.fixtures[ni].isRemoved) {
       lastFixture = props.fixtures[ni];
+      break;
     }
   }
   const keyboardOffset = Dimensions.get("window").height > 500 ? 20 : 20;
 
   const [fixtureNumber, setFixtureNumber] = useState(
-    lastFixture ? (lastFixture.number + 1).toString() : "1"
+    lastFixture ? (parseInt(lastFixture.number) + 1).toString() : "1"
   );
   const [fixtureCourt, setFixtureCourt] = useState(
     lastFixture ? lastFixture.court : 0
@@ -49,6 +50,7 @@ let CreateFixtureScreen = props => {
   const [fixtureDate, setFixtureDate] = useState(
     moment(Date.now()).format("DD.MM.YYYY")
   );
+  console.log(lastFixture ? lastFixture:"17:00")
   const [fixtureTime, setFixtureTime] = useState(
     lastFixture ? lastFixture.startTime : "17:00"
   );
@@ -77,6 +79,32 @@ let CreateFixtureScreen = props => {
     });
     if (parsedFixtureList !== null) {
       setFixtureListValidation(true);
+
+      let newFixture = {
+        id: props.fixtures.length,
+        isRemoved: false,
+        createTime: Date.now(),
+        isOpen: true,
+        playersList: parsedFixtureList,
+        number: fixtureNumber,
+        court: fixtureCourt,
+        type: fixtureType,
+        date: fixtureDate,
+        startTime: fixtureTime,
+      }
+
+      let newFixtures = [...props.fixtures, newFixture]
+
+      DBCommunicator.setFixtures(newFixtures).then(res=>{
+        if (res.status === 200) {
+          // TODO: replace later to the viewFixture page
+          props.setFixtures(newFixtures)
+          props.navigation.pop();
+        } else {
+          Alert.alert("תהליך יציאת המחזור נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
+        }
+      })
+
     } else {
       setFixtureListValidation(false);
     }

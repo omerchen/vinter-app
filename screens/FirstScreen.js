@@ -10,12 +10,12 @@ import { setFixtures } from "../store/actions/fixtures";
 
 let FirstScreen = props => {
   // const [players, setPlayers] = useState(null);
-  const fixtures = useSelector(state => state.fixturs);
+  const fixtures = useSelector(state => state.fixtures);
   let currentFixture = null;
 
   for (let i in fixtures) {
-    if (fixture[i].isOpen && !fixtures[i].isRemoved) {
-      currentFixture = fixture[i];
+    if (fixtures[i].isOpen && !fixtures[i].isRemoved) {
+      currentFixture = fixtures[i];
       break;
     }
   }
@@ -39,6 +39,7 @@ let FirstScreen = props => {
           Alert.alert("Connection error (" + res.status + "");
           return;
         }
+
         if (res.data) {
           dispatch(setFixtures(res.data));
         } else {
@@ -90,7 +91,7 @@ let FirstScreen = props => {
       <View style={{ alignItems: "center" }}>
         <SubButton
           title="למחזורים הקודמים"
-          offline={!dataLoaded || !fixtures || fixtures.filter(item=>!item.isRemoved&&!item.isOpen).length > 0}
+          offline={!dataLoaded || !fixtures || !(fixtures.filter(item=>!item.isRemoved&&!item.isOpen).length > 0)}
           onPress={() => {
             props.navigation.navigate("PreviousFixtures");
           }}
