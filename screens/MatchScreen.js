@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View, Alert, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -16,42 +16,130 @@ let MatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
   const matchId = props.navigation.getParam("matchId");
   let fixture = props.fixtures[fixtureId];
+  let match = fixture.matches[matchId];
+  console.log(match);
   let iconsSize = 36;
+
+  let calculateClock = () => {
+    if (!match.startWhistleTime) {
+      return 0;
+    } else {
+      if (!match.endWhistleTime) {
+        return Math.floor((Date.now() - match.startWhistleTime) / 1000);
+      } else {
+        return Math.floor(
+          (match.endWhistleTime - match.startWhistleTime) / 1000
+        );
+      }
+    }
+  };
+
+  const [clockTime, setClockTime] = useState(calculateClock());
+
+  // sign up interval for updating the clock every second
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setClockTime(calculateClock());
+    }, 200);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [match]);
+
+  let pad = (n, width, z) => {
+    z = z || "0";
+    n = n + "";
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  };
+
+  let parseToString = timeInSeconds => {
+    let seconds = timeInSeconds % 60;
+    let minutes = (timeInSeconds - seconds) / 60;
+    return pad(minutes, 2) + ":" + pad(seconds, 2);
+  };
 
   let forward = () => {
     console.log("forward");
+    if (!match.startTime) {
+      Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
+        cancelable: true
+      });
+    }
   };
   let backward = () => {
     console.log("backward");
+    if (!match.startTime) {
+      Alert.alert("אופס!", "עליך קודם כל להתחיל את המשחק", null, {
+        cancelable: true
+      });
+    }
   };
   let play = () => {
     console.log("play");
+    if (!match.startTime) {
+      let newMatch = { ...match };
+      newMatch.startWhistleTime = Date.now();
+      newMatch.startTime = newMatch.startWhistleTime;
+
+      updateMatchState(newMatch);
+    } else {
+      // TODO: complete later
+    }
   };
   let pause = () => {
     console.log("pause");
+    let newMatch = { ...match };
+    newMatch.endWhistleTime = Date.now();
+
+    updateMatchState(newMatch);
   };
   let end = () => {
     console.log("end");
   };
 
-  const deleteMatch = () => {
+  let showEndDialog = () => {
+    Alert.alert(
+      "אתה עומד לסיים את המשחק",
+      "האם אתה בטוח שהמשחק הסתיים?",
+      [
+        { text: "עדיין לא", style: "cancel" },
+        { text: "שרוק לסיום", onPress: end, style: "destructive" }
+      ],
+      {
+        cancelable: true
+      }
+    );
+  };
+
+  const updateMatchState = (
+    newMatch,
+    onFinish = () => {
+      console.log("update finished successfully!");
+    }
+  ) => {
     let newFixtures = [...props.fixtures];
 
-    newFixtures[fixtureId].matches[matchId].isRemoved = true;
-    newFixtures[fixtureId].matches[matchId].removeTime = Date.now();
+    newFixtures[fixtureId].matches[matchId] = newMatch;
 
     DBCommunicator.setFixtures(newFixtures).then(res => {
       if (res.status === 200) {
         props.setFixtures(newFixtures);
-        props.navigation.pop();
+        onFinish();
       } else {
-        Alert.alert(
-          "תהליך המחיקה נכשל",
-          "ודא שהינך מחובר לרשת ונסה שנית",
-          null,
-          { cancelable: true }
-        );
+        Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
+          cancelable: true
+        });
       }
+    });
+  };
+
+  const deleteMatch = () => {
+    let newMatch = { ...match };
+    newMatch.isRemoved = true;
+    newMatch.removeTime = Date.now();
+
+    updateMatchState(newMatch, () => {
+      props.navigation.pop();
     });
   };
 
@@ -80,7 +168,7 @@ let MatchScreen = props => {
       <View style={styles.timeLayer}>
         <View style={styles.timeView}>
           <View style={styles.clockWrapper}>
-            <Text style={styles.clockText}>04:13</Text>
+            <Text style={styles.clockText}>{parseToString(clockTime)}</Text>
           </View>
           <View style={styles.commandsWrapper}>
             <TouchableOpacity onPress={forward} style={styles.commandView}>
@@ -91,14 +179,8 @@ let MatchScreen = props => {
               />
               <Text style={styles.commandText}>קדימה</Text>
             </TouchableOpacity>
-            {true /*TODO: change to real condition */? (
-              <TouchableOpacity onPress={play} style={styles.commandView}>
-                <AntDesign name="play" size={iconsSize} color={Colors.black} />
-
-                <Text style={styles.commandText}>{false /*TODO: change to real condition */?"התחל":"המשך"}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={play} style={styles.commandView}>
+            {match.startWhistleTime && !match.endWhistleTime ? (
+              <TouchableOpacity onPress={pause} style={styles.commandView}>
                 <AntDesign
                   name="pausecircle"
                   size={iconsSize}
@@ -106,6 +188,14 @@ let MatchScreen = props => {
                 />
 
                 <Text style={styles.commandText}>עצור</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={play} style={styles.commandView}>
+                <AntDesign name="play" size={iconsSize} color={Colors.black} />
+
+                <Text style={styles.commandText}>
+                  {match.startTime ? "המשך" : "התחל"}
+                </Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity onPress={backward} style={styles.commandView}>
@@ -119,7 +209,7 @@ let MatchScreen = props => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity onPress={end} style={styles.endMatchView}>
+        <TouchableOpacity onPress={showEndDialog} style={styles.endMatchView}>
           <MaterialCommunityIcons
             name="whistle"
             size={iconsSize}
