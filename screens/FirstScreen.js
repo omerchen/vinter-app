@@ -4,9 +4,7 @@ import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
 import DBCommunicator from "../helpers/db-communictor";
-import { useSelector, useDispatch, connect } from "react-redux";
-import {SET_FIXTURES} from '../store/actions/fixtures'
-import {SET_PLAYERS} from '../store/actions/players'
+import { useSelector, useDispatch } from "react-redux";
 import { setPlayers } from "../store/actions/players";
 import { setFixtures } from "../store/actions/fixtures";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
