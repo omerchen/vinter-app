@@ -73,7 +73,6 @@ let AddPlayerScreen = props => {
           onPress={value => {
             setPlayerType(value);
           }}
-          style={styles.radio}
         />
         <MainButton
           width={250}
@@ -93,12 +92,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  radio: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: 200,
-    marginBottom: 20
-  }
 });
 
 
