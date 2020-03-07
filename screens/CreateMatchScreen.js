@@ -75,7 +75,10 @@ let CreateMatchScreen = props => {
     dbCommunictor.setFixtures(newFixtures).then((res)=>{
       if (res.status===200) {
         props.setFixtures(newFixtures)
-        props.navigation.pop() // TODO: change later to replace
+        props.navigation.replace({routeName:"Match", params:{
+          fixtureId: fixtureId,
+          matchId: newMatch.id
+        }})
       } else {
         Alert.alert("תהליך יצירת המשחק נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
       }

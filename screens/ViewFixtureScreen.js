@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import {
   StyleSheet,
-  Image,
-  ScrollView,
+    ScrollView,
   Text,
   Platform,
-  Dimensions
+  Dimensions,
+  View
 } from "react-native";
 import MainButton from "../components/MainButton";
 import Colors from "../constants/colors";
@@ -41,18 +41,9 @@ let ViewFixtureScreen = props => {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ alignItems: "center" }}
+    <View
       style={styles.container}
     >
-      {Dimensions.get("window").height > 500 && (
-        <Image
-          source={require("../assets/images/colorful-logo-200h.png")}
-          style={CommonStyles.smallLogo}
-        />
-      )}
-
-      <Text style={CommonStyles.title}>מחזור {fixture.number}</Text>
       <MainButton
         title="משחקים"
         style={styles.button}
@@ -70,7 +61,7 @@ let ViewFixtureScreen = props => {
           props.navigation.navigate("FixtureStatistics");
         }}
       />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -105,11 +96,12 @@ ViewFixtureScreen.navigationOptions = navigationData => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
+    alignItems: "center",
+    justifyContent: "center"
   },
   button: {
-    marginTop: 30,
-    marginBottom: 20
+    marginBottom: 70
   }
 });
 

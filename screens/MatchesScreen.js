@@ -43,7 +43,7 @@ let MatchesScreen = props => {
 
   for (let i in matches) {
     let ni = matches.length - 1 - i;
-    if (matches[ni].isOpen && !matches[i].isRemoved) {
+    if (matches[ni].isOpen && !matches[ni].isRemoved) {
       currentMatch = matches[ni];
     }
   }
@@ -106,7 +106,10 @@ let MatchesScreen = props => {
       <View style={styles.menuWrapper}>
         {currentMatch ? (
           <MainButton title="מעבר למשחק" onPress={()=>{
-            //TODO: implement later
+            props.navigation.navigate({routeName:"Match", params:{
+              fixtureId: fixtureId,
+              matchId: currentMatch.id
+            }})
           }} />
         ) : (
           <MainButton title="התחל משחק חדש" onPress={()=>{
