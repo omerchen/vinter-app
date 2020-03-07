@@ -5,7 +5,7 @@ let orangeSign = "🧡";
 let greenSign = "💚";
 let gkIdentifier = "(שוער)";
 
-
+export let teamLabelsArray = ["הקבוצה הכחולה","הקבוצה הכתומה","הקבוצה הירוקה"]
 let teamColorsArray = ["blue", "orange", "green"];
 
 export let codesToTeamColor = code => {
