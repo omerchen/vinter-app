@@ -105,9 +105,13 @@ let MatchesScreen = props => {
       </View>
       <View style={styles.menuWrapper}>
         {currentMatch ? (
-          <MainButton title="מעבר למשחק" />
+          <MainButton title="מעבר למשחק" onPress={()=>{
+            //TODO: implement later
+          }} />
         ) : (
-          <MainButton title="התחל משחק חדש" />
+          <MainButton title="התחל משחק חדש" onPress={()=>{
+            props.navigation.navigate({routeName:"CreateMatch", params: {fixtureId: fixtureId}})
+          }} />
         )}
         <SubButton
           style={{ marginTop: 30 }}

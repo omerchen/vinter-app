@@ -10,6 +10,7 @@ import ViewFixtureScreen from "../screens/ViewFixtureScreen";
 import AllPlayersScreen from "../screens/AllPlayersScreen"
 import RequirePasswordScreen from "../screens/RequirePasswordScreen"
 import ManageFixtureScreen from "../screens/ManageFixtureScreen"
+import CreateMatchScreen from "../screens/CreateMatchScreen"
 import PlayerScreen from "../screens/PlayerScreen"
 import AddPlayerScreen from "../screens/AddPlayerScreen"
 import EditPlayerScreen from "../screens/EditPlayerScreen"
@@ -37,6 +38,12 @@ const MainNavigator = createStackNavigator(
       screen: FixtureStatisticsScreen,
       navigationOptions: {
         headerTitle: "נתוני המחזור"
+      }
+    },
+    CreateMatch: {
+      screen: CreateMatchScreen,
+      navigationOptions: {
+        headerTitle: "יצירת משחק חדש"
       }
     },
     Matches: {

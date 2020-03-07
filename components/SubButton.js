@@ -7,7 +7,7 @@ import Sizes from "../constants/sizes";
 let SubButton = props => {
     return (
     <TouchableOpacity disabled={props.offline} onPress={props.onPress} style={props.style}>
-        <Text style={{...styles.title, color: props.offline?Colors.darkGray:Colors.primary}}>{props.title}</Text>
+        <Text style={{...styles.title, ...props.textStyle, color: props.offline?Colors.darkGray:Colors.primary}}>{props.title}</Text>
     </TouchableOpacity>
     )
 }
