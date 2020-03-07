@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Image, ScrollView, Text, Platform, Dimensions } from "react-native";
 import MainButton from "../components/MainButton";
 import Colors from "../constants/colors";
 import CommonStyles from "../constants/common-styles";
+import {useSelector} from "react-redux"
+import sleep from "../helpers/sleep"
 
 let ViewFixtureScreen = props => {
+  let fixtureId = props.navigation.getParam("fixtureId")
+  let fixtures = useSelector(state=>state.fixtures)
+  let fixture = fixtures[fixtureId]
+
+  useEffect(()=>{
+    props.navigation.setParams({
+      fixtureNumber: fixture.number
+    })
+  }, [fixture.number])
+
+  if (!fixture || fixture.isRemoved) {
+    sleep(0).then(
+      ()=>{
+        props.navigation.pop();
+      }
+    )
+  }
+
   return (
     <ScrollView contentContainerStyle={{ alignItems: "center" }} style={styles.container}>
       {Dimensions.get("window").height>500&&<Image
@@ -12,7 +32,7 @@ let ViewFixtureScreen = props => {
         style={CommonStyles.smallLogo}
       />}
       
-      <Text style={CommonStyles.title}>מחזור {props.navigation.getParam('fixtureNumber')}</Text>
+      <Text style={CommonStyles.title}>מחזור {fixture.number}</Text>
         <MainButton
           title="משחקים"
           style={styles.button}

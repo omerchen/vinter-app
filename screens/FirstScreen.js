@@ -11,7 +11,6 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 
 let FirstScreen = props => {
-  // const [players, setPlayers] = useState(null);
   const fixtures = useSelector(state => state.fixtures);
   let currentFixture = null;
 
