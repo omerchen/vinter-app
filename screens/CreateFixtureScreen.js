@@ -97,9 +97,13 @@ let CreateFixtureScreen = props => {
 
       DBCommunicator.setFixtures(newFixtures).then(res=>{
         if (res.status === 200) {
-          // TODO: replace later to the viewFixture page
           props.setFixtures(newFixtures)
-          props.navigation.pop();
+          props.navigation.replace({
+            routeName: "ViewFixture",
+            params: {
+              fixtureId: newFixture.id
+            }
+          });
         } else {
           Alert.alert("תהליך יציאת המחזור נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
