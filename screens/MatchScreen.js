@@ -57,7 +57,7 @@ MatchScreen.navigationOptions = navigationData => {
   let refresh = navigationData.navigation.getParam("refresh")
 
   return {
-    headerTitle: "מצב משחק",
+    headerTitle: "דף משחק",
     headerRight: () => {
       return (
         <HeaderButtons
