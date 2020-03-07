@@ -50,7 +50,7 @@ let CreateFixtureScreen = props => {
   const [fixtureDate, setFixtureDate] = useState(
     moment(Date.now()).format("DD.MM.YYYY")
   );
-  console.log(lastFixture ? lastFixture:"17:00")
+
   const [fixtureTime, setFixtureTime] = useState(
     lastFixture ? lastFixture.startTime : "17:00"
   );

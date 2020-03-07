@@ -94,7 +94,6 @@ let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
 
   if (id == null)
   {
-    console.log("\""+playerName+"\"")
     handleNonExistPlayer(playerName)
     return null
   }

@@ -35,7 +35,7 @@ let AllPlayersScreen = props => {
 
   useEffect(() => {
     props.navigation.setParams({ initialName: search, amountOfPlayers: activePlayers.length});
-  }, [search, activePlayers.length]);
+  }, [search, players]);
 
   let notPlayersExistsView = (
     <DismissKeyboardView
