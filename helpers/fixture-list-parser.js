@@ -4,6 +4,7 @@ let blueSign = "💙";
 let orangeSign = "🧡";
 let greenSign = "💚";
 let gkIdentifier = "(שוער)";
+let captainIdentifier = "(קפטן)";
 
 export let teamLabelsArray = ["הקבוצה הכחולה","הקבוצה הכתומה","הקבוצה הירוקה"]
 let teamColorsArray = ["blue", "orange", "green"];
@@ -147,6 +148,9 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
     Alert.alert("רשימה ריקה");
     return null;
   }
+
+  // remove unused captainIdentifier
+  fixtureList = fixtureList.split(captainIdentifier).join("")
 
   // 3 colors exists
   if (
