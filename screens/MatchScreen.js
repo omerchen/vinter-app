@@ -227,7 +227,7 @@ let MatchScreen = props => {
       <TouchableOpacity style={styles.eventView} key={key}>
         <FootballIcon source={icon} />
         <Text style={styles.eventText}>
-          <Text style={styles.regularText}>{time}</Text>
+          <Text style={styles.regularText}>{parseToString(time)}</Text>
         </Text>
         <Text style={styles.eventText}>
           <Text style={styles.boldText}>{title}</Text>
@@ -244,10 +244,19 @@ let MatchScreen = props => {
   let homeEvents = events.filter(item => !item.isRemoved && item.isHome);
   let awayEvents = events.filter(item => !item.isRemoved && !item.isHome);
 
-  let homeEventsComponent = [
-    createEventComponent(EVENT_TYPE_GOAL,"13:94","דור זילברמן (דור זילברמן)",0)
-  ];
-  let awayEventsComponent = [];
+  let renderEvents = events => {
+    //TODO: addsort by time
+  return events.sort((a,b)=>a.time>b.time).map(item => {
+    let desctiption = props.players[item.executerId].name
+
+    if (item.helperId) {
+      desctiption += " ("+props.players[item.helperId].name+")"
+    }
+    return createEventComponent(item.type, item.time, desctiption, item.id)
+  })
+  }
+  let homeEventsComponent = renderEvents(homeEvents);
+  let awayEventsComponent = renderEvents(awayEvents);
 
   let homeResult = homeEvents.filter(item => item.type === EVENT_TYPE_GOAL)
     .length;
