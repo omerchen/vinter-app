@@ -5,7 +5,9 @@ import {
   View,
   Alert,
   TouchableOpacity,
-  Image
+  Image,
+  Device,
+  Dimensions
 } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -27,6 +29,7 @@ import {
 } from "@expo/vector-icons";
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 
+
 let MatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
   const matchId = props.navigation.getParam("matchId");
@@ -40,6 +43,7 @@ let MatchScreen = props => {
   const colorsArray = [Colors.teamBlue, Colors.teamOrange, Colors.teamGreen];
   let iconsSize = 36;
   let plusSize = 80;
+  let vestPadding= 100;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -242,7 +246,9 @@ let MatchScreen = props => {
   let homeEvents = events.filter(item => !item.isRemoved && item.isHome);
   let awayEvents = events.filter(item => !item.isRemoved && !item.isHome);
 
-  let homeEventsComponent = [];
+  let homeEventsComponent = [
+    createEventComponent(EVENT_TYPE_GOAL,"13:94","דור זילברמן (דור זילברמן)")
+  ];
   let awayEventsComponent = [];
 
   let homeResult = homeEvents.filter(item => item.type === EVENT_TYPE_GOAL)
@@ -303,14 +309,14 @@ let MatchScreen = props => {
           <MaterialCommunityIcons
             name="whistle"
             size={60}
-            color={Colors.black}
+            color={Colors.white}
           />
           <Text style={styles.endMatchText}>שרוק לסיום!</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.gameLayer}>
         <View style={styles.teamView}>
-          <View style={styles.teamHeaderView}>
+          <View style={{...styles.teamHeaderView, paddingEnd:vestPadding}}>
             <Image
               resizeMode="contain"
               source={vestArray[match.homeId]}
@@ -341,7 +347,7 @@ let MatchScreen = props => {
           </TouchableOpacity>
         </View>
         <View style={styles.teamView}>
-          <View style={styles.teamHeaderView}>
+          <View style={{...styles.teamHeaderView, paddingStart:vestPadding}}>
             <Image
               resizeMode="contain"
               source={vestArray[match.awayId]}
@@ -441,7 +447,7 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   endMatchView: {
-    backgroundColor: Colors.primaryBright,
+    backgroundColor: Colors.primary,
     height: 120,
     width: 300,
     borderTopLeftRadius: 20,
@@ -452,7 +458,8 @@ const styles = StyleSheet.create({
   },
   endMatchText: {
     fontFamily: "assistant-bold",
-    fontSize: 20
+    fontSize: 20,
+    color: Colors.white
   },
   border: {
     width: 2,
@@ -468,9 +475,9 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   teamHeaderView: {
-    flex: 5,
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom:20,
   },
   resultText: {
     fontFamily: "assistant-bold",
@@ -479,8 +486,8 @@ const styles = StyleSheet.create({
   eventsView: {
     width: "100%",
     alignItems: "flex-start",
-    paddingStart: 100,
-    flex: 7
+    paddingStart: 20,
+    flex: 1
   },
   vestImage: {
     height: 150,
@@ -504,8 +511,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   eventText: {
-    fontSize: 25,
-    marginStart: 20
+    fontSize: 20,
+    marginStart: 15
   },
   regularText: {
     fontFamily: "assistant-semi-bold"
