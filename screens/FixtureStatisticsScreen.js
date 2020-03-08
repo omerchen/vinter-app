@@ -6,6 +6,7 @@ import { Table, Row, Rows } from "react-native-table-component";
 import { ScrollView } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
+import { calculatePoints } from "../helpers/rules";
 
 let FixtureStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -19,16 +20,16 @@ let FixtureStatisticsScreen = props => {
   const TABLE_NAME_COL = 1;
   const TABLE_GOAL_COL = 2;
   const TABLE_ASSIST_COL = 3;
-  const TABLE_CLEAN_COL = 4;
-  const TABLE_SAVE_COL = 5;
-  const TABLE_POINTS_COL = 6;
+  const TABLE_CLEAN_COL = -1;
+  const TABLE_SAVE_COL = 4;
+  const TABLE_POINTS_COL = 5;
 
-  const tableHead = [
+  const playersTableHead = [
     "קבוצה",
     "שם השחקן",
     "שערים",
     "בישולים",
-    "שער נקי",
+    // "שער נקי",
     "הצלות גדולות",
     "צבירת נקודות"
   ];
@@ -96,11 +97,15 @@ let FixtureStatisticsScreen = props => {
     return counter;
   };
   const getCleanSheet = playerObject => {
+    return getCleanSheetFromTeam(playerObject.team);
+  };
+
+  const getCleanSheetFromTeam = teamId => {
     let counter = 0;
 
     // count at home
     counter += closedMatches
-      .filter(match => match.homeId == playerObject.team)
+      .filter(match => match.homeId == teamId)
       .filter(match =>
         match.events
           ? match.events.filter(
@@ -114,7 +119,7 @@ let FixtureStatisticsScreen = props => {
 
     // count aWAY
     counter += closedMatches
-      .filter(match => match.awayId == playerObject.team)
+      .filter(match => match.awayId == teamId)
       .filter(match =>
         match.events
           ? match.events.filter(
@@ -142,13 +147,13 @@ let FixtureStatisticsScreen = props => {
     return counter;
   };
   const getPoints = playerObject => {
-    return 0;
+    return calculatePoints(players, fixtures, playerObject, fixtureId);
   };
 
-  const tableData = playersList.map(playerObject => {
+  const playersTableData = playersList.map(playerObject => {
     let tableObject = [];
 
-    for (let i = 0; i < tableHead.length; i++) {
+    for (let i = 0; i < playersTableHead.length; i++) {
       switch (i) {
         case TABLE_TEAM_COL:
           tableObject.push(getTeam(playerObject));
@@ -179,12 +184,194 @@ let FixtureStatisticsScreen = props => {
     return tableObject;
   });
 
+  let pad = (n, width, z) => {
+    z = z || "0";
+    n = n + "";
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  };
+
+  let parseToString = timeInSeconds => {
+    let seconds = timeInSeconds % 60;
+    let minutes = (timeInSeconds - seconds) / 60;
+    return pad(minutes, 2) + ":" + pad(seconds, 2);
+  };
+
+  const teamsTableHead = [
+    "קבוצה",
+    "משחקים",
+    "נצחונות",
+    "הפסדים",
+    "תיקו",
+    "שערי זכות",
+    "שערי חובה",
+    "שערים נקיים",
+    "זמן נצ׳ ממוצע",
+    "זמן הפ׳ ממוצע",
+    "הניצחון המהיר",
+    "רצף נצ׳"
+  ];
+
+  const teamsTableData = [];
+
+  for (let i in fixture.playersList) {
+    let row = [];
+
+    // Team Name
+    row.push(shortTeamLabelsArray[i]);
+
+    // Team Win
+    let wins = closedMatches.filter(match => match.winnerId == i);
+    let penaltyWins = wins.filter(match => {
+      let homeGoals = match.events
+        ? match.events.filter(
+            event =>
+              !event.isRemoved && event.isHome && event.type == EVENT_TYPE_GOAL
+          ).length
+        : 0;
+      let awayGoals = match.events
+        ? match.events.filter(
+            event =>
+              !event.isRemoved && !event.isHome && event.type == EVENT_TYPE_GOAL
+          ).length
+        : 0;
+
+      return homeGoals == awayGoals;
+    });
+
+    // Team Lose
+    let loses = closedMatches.filter(
+      match =>
+        match.winnerId != i &&
+        match.winnerId != null &&
+        match.winnerId != undefined &&
+        (match.homeId == i || match.awayId == i)
+    );
+    let penaltyLoses = loses.filter(match => {
+      let homeGoals = match.events
+        ? match.events.filter(
+            event =>
+              !event.isRemoved && event.isHome && event.type == EVENT_TYPE_GOAL
+          ).length
+        : 0;
+      let awayGoals = match.events
+        ? match.events.filter(
+            event =>
+              !event.isRemoved && !event.isHome && event.type == EVENT_TYPE_GOAL
+          ).length
+        : 0;
+
+      return homeGoals == awayGoals;
+    });
+
+    // Team tie
+    let ties = closedMatches.filter(
+      match =>
+        (match.winnerId == null || match.winnerId == undefined) &&
+        (match.homeId == i || match.awayId == i)
+    );
+
+    let appearences = wins.length + loses.length + ties.length;
+    let winLabel = "(" + penaltyWins.length + ") " + wins.length;
+    let loseLabel = "(" + penaltyLoses.length + ") " + loses.length;
+
+    row.push(appearences, winLabel, loseLabel, ties.length);
+
+    // goals
+    let goalsFor = 0;
+    let goalsAgainst = 0;
+
+    for (let j in closedMatches) {
+      if (closedMatches[j].homeId == i && closedMatches[j].events) {
+        let goalEvents = closedMatches[j].events.filter(
+          item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+        );
+        for (let w in goalEvents) {
+          if (goalEvents[w].isHome) {
+            goalsFor++;
+          } else {
+            goalsAgainst++;
+          }
+        }
+      } else if (closedMatches[j].awayId == i && closedMatches[j].events) {
+        let goalEvents = closedMatches[j].events.filter(
+          item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+        );
+        for (let w in goalEvents) {
+          if (!goalEvents[w].isHome) {
+            goalsFor++;
+          } else {
+            goalsAgainst++;
+          }
+        }
+      }
+    }
+
+    row.push(goalsFor, goalsAgainst, getCleanSheetFromTeam(i));
+
+    // avg time
+    let minWin = null
+    let winTime = 0
+    let loseTime = 0
+
+    for (let j in wins) {
+      if (j==0 || wins[j].time < minWin) {
+        minWin = wins[j].time
+      } 
+
+      winTime += wins[j].time
+    }
+
+    for (let j in loses) {
+      loseTime += loses[j].time
+    }
+
+    let fastestWin = (minWin == null) ? "--" : parseToString(minWin)
+    let winAvgTimeLabel = parseToString(Math.floor(winTime/wins.length))
+    let loseAvgTimeLabel = parseToString(Math.floor(loseTime/loses.length))
+
+    row.push(winAvgTimeLabel,loseAvgTimeLabel, fastestWin)
+
+    // top wins
+    let topWins = 0
+    let currentScore = 0
+
+    for (let j in closedMatches) {
+      if (closedMatches[j].winnerId == i) {
+        currentScore++
+      } else {
+        currentScore = 0
+      }
+
+      if (currentScore > topWins) topWins = currentScore
+    }
+
+    row.push(topWins)
+
+    teamsTableData.push(row);
+  }
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.tableTitle}>נתונים אישיים</Text>
+      <Text style={styles.tableTitle}>נתונים קבוצתיים</Text>
       <Table borderStyle={{ borderWidth: 2, borderColor: "#c8e1ff" }}>
-        <Row data={tableHead} style={styles.head} textStyle={styles.text} />
-        <Rows data={tableData} textStyle={styles.text} />
+        <Row
+          data={teamsTableHead}
+          style={{ ...styles.head, backgroundColor: "#f1f8ff" }}
+          textStyle={styles.text}
+        />
+        <Rows data={teamsTableData} textStyle={styles.text} />
+      </Table>
+      <View style={{ height: 50 }} />
+      <Text style={styles.tableTitle}>נתונים אישיים</Text>
+      <Table
+        borderStyle={{ borderWidth: 2, borderColor: Colors.primaryBright }}
+      >
+        <Row
+          data={playersTableHead}
+          style={styles.head}
+          textStyle={styles.text}
+        />
+        <Rows data={playersTableData} textStyle={styles.text} />
       </Table>
       <View style={{ height: 50 }} />
     </ScrollView>
@@ -192,13 +379,13 @@ let FixtureStatisticsScreen = props => {
 };
 
 const styles = StyleSheet.create({
-  head: { height: 40, backgroundColor: "#f1f8ff" },
+  head: { height: 40, backgroundColor: Colors.primaryBrightest },
   text: { margin: 6, textAlign: "left" },
   container: {
     flex: 1,
-    padding: 16,
+    padding: 5,
     paddingTop: 30,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
   },
   tableTitle: {
     fontFamily: "assistant-semi-bold",

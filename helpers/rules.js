@@ -33,3 +33,8 @@ export const RULES_FAIRPLAY = 1
 export const RULES_YELLOW = 1
 export const RULES_RED = 1
 export const RULES_SECOND_YELLOW = 1
+
+
+export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
+    return 0
+}
