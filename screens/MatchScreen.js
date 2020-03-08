@@ -5,7 +5,7 @@ import {
   View,
   Alert,
   TouchableOpacity,
-  Image,
+  Image
 } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -26,7 +26,7 @@ import {
   MaterialCommunityIcons
 } from "@expo/vector-icons";
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
-
+import { teamLabelsArray } from "../helpers/fixture-list-parser";
 
 let MatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -41,7 +41,7 @@ let MatchScreen = props => {
   const colorsArray = [Colors.teamBlue, Colors.teamOrange, Colors.teamGreen];
   let iconsSize = 36;
   let plusSize = 80;
-  let vestPadding= 100;
+  let vestPadding = 100;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -125,8 +125,36 @@ let MatchScreen = props => {
 
     updateMatchState(newMatch);
   };
+
+  let endWithResult = winnerId => {
+    let newMatch = {...match}
+      newMatch.winnerId = winnerId
+      newMatch.isOpen = false
+      newMatch.endTime = Date.now();
+      newMatch.endWhistleTime = newMatch.endTime
+      newMatch.time = clockTime
+
+      updateMatchState(newMatch, ()=>{
+        props.navigation.pop()
+      })
+  }
+
   let end = () => {
-    console.log("end");
+    if (homeResult == awayResult) {
+      showTieDialog((winnerId)=>{
+        endWithResult(winnerId)
+      })
+    } else {
+      let winnerId;
+
+      if (homeResult > awayResult) {
+        winnerId = match.homeId;
+      } else {
+        winnerId = match.awayId
+      }
+
+      endWithResult(winnerId)
+    }
   };
 
   let showEndDialog = () => {
@@ -136,6 +164,85 @@ let MatchScreen = props => {
       [
         { text: "עדיין לא", style: "cancel" },
         { text: "שרוק לסיום", onPress: end, style: "destructive" }
+      ],
+      {
+        cancelable: true
+      }
+    );
+  };
+
+  let showTieDialog = onFinish => {
+    Alert.alert(
+      "נראה שיש שיוויון בתוצאת המשחק!",
+      "איך נבחר להכריע את המשחק?",
+      [
+        {
+          text: "תיקו",
+          onPress: () => {
+            onFinish(null);
+          },
+          style: "default"
+        },
+        {
+          text: "דו קרב פנדלים",
+          onPress: () => {
+            showPenaltiesDialog(onFinish);
+          },
+          style: "default"
+        },
+        
+      ],
+      {
+        cancelable: true
+      }
+    );
+  };
+
+  let showPenaltiesDialog = onFinish => {
+    Alert.alert(
+      "אז מי ניצחה?",
+      "סמן את הקבוצה שניצחה בדו קרב הפנדלים",
+      [
+        
+        {
+          text: teamLabelsArray[match.awayId],
+          onPress: () => {
+            onFinish(match.awayId);
+          },
+          style: "default"
+        },
+        {
+          text: teamLabelsArray[match.homeId],
+          onPress: () => {
+            onFinish(match.homeId);
+          },
+          style: "default"
+        },
+      ],
+      {
+        cancelable: true
+      }
+    );
+  };
+
+  let removeEvent = eventId => {
+    let newMatch = { ...match };
+    newMatch.events[eventId].isRemoved = true;
+
+    updateMatchState(newMatch);
+  };
+
+  let showRemoveEventDialog = eventId => {
+    Alert.alert(
+      "מחיקת אירוע",
+      "האם אתה בטוח שאתה רוצה למחוק את האירוע הזה?",
+      [
+        { text: "לא", style: "cancel" },
+        {
+          text: "כן, אני בטוח",
+          onPress: removeEvent.bind(this, eventId),
+          style: "destructive"
+        }
       ],
       {
         cancelable: true
@@ -195,7 +302,7 @@ let MatchScreen = props => {
     });
   }, [showDeleteDialog]);
 
-  let createEventComponent = (type, time, description, key) => {
+  let createEventComponent = (type, time, description, eventId) => {
     let title = "";
     let icon = null;
     switch (type) {
@@ -224,7 +331,11 @@ let MatchScreen = props => {
     }
 
     return (
-      <TouchableOpacity style={styles.eventView} key={key}>
+      <TouchableOpacity
+        style={styles.eventView}
+        key={eventId}
+        onPress={showRemoveEventDialog.bind(this, eventId)}
+      >
         <FootballIcon source={icon} />
         <Text style={styles.eventText}>
           <Text style={styles.regularText}>{parseToString(time)}</Text>
@@ -246,24 +357,25 @@ let MatchScreen = props => {
 
   let renderEvents = events => {
     //TODO: addsort by time
-  return events.sort((a,b)=>a.time>b.time).map(item => {
-    let desctiption = props.players[item.executerId].name
+    return events
+      .sort((a, b) => a.time > b.time)
+      .map(item => {
+        let desctiption = props.players[item.executerId].name;
 
-    if (item.helperId) {
-      desctiption += " ("+props.players[item.helperId].name+")"
-    }
-    return createEventComponent(item.type, item.time, desctiption, item.id)
-  })
-  }
+        if (item.helperId) {
+          desctiption += " (" + props.players[item.helperId].name + ")";
+        }
+        return createEventComponent(item.type, item.time, desctiption, item.id);
+      });
+  };
   let homeEventsComponent = renderEvents(homeEvents);
   let awayEventsComponent = renderEvents(awayEvents);
 
   let homeResult = homeEvents.filter(item => item.type === EVENT_TYPE_GOAL)
     .length;
 
-    let awayResult = awayEvents.filter(item => item.type === EVENT_TYPE_GOAL)
-      .length;
-
+  let awayResult = awayEvents.filter(item => item.type === EVENT_TYPE_GOAL)
+    .length;
 
   return (
     <View style={styles.container}>
@@ -323,7 +435,7 @@ let MatchScreen = props => {
       </View>
       <View style={styles.gameLayer}>
         <View style={styles.teamView}>
-          <View style={{...styles.teamHeaderView, paddingEnd:vestPadding}}>
+          <View style={{ ...styles.teamHeaderView, paddingEnd: vestPadding }}>
             <Image
               resizeMode="contain"
               source={vestArray[match.homeId]}
@@ -354,7 +466,7 @@ let MatchScreen = props => {
           </TouchableOpacity>
         </View>
         <View style={styles.teamView}>
-          <View style={{...styles.teamHeaderView, paddingStart:vestPadding}}>
+          <View style={{ ...styles.teamHeaderView, paddingStart: vestPadding }}>
             <Image
               resizeMode="contain"
               source={vestArray[match.awayId]}
@@ -484,7 +596,7 @@ const styles = StyleSheet.create({
   teamHeaderView: {
     justifyContent: "flex-start",
     alignItems: "center",
-    marginBottom:20,
+    marginBottom: 20
   },
   resultText: {
     fontFamily: "assistant-bold",

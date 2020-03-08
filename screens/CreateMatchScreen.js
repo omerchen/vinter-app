@@ -30,7 +30,7 @@ let CreateMatchScreen = props => {
 
   let initialHomeId = lastMatch && lastMatch.winnerId ? lastMatch.winnerId : 0;
   let initialOutsideId =
-    lastMatch && lastMatch.winnerId
+    lastMatch && lastMatch.winnerId !== null
       ? lastMatch.homeId + lastMatch.awayId - lastMatch.winnerId
       : 2;
 
