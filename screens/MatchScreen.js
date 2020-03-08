@@ -42,6 +42,8 @@ let MatchScreen = props => {
   let iconsSize = 36;
   let plusSize = 80;
   let vestPadding = 100;
+  let removable = fixture.isOpen;
+  let editable = fixture.isOpen && match.isOpen;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -127,33 +129,33 @@ let MatchScreen = props => {
   };
 
   let endWithResult = winnerId => {
-    let newMatch = {...match}
-      newMatch.winnerId = winnerId
-      newMatch.isOpen = false
-      newMatch.endTime = Date.now();
-      newMatch.endWhistleTime = newMatch.endTime
-      newMatch.time = clockTime
+    let newMatch = { ...match };
+    newMatch.winnerId = winnerId;
+    newMatch.isOpen = false;
+    newMatch.endTime = Date.now();
+    newMatch.endWhistleTime = newMatch.endTime;
+    newMatch.time = clockTime;
 
-      updateMatchState(newMatch, ()=>{
-        props.navigation.pop()
-      })
-  }
+    updateMatchState(newMatch, () => {
+      props.navigation.pop();
+    });
+  };
 
   let end = () => {
     if (homeResult == awayResult) {
-      showTieDialog((winnerId)=>{
-        endWithResult(winnerId)
-      })
+      showTieDialog(winnerId => {
+        endWithResult(winnerId);
+      });
     } else {
       let winnerId;
 
       if (homeResult > awayResult) {
         winnerId = match.homeId;
       } else {
-        winnerId = match.awayId
+        winnerId = match.awayId;
       }
 
-      endWithResult(winnerId)
+      endWithResult(winnerId);
     }
   };
 
@@ -189,8 +191,7 @@ let MatchScreen = props => {
             showPenaltiesDialog(onFinish);
           },
           style: "default"
-        },
-        
+        }
       ],
       {
         cancelable: true
@@ -203,7 +204,6 @@ let MatchScreen = props => {
       "אז מי ניצחה?",
       "סמן את הקבוצה שניצחה בדו קרב הפנדלים",
       [
-        
         {
           text: teamLabelsArray[match.awayId],
           onPress: () => {
@@ -217,7 +217,7 @@ let MatchScreen = props => {
             onFinish(match.homeId);
           },
           style: "default"
-        },
+        }
       ],
       {
         cancelable: true
@@ -298,9 +298,10 @@ let MatchScreen = props => {
 
   useEffect(() => {
     props.navigation.setParams({
-      deleteMatch: showDeleteDialog
+      deleteMatch: showDeleteDialog,
+      removable: removable
     });
-  }, [showDeleteDialog]);
+  }, [showDeleteDialog, removable]);
 
   let createEventComponent = (type, time, description, eventId) => {
     let title = "";
@@ -334,6 +335,7 @@ let MatchScreen = props => {
       <TouchableOpacity
         style={styles.eventView}
         key={eventId}
+        disabled={!editable}
         onPress={showRemoveEventDialog.bind(this, eventId)}
       >
         <FootballIcon source={icon} />
@@ -356,7 +358,6 @@ let MatchScreen = props => {
   let awayEvents = events.filter(item => !item.isRemoved && !item.isHome);
 
   let renderEvents = events => {
-    //TODO: addsort by time
     return events
       .sort((a, b) => a.time > b.time)
       .map(item => {
@@ -377,6 +378,13 @@ let MatchScreen = props => {
   let awayResult = awayEvents.filter(item => item.type === EVENT_TYPE_GOAL)
     .length;
 
+  let homeResultStyle = match.winnerId ===match.homeId?styles.winnerText:(
+    match.winnerId===match.awayId?styles.loserText:{}
+  )
+  let awayResultStyle = match.winnerId ===match.homeId?styles.loserText:(
+    match.winnerId===match.awayId?styles.winnerText:{}
+  )
+
   return (
     <View style={styles.container}>
       <View style={styles.timeLayer}>
@@ -384,54 +392,63 @@ let MatchScreen = props => {
           <View style={styles.clockWrapper}>
             <Text style={styles.clockText}>{parseToString(clockTime)}</Text>
           </View>
-          <View style={styles.commandsWrapper}>
-            <TouchableOpacity onPress={forward} style={styles.commandView}>
-              <MaterialIcons
-                name="forward-30"
-                size={iconsSize}
-                color={Colors.black}
-              />
-              <Text style={styles.commandText}>קדימה</Text>
-            </TouchableOpacity>
-            {match.startWhistleTime && !match.endWhistleTime ? (
-              <TouchableOpacity onPress={pause} style={styles.commandView}>
-                <AntDesign
-                  name="pausecircle"
+          {editable ? (
+            <View style={styles.commandsWrapper}>
+              <TouchableOpacity onPress={forward} style={styles.commandView}>
+                <MaterialIcons
+                  name="forward-30"
+                  size={iconsSize}
+                  color={Colors.black}
+                />
+                <Text style={styles.commandText}>קדימה</Text>
+              </TouchableOpacity>
+              {match.startWhistleTime && !match.endWhistleTime ? (
+                <TouchableOpacity onPress={pause} style={styles.commandView}>
+                  <AntDesign
+                    name="pausecircle"
+                    size={iconsSize}
+                    color={Colors.black}
+                  />
+
+                  <Text style={styles.commandText}>עצור</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={play} style={styles.commandView}>
+                  <AntDesign
+                    name="play"
+                    size={iconsSize}
+                    color={Colors.black}
+                  />
+
+                  <Text style={styles.commandText}>
+                    {match.startTime ? "המשך" : "התחל"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={backward} style={styles.commandView}>
+                <MaterialIcons
+                  name="replay-30"
                   size={iconsSize}
                   color={Colors.black}
                 />
 
-                <Text style={styles.commandText}>עצור</Text>
+                <Text style={styles.commandText}>אחורה</Text>
               </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={play} style={styles.commandView}>
-                <AntDesign name="play" size={iconsSize} color={Colors.black} />
-
-                <Text style={styles.commandText}>
-                  {match.startTime ? "המשך" : "התחל"}
-                </Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity onPress={backward} style={styles.commandView}>
-              <MaterialIcons
-                name="replay-30"
-                size={iconsSize}
-                color={Colors.black}
-              />
-
-              <Text style={styles.commandText}>אחורה</Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          ) : <Text style={styles.commandText}>המשחק הסתיים</Text>}
         </View>
         <View style={styles.border} />
-        <TouchableOpacity onPress={showEndDialog} style={styles.endMatchView}>
-          <MaterialCommunityIcons
-            name="whistle"
-            size={60}
-            color={Colors.white}
-          />
-          <Text style={styles.endMatchText}>שרוק לסיום!</Text>
-        </TouchableOpacity>
+
+        {match.isOpen ? (
+          <TouchableOpacity onPress={showEndDialog} style={styles.endMatchView}>
+            <MaterialCommunityIcons
+              name="whistle"
+              size={60}
+              color={Colors.white}
+            />
+            <Text style={styles.endMatchText}>שרוק לסיום!</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
       <View style={styles.gameLayer}>
         <View style={styles.teamView}>
@@ -441,15 +458,18 @@ let MatchScreen = props => {
               source={vestArray[match.homeId]}
               style={styles.vestImage}
             />
-            <Text style={styles.resultText}>{homeResult}</Text>
+            <Text style={{...styles.resultText,...homeResultStyle}}>{homeResult}</Text>
           </View>
           <View style={styles.eventsView}>{homeEventsComponent}</View>
           <TouchableOpacity
             style={{
               ...styles.addView,
               alignSelf: "flex-start",
-              backgroundColor: colorsArray[match.homeId].vest
+              backgroundColor: editable
+                ? colorsArray[match.homeId].vest
+                : Colors.darkGray
             }}
+            disabled={!editable}
             onPress={() => {
               props.navigation.navigate({
                 routeName: "CreateEvent",
@@ -472,15 +492,18 @@ let MatchScreen = props => {
               source={vestArray[match.awayId]}
               style={styles.vestImage}
             />
-            <Text style={styles.resultText}>{awayResult}</Text>
+            <Text style={{...styles.resultText,...awayResultStyle}}>{awayResult}</Text>
           </View>
           <View style={styles.eventsView}>{awayEventsComponent}</View>
           <TouchableOpacity
             style={{
               ...styles.addView,
               alignSelf: "flex-end",
-              backgroundColor: colorsArray[match.awayId].vest
+              backgroundColor: editable
+                ? colorsArray[match.awayId].vest
+                : Colors.darkGray
             }}
+            disabled={!editable}
             onPress={() => {
               props.navigation.navigate({
                 routeName: "CreateEvent",
@@ -502,7 +525,7 @@ let MatchScreen = props => {
 };
 
 MatchScreen.navigationOptions = navigationData => {
-  let refresh = navigationData.navigation.getParam("refresh");
+  let removable = navigationData.navigation.getParam("removable");
 
   return {
     headerTitle: "דף משחק",
@@ -514,7 +537,18 @@ MatchScreen.navigationOptions = navigationData => {
           <Item
             title="Add Player"
             iconName="delete"
-            onPress={navigationData.navigation.getParam("deleteMatch")}
+            onPress={() => {
+              if (removable) {
+                navigationData.navigation.getParam("deleteMatch")();
+              } else {
+                Alert.alert(
+                  "שגיאה בעת מחיקת המשחק",
+                  "נראה שהמחזור הנוכחי סגור ולכן לא ניתן לבצע שינויים נוספים בתוצאותיו",
+                  null,
+                  { cancelable: true }
+                );
+              }
+            }}
           />
         </HeaderButtons>
       );
@@ -622,7 +656,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    elevation: 10
+    elevation: 10,
+    backgroundColor: Colors.darkGray
   },
   eventView: {
     flexDirection: "row",
@@ -638,6 +673,13 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontFamily: "assistant-bold"
+  },
+  winnerText: {
+    fontFamily: "assistant-extra-bold",
+  },
+  loserText: {
+    fontFamily: "assistant-semi-bold",
+    color: Colors.gray,
   }
 });
 

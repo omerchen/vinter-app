@@ -58,7 +58,7 @@ let PreviousMatchesScreen = props => {
             homeName + " " + homeResult + " - " + awayResult + " " + awayName;
           return (
             <SubButton
-              style={{ marginTop: 15, marginBottom: 5 }}
+              style={{ marginTop: 10, marginBottom: 10 }}
               key={match.id}
               title={title}
               onPress={() => {
