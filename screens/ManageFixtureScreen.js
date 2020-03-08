@@ -22,7 +22,7 @@ let ManageFixtureScreen = props => {
   let matches = fixture.matches ? fixture.matches : [];
 
   // states
-  const [mvpId, setMvpId] = useState(null);
+  const [mvpId, setMvpId] = useState(fixture.mvpId);
 
   let playersData = [];
 
@@ -131,6 +131,7 @@ let ManageFixtureScreen = props => {
           onChangeText={value => {
             setMvpId(value);
           }}
+          value={mvpId}
           labelFontSize={20}
           fontSize={25}
           itemCount={6}
