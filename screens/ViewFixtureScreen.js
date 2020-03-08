@@ -69,7 +69,7 @@ let ViewFixtureScreen = props => {
         title="סטטיסטיקה"
         style={{ ...styles.button }}
         onPress={() => {
-          props.navigation.navigate("FixtureStatistics");
+          props.navigation.navigate({routeName:"FixtureStatistics", params:{fixtureId: fixtureId}});
         }}
       />
     </View>
