@@ -12,7 +12,13 @@ import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 import DBCommunicator from "../helpers/db-communictor";
-
+import {
+  EVENT_TYPE_GOAL,
+  EVENT_TYPE_RED,
+  EVENT_TYPE_SECOND_YELLOW,
+  EVENT_TYPE_WALL,
+  EVENT_TYPE_YELLOW
+} from "../constants/event-types";
 import { SET_FIXTURES } from "../store/actions/fixtures";
 import {
   MaterialIcons,
@@ -191,23 +197,23 @@ let MatchScreen = props => {
     let title = "";
     let icon = null;
     switch (type) {
-      case "goal":
+      case EVENT_TYPE_GOAL:
         title = "גול! ";
         icon = footballIconTypes.goal;
         break;
-      case "red":
+      case EVENT_TYPE_RED:
         title = "כרטיס אדום! ";
         icon = footballIconTypes.red;
         break;
-      case "yellow":
+      case EVENT_TYPE_YELLOW:
         title = "כרטיס צהוב ";
         icon = footballIconTypes.yellow;
         break;
-      case "secondYellow":
+      case EVENT_TYPE_SECOND_YELLOW:
         title = "צהוב שני! ";
         icon = footballIconTypes.second_yellow;
         break;
-      case "wall":
+      case EVENT_TYPE_WALL:
         title = "הצלה גדולה! ";
         icon = footballIconTypes.wall;
         break;
@@ -229,16 +235,22 @@ let MatchScreen = props => {
     );
   };
 
-  let homeEvents = [
-    createEventComponent("goal", "01:02", "רתם פינקל (דור זילברמן)", 1),
-    createEventComponent("yellow", "01:46", "יונתם סעאת", 2)
-  ];
+  // EVENT CALCULATIONS
 
-  let homeResult = 1;
+  let events = match.events ? match.evenets : [];
 
-  let awayEvents = [];
+  let homeEvents = events.filter(item => !item.isRemoved && item.isHome);
+  let awayEvents = events.filter(item => !item.isRemoved && !item.isHome);
 
-  let awayResult = 0;
+  let homeEventsComponent = [];
+  let awayEventsComponent = [];
+
+  let homeResult = homeEvents.filter(item => item.type === EVENT_TYPE_GOAL)
+    .length;
+
+    let awayResult = awayEvents.filter(item => item.type === EVENT_TYPE_GOAL)
+      .length;
+
 
   return (
     <View style={styles.container}>
@@ -306,20 +318,23 @@ let MatchScreen = props => {
             />
             <Text style={styles.resultText}>{homeResult}</Text>
           </View>
-          <View style={styles.eventsView}>{homeEvents}</View>
+          <View style={styles.eventsView}>{homeEventsComponent}</View>
           <TouchableOpacity
             style={{
               ...styles.addView,
               alignSelf: "flex-start",
               backgroundColor: colorsArray[match.homeId].vest
             }}
-            onPress={()=>{
-              props.navigation.navigate({routeName:"CreateEvent", params:{
-                time: clockTime,
-                isHome:true,
-                matchId: matchId,
-                fixtureId: fixtureId
-              }})
+            onPress={() => {
+              props.navigation.navigate({
+                routeName: "CreateEvent",
+                params: {
+                  time: clockTime,
+                  isHome: true,
+                  matchId: matchId,
+                  fixtureId: fixtureId
+                }
+              });
             }}
           >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />
@@ -334,20 +349,23 @@ let MatchScreen = props => {
             />
             <Text style={styles.resultText}>{awayResult}</Text>
           </View>
-          <View style={styles.eventsView}>{awayEvents}</View>
+          <View style={styles.eventsView}>{awayEventsComponent}</View>
           <TouchableOpacity
             style={{
               ...styles.addView,
               alignSelf: "flex-end",
               backgroundColor: colorsArray[match.awayId].vest
             }}
-            onPress={()=>{
-              props.navigation.navigate({routeName:"CreateEvent", params:{
-                time: clockTime,
-                isHome:false,
-                matchId: matchId,
-                fixtureId: fixtureId
-              }})
+            onPress={() => {
+              props.navigation.navigate({
+                routeName: "CreateEvent",
+                params: {
+                  time: clockTime,
+                  isHome: false,
+                  matchId: matchId,
+                  fixtureId: fixtureId
+                }
+              });
             }}
           >
             <AntDesign name="plus" size={plusSize} color={Colors.opacityPlus} />

@@ -16,6 +16,7 @@ import DBCommunicator from "../helpers/db-communictor";
 import MainButton from "../components/MainButton"
 import { SET_FIXTURES } from "../store/actions/fixtures";
 import { Dropdown } from 'react-native-material-dropdown';
+import {eventTypesRadio} from '../constants/event-types'
 
 
 let CreateEventScreen = props => {
@@ -25,13 +26,6 @@ let CreateEventScreen = props => {
   const matchId = props.navigation.getParam("matchId");
   let fixture = props.fixtures[fixtureId];
   let match = fixture.matches[matchId];
-
-  const eventTypesRadio = [
-    { label: "  גול", value: 0 },
-    { label: "  הצלה גדולה", value: 1 },
-    { label: "  כרטיס צהוב", value: 2 },
-    { label: "  כרטיס אדום", value: 3 },
-  ];
 
   let playersData = []
 
