@@ -6,6 +6,9 @@ let greenSign = "💚";
 let gkIdentifier = "(שוער)";
 let captainIdentifier = "(קפטן)";
 
+const MINIMUM_PLAYERS_PER_TEAM = 3
+const MAXIMUM_PLAYERS_PER_TEAM = 7
+
 export let teamLabelsArray = ["הקבוצה הכחולה","הקבוצה הכתומה","הקבוצה הירוקה"]
 export let shortTeamLabelsArray = ["כחול","כתום","ירוק"]
 let teamColorsArray = ["blue", "orange", "green"];
@@ -109,8 +112,8 @@ let parseTeam = (teamString, players, handleNonExistPlayer) => {
   let lines = teamString.split("\n");
 
   // validate number of players at a team
-  if (lines.length != 6 /*num of players + header line*/) {
-    Alert.alert("על כל הקבוצות להיות בפורמט של שורת כותרת ו5 שורות לשחקנים");
+  if (lines.length < MINIMUM_PLAYERS_PER_TEAM + 1 || lines.length > MAXIMUM_PLAYERS_PER_TEAM + 1) {
+    Alert.alert("על כל הקבוצות להיות בפורמט של שורת כותרת ולהכיל בין "+MINIMUM_PLAYERS_PER_TEAM+" ל"+MAXIMUM_PLAYERS_PER_TEAM+" שחקנים");
     return null;
   }
 
