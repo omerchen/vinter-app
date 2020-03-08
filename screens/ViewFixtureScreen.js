@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import {
   StyleSheet,
-    ScrollView,
+  ScrollView,
   Text,
   Platform,
   Dimensions,
@@ -26,7 +26,11 @@ import { IoniconsHeaderButton } from "../components/HeaderButton";
 let ViewFixtureScreen = props => {
   let fixtureId = props.navigation.getParam("fixtureId");
   let fixtures = useSelector(state => state.fixtures);
+  let players = useSelector(state => state.players);
   let fixture = fixtures[fixtureId];
+
+  let fixtureTypesLabel = ["מחזור רגיל", "מחזרו גמר", "מחזור ידידות"];
+  let fixtureCourtLabel = ["מגרש 1", "מגרש 2", "מגרש 3"];
 
   useEffect(() => {
     props.navigation.setParams({
@@ -41,9 +45,16 @@ let ViewFixtureScreen = props => {
   }
 
   return (
-    <View
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      <View style={styles.metaDataView}>
+        <Text style={styles.metaDataText}>
+          {fixtureTypesLabel[fixture.type]} | {fixture.date} |{" "}
+          {fixture.startTime} | {fixtureCourtLabel[fixture.court]}
+        </Text>
+          {fixture.mvpId&&<Text style={styles.metaDataText}>
+            השחקן המצטיין: {players[fixture.mvpId].name}
+            </Text>}
+      </View>
       <MainButton
         title="משחקים"
         style={styles.button}
@@ -102,6 +113,14 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 70
+  },
+  metaDataText: {
+    fontFamily:"assistant-semi-bold",
+    fontSize:20,
+  },
+  metaDataView: {
+    marginBottom:70,
+    alignItems:"center"
   }
 });
 
