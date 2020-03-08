@@ -5,7 +5,8 @@ import {
   View,
   Alert,
   TouchableOpacity,
-  Image
+  Image,
+  Vibration
 } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -27,6 +28,7 @@ import {
 } from "@expo/vector-icons";
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
+import { timeToVibrate } from "../constants/configs";
 
 let MatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -295,6 +297,10 @@ let MatchScreen = props => {
       }
     );
   }, [props.fixtures, props.setFixtures, fixtureId]);
+
+  if (timeToVibrate.filter(item=>item==clockTime).length > 0) {
+    Vibration.vibrate(10000)
+  }
 
   useEffect(() => {
     props.navigation.setParams({

@@ -326,8 +326,8 @@ let FixtureStatisticsScreen = props => {
     }
 
     let fastestWin = (minWin == null) ? "--" : parseToString(minWin)
-    let winAvgTimeLabel = parseToString(Math.floor(winTime/wins.length))
-    let loseAvgTimeLabel = parseToString(Math.floor(loseTime/loses.length))
+    let winAvgTimeLabel = wins.length ==0?"--":parseToString(Math.floor(winTime/wins.length))
+    let loseAvgTimeLabel = loses.length ==0?"--":parseToString(Math.floor(loseTime/loses.length))
 
     row.push(winAvgTimeLabel,loseAvgTimeLabel, fastestWin)
 

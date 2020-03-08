@@ -1,0 +1,1 @@
+export const timeToVibrate= [6*60,7*60,8*60,9*60]
