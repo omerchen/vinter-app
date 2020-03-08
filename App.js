@@ -5,17 +5,26 @@ import { AppLoading } from "expo";
 import { createStore, combineReducers } from "redux";
 import playersReducer from "./store/reducers/players";
 import fixturesReducer from "./store/reducers/fixtures";
-import {Provider} from 'react-redux'
-import {enableScreens} from 'react-native-screens'
-import {YellowBox, I18nManager} from 'react-native'
+import { Provider } from "react-redux";
+import { enableScreens } from "react-native-screens";
+import { YellowBox, I18nManager } from "react-native";
 
-enableScreens()
+enableScreens();
 
 // ignore specific warrning messages
-YellowBox.ignoreWarnings(['componentWillReceiveProps','componentWillUpdate', 'TimePickerAndroid', 'DatePickerAndroid']);
-I18nManager.forceRTL(true)
+YellowBox.ignoreWarnings([
+  "componentWillReceiveProps",
+  "componentWillUpdate",
+  "TimePickerAndroid",
+  "DatePickerAndroid",
+  "Failed prop type"
+]);
+I18nManager.forceRTL(true);
 
-const rootReducer = combineReducers({ players: playersReducer, fixtures: fixturesReducer });
+const rootReducer = combineReducers({
+  players: playersReducer,
+  fixtures: fixturesReducer
+});
 const store = createStore(rootReducer);
 
 const fetchFonts = () => {
@@ -39,10 +48,17 @@ let App = props => {
         onFinish={() => {
           setDataLoaded(true);
         }}
-        onError={err => {console.log(err)}}
+        onError={err => {
+          console.log(err);
+        }}
       />
     );
-  else return <Provider store={store}><AppNavigator /></Provider>;
+  else
+    return (
+      <Provider store={store}>
+        <AppNavigator />
+      </Provider>
+    );
 };
 
 export default App;

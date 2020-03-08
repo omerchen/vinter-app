@@ -6,8 +6,6 @@ import {
   Alert,
   TouchableOpacity,
   Image,
-  Device,
-  Dimensions
 } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -241,13 +239,13 @@ let MatchScreen = props => {
 
   // EVENT CALCULATIONS
 
-  let events = match.events ? match.evenets : [];
+  let events = match.events ? match.events : [];
 
   let homeEvents = events.filter(item => !item.isRemoved && item.isHome);
   let awayEvents = events.filter(item => !item.isRemoved && !item.isHome);
 
   let homeEventsComponent = [
-    createEventComponent(EVENT_TYPE_GOAL,"13:94","דור זילברמן (דור זילברמן)")
+    createEventComponent(EVENT_TYPE_GOAL,"13:94","דור זילברמן (דור זילברמן)",0)
   ];
   let awayEventsComponent = [];
 
