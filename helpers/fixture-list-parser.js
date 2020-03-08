@@ -7,6 +7,7 @@ let gkIdentifier = "(שוער)";
 let captainIdentifier = "(קפטן)";
 
 export let teamLabelsArray = ["הקבוצה הכחולה","הקבוצה הכתומה","הקבוצה הירוקה"]
+export let shortTeamLabelsArray = ["כחול","כתום","ירוק"]
 let teamColorsArray = ["blue", "orange", "green"];
 
 export let codesToTeamColor = code => {

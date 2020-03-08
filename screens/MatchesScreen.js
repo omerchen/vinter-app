@@ -120,6 +120,9 @@ let MatchesScreen = props => {
           style={{ marginTop: 30 }}
           offline={endMatches.length === 0}
           title="למשחקים הקודמים"
+          onPress={()=>{
+            props.navigation.navigate({routeName:"PreviousMatches", params: {fixtureId: fixtureId}})
+          }}
         />
       </View>
     </View>

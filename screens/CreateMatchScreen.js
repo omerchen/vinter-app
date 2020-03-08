@@ -28,9 +28,9 @@ let CreateMatchScreen = props => {
   let lastMatch =
     endMatches.length > 0 ? endMatches[endMatches.length - 1] : null;
 
-  let initialHomeId = lastMatch && lastMatch.winnerId ? lastMatch.winnerId : 0;
+  let initialHomeId = (lastMatch && lastMatch.winnerId !== null && lastMatch.winnerId !== undefined) ? lastMatch.winnerId : 0;
   let initialOutsideId =
-    lastMatch && lastMatch.winnerId !== null
+    (lastMatch && lastMatch.winnerId !== null && lastMatch.winnerId !== undefined)
       ? lastMatch.homeId + lastMatch.awayId - lastMatch.winnerId
       : 2;
 
@@ -38,6 +38,7 @@ let CreateMatchScreen = props => {
   const [awayTeamId, setAwayTeamId] = useState(
     3 - initialHomeId - initialOutsideId
   );
+
   const [outsideTeamId, setOutsideTeamId] = useState(initialOutsideId);
 
   const switchHome = () => {
