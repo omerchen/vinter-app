@@ -15,8 +15,10 @@ import DBCommunicator from "../helpers/db-communictor";
 import MainButton from "../components/MainButton";
 import { SET_FIXTURES } from "../store/actions/fixtures";
 import { Dropdown } from "react-native-material-dropdown";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let ManageFixtureScreen = props => {
+  let [loading, setLoading] = useState(false)
   const fixtureId = props.navigation.getParam("fixtureId");
   let fixture = props.fixtures[fixtureId];
   let matches = fixture.matches ? fixture.matches : [];
@@ -105,6 +107,7 @@ let ManageFixtureScreen = props => {
   };
 
   let updateFixtures = newFixture => {
+    setLoading(true)
     let newFixtures = [...props.fixtures];
     newFixtures[fixtureId] = newFixture;
 
@@ -113,6 +116,7 @@ let ManageFixtureScreen = props => {
         props.setFixtures(newFixtures);
         props.navigation.pop();
       } else {
+        setLoading(false)
         Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
           cancelable: true
         });
@@ -122,6 +126,11 @@ let ManageFixtureScreen = props => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <View style={{ width: 450 }}>
         <Dropdown
           label="השחקן המצטיין"

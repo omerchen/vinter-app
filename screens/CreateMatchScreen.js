@@ -13,6 +13,8 @@ import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import dbCommunictor from "../helpers/db-communictor";
 import {SET_FIXTURES} from "../store/actions/fixtures"
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 let CreateMatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -24,7 +26,7 @@ let CreateMatchScreen = props => {
   let fixture = props.fixtures[fixtureId];
   let matches = fixture.matches ? fixture.matches : [];
   let endMatches = matches.filter(item => !item.isRemoved && !item.isOpen);
-
+  let [loading, setLoading] = useState(false)
   let lastMatch =
     endMatches.length > 0 ? endMatches[endMatches.length - 1] : null;
 
@@ -53,6 +55,8 @@ let CreateMatchScreen = props => {
   }
 
   const createMatch = () => {
+    setLoading(true)
+
     let newMatch = {
       id: matches.length,
       homeId: homeTeamId,
@@ -81,6 +85,7 @@ let CreateMatchScreen = props => {
           matchId: newMatch.id
         }})
       } else {
+        setLoading(false)
         Alert.alert("תהליך יצירת המשחק נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
       }
     })
@@ -88,6 +93,11 @@ let CreateMatchScreen = props => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <View style={styles.teamsView}>
     <TouchableWithoutFeedback onPress={switchHome}>
           <View style={styles.teamView}>

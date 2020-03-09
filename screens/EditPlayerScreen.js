@@ -19,8 +19,10 @@ import { SET_PLAYERS } from "../store/actions/players";
 import playerTypeRadio from '../constants/player-type-radio'
 import {HeaderButtons, Item} from 'react-navigation-header-buttons'
 import {MaterialCommunityIconsHeaderButton} from '../components/HeaderButton'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let EditPlayerScreen = props => {
+  let [loading, setLoading] = useState(false)
   let playerId = props.navigation.getParam("playerId");
 
   const [name, setName] = useState(props.players[playerId].name);
@@ -49,12 +51,13 @@ let EditPlayerScreen = props => {
           newPlayers[i].type = playerType;
         }
       }
-
+      setLoading(true)
       DBCommunicator.setPlayers(newPlayers).then(res => {
         if (res.status === 200) {
           props.setPlayers(newPlayers);
           props.navigation.pop();
         } else {
+          setLoading(false)
           Alert.alert("תהליך העדכון נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
       });
@@ -62,6 +65,7 @@ let EditPlayerScreen = props => {
   };
 
   const dispatchPlayersDelete = () => {
+    setLoading(true)
     let newPlayers = [...props.players];
 
     newPlayers[playerId].isRemoved = true
@@ -72,6 +76,7 @@ let EditPlayerScreen = props => {
         props.setPlayers(newPlayers);
         props.navigation.pop();
       } else {
+        setLoading(false)
         Alert.alert("תהליך המחיקה נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
       }
     });
@@ -85,7 +90,7 @@ let EditPlayerScreen = props => {
       cancelable: true,
       
     })
-  },[props.players, props.setPlayers, playerId])
+  },[props.players, props.setPlayers, playerId, setLoading])
 
   useEffect(()=>{
     props.navigation.setParams({
@@ -99,6 +104,11 @@ let EditPlayerScreen = props => {
       behavior="padding"
       keyboardVerticalOffset={keyboardOffset}
     >
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <DismissKeyboardView style={styles.container}>
         <TextInput
           label="שם מלא"

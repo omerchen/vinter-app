@@ -17,6 +17,10 @@ let PreviousFixturesScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
 
+  if (!fixtures || fixtures.filter(item=>!item.isRemoved).length == 0) {
+    props.navigation.pop()
+  }
+
   return (
     <ScrollView
       style={styles.container}

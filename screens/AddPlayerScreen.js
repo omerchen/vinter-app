@@ -9,6 +9,7 @@ import {connect} from 'react-redux'
 import DBCommunicator from '../helpers/db-communictor'
 import {SET_PLAYERS} from '../store/actions/players'
 import playerTypeRadio from '../constants/player-type-radio'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 let AddPlayerScreen = props => {
@@ -16,6 +17,7 @@ let AddPlayerScreen = props => {
   const [name, setName] = useState(initialName?initialName.toString():"");
   const [playerType, setPlayerType] = useState(0);
   const keyboardOffset = Dimensions.get("window").height>500?100:20
+  let [loading, setLoading] = useState(false)
 
   const dispatchPlayers = () => {
     let isExist = false;
@@ -36,7 +38,7 @@ let AddPlayerScreen = props => {
       };
 
       let newPlayers = [...props.players, newPlayer]
-      
+      setLoading(true)
       DBCommunicator.setPlayers(newPlayers).then((res)=>{
         if (res.status === 200)
         {
@@ -45,6 +47,7 @@ let AddPlayerScreen = props => {
         }
         else
         {
+          setLoading(false)
           Alert.alert("תהליך ההוספה נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
       })
@@ -57,6 +60,11 @@ let AddPlayerScreen = props => {
       behavior="padding"
       keyboardVerticalOffset={keyboardOffset}
     >
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <DismissKeyboardView style={styles.container}>
         <TextInput
           label="שם מלא"

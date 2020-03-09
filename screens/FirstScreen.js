@@ -10,6 +10,7 @@ import { setFixtures } from "../store/actions/fixtures";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 import { SECURE_LEVEL_FOUNDER, SECURE_LEVEL_ADMIN } from "../constants/security-levels";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let FirstScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -76,6 +77,11 @@ let FirstScreen = props => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={!dataLoaded}
+          textContent={""}
+          textStyle={{}}
+        />
       <Image
         source={require("../assets/images/colorful-logo-280h.png")}
         style={styles.logo}

@@ -7,10 +7,12 @@ import {
   Alert,
   Dimensions,
   View,
+  Clipboard, 
   TextInput as RNTextInput
 } from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
+import SubButton from "../components/SubButton";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import RadioForm from "react-native-simple-radio-button";
@@ -23,10 +25,13 @@ import {
 } from "../constants/fixture-radio-fields";
 import moment from "moment";
 import parseList from "../helpers/fixture-list-parser";
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 let inputLength = 250;
 
 let CreateFixtureScreen = props => {
+  let [loading, setLoading] = useState(false)
   let lastFixture = null;
   let players = useSelector(state => state.players);
   for (let i in props.fixtures) {
@@ -57,7 +62,10 @@ let CreateFixtureScreen = props => {
 
   const [fixtureList, setFixtureList] = useState("");
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
-
+  let readFromClipboard = async () => {   
+    const clipboardContent = await Clipboard.getString();   
+    setFixtureList(clipboardContent); 
+  };
   let createFixture = () => {
     let parsedFixtureList = parseList(fixtureList, players, playerName => {
       Alert.alert(
@@ -95,6 +103,7 @@ let CreateFixtureScreen = props => {
 
       let newFixtures = [...props.fixtures, newFixture]
 
+      setLoading(true)
       DBCommunicator.setFixtures(newFixtures).then(res=>{
         if (res.status === 200) {
           props.setFixtures(newFixtures)
@@ -105,6 +114,7 @@ let CreateFixtureScreen = props => {
             }
           });
         } else {
+          setLoading(false)
           Alert.alert("תהליך יציאת המחזור נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
         }
       })
@@ -120,6 +130,11 @@ let CreateFixtureScreen = props => {
       behavior="padding"
       keyboardVerticalOffset={keyboardOffset}
     >
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ alignItems: "center" }}
@@ -215,6 +230,12 @@ let CreateFixtureScreen = props => {
           }}
           style={styles.radio}
         />
+        <View style={{flexDirection:"row", width:250, justifyContent:"space-evenly"}}>
+          <SubButton title="הדבק לרשימה" onPress={readFromClipboard} />
+          <SubButton title="נקה רשימה" onPress={()=>{
+            setFixtureList("")
+          }} />
+        </View>
         <RNTextInput
           value={fixtureList}
           onChange={e => {

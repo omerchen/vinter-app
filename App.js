@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { enableScreens } from "react-native-screens";
 import { YellowBox, I18nManager } from "react-native";
 
+
 enableScreens();
 
 // ignore specific warrning messages
@@ -17,7 +18,8 @@ YellowBox.ignoreWarnings([
   "componentWillUpdate",
   "TimePickerAndroid",
   "DatePickerAndroid",
-  "Failed prop type"
+  "Failed prop type",
+  "Cannot update during", // TODO: @scenario: when removing all the fixtures throught PreviousFixturesScreen and poping back to home screen
 ]);
 I18nManager.forceRTL(true);
 

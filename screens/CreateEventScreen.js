@@ -22,6 +22,7 @@ import {
   EVENT_TYPE_YELLOW,
   EVENT_TYPE_SECOND_YELLOW
 } from "../constants/event-types";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let CreateEventScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -37,6 +38,7 @@ let CreateEventScreen = props => {
     "מבצע העבירה",
     "מבצע העבירה"
   ];
+  let [loading,setLoading] = useState(false)
 
   // states
   const [eventType, setEventType] = useState(EVENT_TYPE_GOAL);
@@ -94,6 +96,7 @@ let CreateEventScreen = props => {
   }
 
   let updateFixtures = newEvent => {
+    setLoading(true)
     let newFixtures = [...props.fixtures];
     if (newFixtures[fixtureId].matches[matchId].events) {
       newFixtures[fixtureId].matches[matchId].events.push(newEvent);
@@ -106,6 +109,7 @@ let CreateEventScreen = props => {
         props.setFixtures(newFixtures);
         props.navigation.pop()
       } else {
+        setLoading(false)
         Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
           cancelable: true
         });
@@ -115,6 +119,11 @@ let CreateEventScreen = props => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <RadioForm
         radio_props={eventTypesRadio}
         initial={0}

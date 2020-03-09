@@ -3,10 +3,12 @@ import Axios from 'axios'
 class DBCommunicator {
     isDebug = true // TODO: use this flag for switching between databases
     url = 'https://vinter-app.firebaseio.com/'
-    getPlayers = () => Axios.get(this.url+'players.json')
-    setPlayers = (players) => Axios.put(this.url+'players.json', players)
-    getFixtures = () => Axios.get(this.url+'fixtures.json')
-    setFixtures = (fixtures) => Axios.put(this.url+'fixtures.json', fixtures)
+    playersTableName = 'players'
+    fixturesTableName = 'dvshcjldcs'
+    getPlayers = () => Axios.get(this.url+this.playersTableName+'.json')
+    setPlayers = (players) => Axios.put(this.url+this.playersTableName+'.json', players)
+    getFixtures = () => Axios.get(this.url+this.fixturesTableName+'.json')
+    setFixtures = (fixtures) => Axios.put(this.url+this.fixturesTableName+'.json', fixtures)
 }
 
 export default new DBCommunicator()

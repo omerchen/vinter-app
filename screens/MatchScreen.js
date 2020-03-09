@@ -29,8 +29,10 @@ import {
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
 import { timeToVibrate } from "../constants/configs";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let MatchScreen = props => {
+  let [loading,setLoading] = useState(false)
   const fixtureId = props.navigation.getParam("fixtureId");
   const matchId = props.navigation.getParam("matchId");
   let fixture = props.fixtures[fixtureId];
@@ -258,6 +260,7 @@ let MatchScreen = props => {
       console.log("update finished successfully!");
     }
   ) => {
+    setLoading(true)
     let newFixtures = [...props.fixtures];
 
     newFixtures[fixtureId].matches[matchId] = newMatch;
@@ -265,8 +268,10 @@ let MatchScreen = props => {
     DBCommunicator.setFixtures(newFixtures).then(res => {
       if (res.status === 200) {
         props.setFixtures(newFixtures);
+        setLoading(false)
         onFinish();
       } else {
+        setLoading(false)
         Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
           cancelable: true
         });
@@ -393,6 +398,11 @@ let MatchScreen = props => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={loading}
+          textContent={""}
+          textStyle={{}}
+        />
       <View style={styles.timeLayer}>
         <View style={styles.timeView}>
           <View style={styles.clockWrapper}>
