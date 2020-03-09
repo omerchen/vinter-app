@@ -1,4 +1,4 @@
-export const SECURE_MODE = false
+export const SECURE_MODE = true
 
 export const PASSWORDS = ["Omer8060","Vinter8060","Vl123456!","1"]
 export const SECURE_LEVEL_NO_PASSWORD = PASSWORDS.length // any player at the club

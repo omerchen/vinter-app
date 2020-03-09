@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "vinter-app",
+    "name": "Vinter",
     "slug": "vinter-app",
     "privacy": "public",
     "sdkVersion": "36.0.0",
@@ -24,7 +24,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.omerchen.vinterapp",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "icon":"./assets/ios-icon.png"
+    },
+    "android": {
+      "package": "com.omerchen.vinterapp",
+      "versionCode": 1
     }
   }
 }

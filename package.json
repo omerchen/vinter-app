@@ -34,8 +34,9 @@
     "redux": "^4.0.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0",
     "babel-preset-expo": "~8.0.0",
-    "@babel/core": "^7.0.0"
+    "react-native-bundle-visualizer": "^2.1.1"
   },
   "private": true
 }
