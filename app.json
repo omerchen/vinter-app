@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,13 +25,13 @@
     ],
     "ios": {
       "bundleIdentifier": "com.omerchen.vinterapp",
-      "buildNumber": "1.1.0",
+      "buildNumber": "1.2.0",
       "supportsTablet": true,
       "icon":"./assets/ios-icon.png"
     },
     "android": {
       "package": "com.omerchen.vinterapp",
-      "versionCode": 2
+      "versionCode": 3
     }
   }
 }
