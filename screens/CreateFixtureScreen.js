@@ -7,7 +7,7 @@ import {
   Alert,
   Dimensions,
   View,
-  Clipboard, 
+  Clipboard,
   TextInput as RNTextInput
 } from "react-native";
 import Colors from "../constants/colors";
@@ -22,16 +22,15 @@ import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
 import {
   fixtureCourtRadio,
   fixtureTypeRadio
-} from "../constants/fixture-radio-fields";
+} from "../constants/fixture-properties";
 import moment from "moment";
 import parseList from "../helpers/fixture-list-parser";
-import Spinner from 'react-native-loading-spinner-overlay';
-
+import Spinner from "react-native-loading-spinner-overlay";
 
 let inputLength = 250;
 
 let CreateFixtureScreen = props => {
-  let [loading, setLoading] = useState(false)
+  let [loading, setLoading] = useState(false);
   let lastFixture = null;
   let players = useSelector(state => state.players);
   for (let i in props.fixtures) {
@@ -62,9 +61,9 @@ let CreateFixtureScreen = props => {
 
   const [fixtureList, setFixtureList] = useState("");
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
-  let readFromClipboard = async () => {   
-    const clipboardContent = await Clipboard.getString();   
-    setFixtureList(clipboardContent); 
+  let readFromClipboard = async () => {
+    const clipboardContent = await Clipboard.getString();
+    setFixtureList(clipboardContent);
   };
   let createFixture = () => {
     let parsedFixtureList = parseList(fixtureList, players, playerName => {
@@ -73,14 +72,18 @@ let CreateFixtureScreen = props => {
         "האם תרצה להוסיף את השחקן למאגר?",
         [
           { text: "לא", style: "cancel" },
-          { text: "כן", onPress: () => {
-            props.navigation.navigate({
-              routeName:"AddPlayer",
-              params: {
-                initialName: playerName
-              }
-            })
-          }, style: "default" }
+          {
+            text: "כן",
+            onPress: () => {
+              props.navigation.navigate({
+                routeName: "AddPlayer",
+                params: {
+                  initialName: playerName
+                }
+              });
+            },
+            style: "default"
+          }
         ],
         { cancelable: true }
       );
@@ -98,15 +101,15 @@ let CreateFixtureScreen = props => {
         court: fixtureCourt,
         type: fixtureType,
         date: fixtureDate,
-        startTime: fixtureTime,
-      }
+        startTime: fixtureTime
+      };
 
-      let newFixtures = [...props.fixtures, newFixture]
+      let newFixtures = [...props.fixtures, newFixture];
 
-      setLoading(true)
-      DBCommunicator.setFixtures(newFixtures).then(res=>{
+      setLoading(true);
+      DBCommunicator.setFixtures(newFixtures).then(res => {
         if (res.status === 200) {
-          props.setFixtures(newFixtures)
+          props.setFixtures(newFixtures);
           props.navigation.replace({
             routeName: "ViewFixture",
             params: {
@@ -114,11 +117,15 @@ let CreateFixtureScreen = props => {
             }
           });
         } else {
-          setLoading(false)
-          Alert.alert("תהליך יציאת המחזור נכשל", "ודא שהינך מחובר לרשת ונסה שנית", null, {cancelable:true});
+          setLoading(false);
+          Alert.alert(
+            "תהליך יציאת המחזור נכשל",
+            "ודא שהינך מחובר לרשת ונסה שנית",
+            null,
+            { cancelable: true }
+          );
         }
-      })
-
+      });
     } else {
       setFixtureListValidation(false);
     }
@@ -130,11 +137,7 @@ let CreateFixtureScreen = props => {
       behavior="padding"
       keyboardVerticalOffset={keyboardOffset}
     >
-      <Spinner
-          visible={loading}
-          textContent={""}
-          textStyle={{}}
-        />
+      <Spinner visible={loading} textContent={""} textStyle={{}} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ alignItems: "center" }}
@@ -230,11 +233,20 @@ let CreateFixtureScreen = props => {
           }}
           style={styles.radio}
         />
-        <View style={{flexDirection:"row", width:250, justifyContent:"space-evenly"}}>
+        <View
+          style={{
+            flexDirection: "row",
+            width: 250,
+            justifyContent: "space-evenly"
+          }}
+        >
           <SubButton title="הדבק לרשימה" onPress={readFromClipboard} />
-          <SubButton title="נקה רשימה" onPress={()=>{
-            setFixtureList("")
-          }} />
+          <SubButton
+            title="נקה רשימה"
+            onPress={() => {
+              setFixtureList("");
+            }}
+          />
         </View>
         <RNTextInput
           value={fixtureList}

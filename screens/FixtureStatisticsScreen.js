@@ -44,8 +44,8 @@ let FixtureStatisticsScreen = props => {
 
   if (closedMatches.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text>לא ניתן להציג סטטיסטיקה למחזור זה</Text>
+      <View style={{flex:1, justifyContent:"center",alignItems:"center"}}>
+        <Text style={{fontFamily:"assistant-semi-bold",fontSize:25, color: Colors.darkGray}}>לא ניתן להציג סטטיסטיקה למחזור זה</Text>
       </View>
     );
   }
@@ -96,6 +96,7 @@ let FixtureStatisticsScreen = props => {
     }
     return counter;
   };
+
   const getCleanSheet = playerObject => {
     return getCleanSheetFromTeam(playerObject.team);
   };
@@ -147,7 +148,7 @@ let FixtureStatisticsScreen = props => {
     return counter;
   };
   const getPoints = playerObject => {
-    return calculatePoints(players, fixtures, playerObject, fixtureId);
+    return calculatePoints(players, fixtures, playerObject.id, fixtureId);
   };
 
   const playersTableData = playersList.map(playerObject => {
