@@ -35,7 +35,9 @@ let PreviousFixturesScreen = props => {
             title += " - גמר"
           } else if (fixture.type == 2) /*friendly*/{
             title += " - ידידות"
-          } else if (fixture.mvpId) {
+          } 
+          
+          if (fixture.mvpId) {
             title += " ("+players[fixture.mvpId].name+")"
           }
 

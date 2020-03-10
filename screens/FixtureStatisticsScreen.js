@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, ColorPropType } from "react-native";
+import { StyleSheet, Text, View, ColorPropType, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows } from "react-native-table-component";
@@ -18,20 +18,20 @@ let FixtureStatisticsScreen = props => {
 
   const TABLE_TEAM_COL = 0;
   const TABLE_NAME_COL = 1;
-  const TABLE_GOAL_COL = 2;
-  const TABLE_ASSIST_COL = 3;
+  const TABLE_POINTS_COL = 2;
+  const TABLE_GOAL_COL = 3;
+  const TABLE_ASSIST_COL = 4;
+  const TABLE_SAVE_COL = 5;
   const TABLE_CLEAN_COL = -1;
-  const TABLE_SAVE_COL = 4;
-  const TABLE_POINTS_COL = 5;
 
   const playersTableHead = [
     "קבוצה",
     "שם השחקן",
+    "צבירת נקודות",
     "שערים",
     "בישולים",
     // "שער נקי",
-    "הצלות גדולות",
-    "צבירת נקודות"
+    "הצלות גדולות"
   ];
   const playersList = [];
   for (let i in fixture.playersList) {
@@ -44,8 +44,16 @@ let FixtureStatisticsScreen = props => {
 
   if (closedMatches.length === 0) {
     return (
-      <View style={{flex:1, justifyContent:"center",alignItems:"center"}}>
-        <Text style={{fontFamily:"assistant-semi-bold",fontSize:25, color: Colors.darkGray}}>לא ניתן להציג סטטיסטיקה למחזור זה</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text
+          style={{
+            fontFamily: "assistant-semi-bold",
+            fontSize: 25,
+            color: Colors.darkGray
+          }}
+        >
+          לא ניתן להציג סטטיסטיקה למחזור זה
+        </Text>
       </View>
     );
   }
@@ -151,39 +159,41 @@ let FixtureStatisticsScreen = props => {
     return calculatePoints(players, fixtures, playerObject.id, fixtureId);
   };
 
-  const playersTableData = playersList.map(playerObject => {
-    let tableObject = [];
+  const playersTableData = playersList
+    .map(playerObject => {
+      let tableObject = [];
 
-    for (let i = 0; i < playersTableHead.length; i++) {
-      switch (i) {
-        case TABLE_TEAM_COL:
-          tableObject.push(getTeam(playerObject));
-          break;
-        case TABLE_NAME_COL:
-          tableObject.push(getName(playerObject));
-          break;
-        case TABLE_GOAL_COL:
-          tableObject.push(getGoals(playerObject));
-          break;
-        case TABLE_ASSIST_COL:
-          tableObject.push(getAssists(playerObject));
-          break;
-        case TABLE_CLEAN_COL:
-          tableObject.push(getCleanSheet(playerObject));
-          break;
-        case TABLE_SAVE_COL:
-          tableObject.push(getSaves(playerObject));
-          break;
-        case TABLE_POINTS_COL:
-          tableObject.push(getPoints(playerObject));
-          break;
-        default:
-          tableObject.push("");
+      for (let i = 0; i < playersTableHead.length; i++) {
+        switch (i) {
+          case TABLE_TEAM_COL:
+            tableObject.push(getTeam(playerObject));
+            break;
+          case TABLE_NAME_COL:
+            tableObject.push(getName(playerObject));
+            break;
+          case TABLE_GOAL_COL:
+            tableObject.push(getGoals(playerObject));
+            break;
+          case TABLE_ASSIST_COL:
+            tableObject.push(getAssists(playerObject));
+            break;
+          case TABLE_CLEAN_COL:
+            tableObject.push(getCleanSheet(playerObject));
+            break;
+          case TABLE_SAVE_COL:
+            tableObject.push(getSaves(playerObject));
+            break;
+          case TABLE_POINTS_COL:
+            tableObject.push(getPoints(playerObject));
+            break;
+          default:
+            tableObject.push("");
+        }
       }
-    }
 
-    return tableObject;
-  });
+      return tableObject;
+    })
+    .sort((a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL]);
 
   let pad = (n, width, z) => {
     z = z || "0";
@@ -200,16 +210,16 @@ let FixtureStatisticsScreen = props => {
   const teamsTableHead = [
     "קבוצה",
     "משחקים",
-    "נצחונות",
-    "הפסדים",
-    "תיקו",
+    "נצ׳ (בפנדל׳)",
+    "הפ׳ (בפנדל׳)",
+    // "תיקו",
     "שערי זכות",
     "שערי חובה",
     "שערים נקיים",
     "זמן נצ׳ ממוצע",
     "זמן הפ׳ ממוצע",
     "הניצחון המהיר",
-    "רצף נצ׳"
+    "רצף נצ׳ שיא"
   ];
 
   const teamsTableData = [];
@@ -275,7 +285,7 @@ let FixtureStatisticsScreen = props => {
     let winLabel = "(" + penaltyWins.length + ") " + wins.length;
     let loseLabel = "(" + penaltyLoses.length + ") " + loses.length;
 
-    row.push(appearences, winLabel, loseLabel, ties.length);
+    row.push(appearences, winLabel, loseLabel);
 
     // goals
     let goalsFor = 0;
@@ -310,49 +320,62 @@ let FixtureStatisticsScreen = props => {
     row.push(goalsFor, goalsAgainst, getCleanSheetFromTeam(i));
 
     // avg time
-    let minWin = null
-    let winTime = 0
-    let loseTime = 0
+    let minWin = null;
+    let winTime = 0;
+    let loseTime = 0;
 
     for (let j in wins) {
-      if (j==0 || wins[j].time < minWin) {
-        minWin = wins[j].time
-      } 
+      if (j == 0 || wins[j].time < minWin) {
+        minWin = wins[j].time;
+      }
 
-      winTime += wins[j].time
+      winTime += wins[j].time;
     }
 
     for (let j in loses) {
-      loseTime += loses[j].time
+      loseTime += loses[j].time;
     }
 
-    let fastestWin = (minWin == null) ? "--" : parseToString(minWin)
-    let winAvgTimeLabel = wins.length ==0?"--":parseToString(Math.floor(winTime/wins.length))
-    let loseAvgTimeLabel = loses.length ==0?"--":parseToString(Math.floor(loseTime/loses.length))
+    let fastestWin = minWin == null ? "--" : parseToString(minWin);
+    let winAvgTimeLabel =
+      wins.length == 0
+        ? "--"
+        : parseToString(Math.floor(winTime / wins.length));
+    let loseAvgTimeLabel =
+      loses.length == 0
+        ? "--"
+        : parseToString(Math.floor(loseTime / loses.length));
 
-    row.push(winAvgTimeLabel,loseAvgTimeLabel, fastestWin)
+    row.push(winAvgTimeLabel, loseAvgTimeLabel, fastestWin);
 
     // top wins
-    let topWins = 0
-    let currentScore = 0
+    let topWins = 0;
+    let currentScore = 0;
 
     for (let j in closedMatches) {
       if (closedMatches[j].winnerId == i) {
-        currentScore++
+        currentScore++;
       } else {
-        currentScore = 0
+        currentScore = 0;
       }
 
-      if (currentScore > topWins) topWins = currentScore
+      if (currentScore > topWins) topWins = currentScore;
     }
 
-    row.push(topWins)
+    row.push(topWins);
 
     teamsTableData.push(row);
   }
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image
+        resizeMode="contain"
+          source={require("../assets/images/colorful-logo-280h.png")}
+          style={styles.logo}
+        />
+      </View>
       <Text style={styles.tableTitle}>נתונים קבוצתיים</Text>
       <Table borderStyle={{ borderWidth: 2, borderColor: "#c8e1ff" }}>
         <Row
@@ -384,15 +407,22 @@ const styles = StyleSheet.create({
   text: { margin: 6, textAlign: "left" },
   container: {
     flex: 1,
-    padding: 5,
+    padding: 20,
     paddingTop: 30,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.white
   },
   tableTitle: {
     fontFamily: "assistant-semi-bold",
     fontSize: 30,
     textAlign: "center",
     marginBottom: 20
+  },
+  logoContainer:{
+    alignItems:"center"
+  },
+  logo: {
+    height: 180,
+    marginBottom: 30
   }
 });
 
