@@ -13,6 +13,7 @@ import MatchScreen from "../screens/MatchScreen"
 import PreviousMatchesScreen from "../screens/PreviousMatchesScreen"
 import CreateEventScreen from "../screens/CreateEventScreen"
 import ManageFixtureScreen from "../screens/ManageFixtureScreen"
+import RulesScreen from "../screens/RulesScreen"
 import CreateMatchScreen from "../screens/CreateMatchScreen"
 import PlayerScreen from "../screens/PlayerScreen"
 import LeagueTableScreen from "../screens/LeagueTableScreen"
@@ -50,11 +51,14 @@ const MainNavigator = createStackNavigator(
         headerTitle: "משחקי המחזור"
       }
     },
+    Rules: {
+      screen: RulesScreen,
+      navigationOptions: {
+        headerTitle: "שיטת הניקוד"
+      }
+    },
     LeagueTable: {
       screen: LeagueTableScreen,
-      navigationOptions: {
-        headerTitle: "טבלת הליגה"
-      }
     },
     FixtureStatistics: {
       screen: FixtureStatisticsScreen,

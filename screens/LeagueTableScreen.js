@@ -8,6 +8,8 @@ import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
+import {HeaderButtons,  Item} from "react-navigation-header-buttons";
+import {IoniconsHeaderButton} from "../components/HeaderButton"
 
 let LeagueTableScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -174,5 +176,24 @@ const styles = StyleSheet.create({
     marginBottom: 30
   }
 });
+
+LeagueTableScreen.navigationOptions = navigationData => {
+  return {
+    headerTitle: "טבלת הליגה",
+    headerRight: () => {
+      return (
+        <HeaderButtons
+          HeaderButtonComponent={IoniconsHeaderButton}
+        >
+          <Item
+            title="Learn More"
+            iconName="md-help"
+            onPress={()=>navigationData.navigation.navigate("Rules")}
+          />
+        </HeaderButtons>
+      );
+    }
+  }
+}
 
 export default LeagueTableScreen;
