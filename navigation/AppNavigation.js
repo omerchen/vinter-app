@@ -15,6 +15,7 @@ import CreateEventScreen from "../screens/CreateEventScreen"
 import ManageFixtureScreen from "../screens/ManageFixtureScreen"
 import CreateMatchScreen from "../screens/CreateMatchScreen"
 import PlayerScreen from "../screens/PlayerScreen"
+import LeagueTableScreen from "../screens/LeagueTableScreen"
 import AddPlayerScreen from "../screens/AddPlayerScreen"
 import EditPlayerScreen from "../screens/EditPlayerScreen"
 
@@ -47,6 +48,12 @@ const MainNavigator = createStackNavigator(
       screen: PreviousMatchesScreen,
       navigationOptions: {
         headerTitle: "משחקי המחזור"
+      }
+    },
+    LeagueTable: {
+      screen: LeagueTableScreen,
+      navigationOptions: {
+        headerTitle: "טבלת הליגה"
       }
     },
     FixtureStatistics: {

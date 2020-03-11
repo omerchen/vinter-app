@@ -114,6 +114,13 @@ let FirstScreen = props => {
 
       <View style={{ alignItems: "center" }}>
         <SubButton
+          title="טבלת הליגה"
+          offline={!dataLoaded}
+          onPress={() => {
+            props.navigation.navigate("LeagueTable");
+          }}
+        />
+        <SubButton
           title="למחזורים הקודמים"
           offline={
             !dataLoaded ||
@@ -126,10 +133,11 @@ let FirstScreen = props => {
           onPress={() => {
             props.navigation.navigate("PreviousFixtures");
           }}
+          style={{ marginVertical: 20 }}
+
         />
         <SubButton
           title="שחקני הקבוצה"
-          style={{ marginTop: 20 }}
           offline={!dataLoaded}
           onPress={() => {
             props.navigation.navigate({

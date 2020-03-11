@@ -156,7 +156,7 @@ let FixtureStatisticsScreen = props => {
     return counter;
   };
   const getPoints = playerObject => {
-    return calculatePoints(players, fixtures, playerObject.id, fixtureId);
+    return calculatePoints(players, fixtures, playerObject.id, fixtureId).points;
   };
 
   const playersTableData = playersList

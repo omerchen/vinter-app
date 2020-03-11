@@ -191,6 +191,19 @@ const getSaves = (playerObject, closedMatches) => {
 };
 
 export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
+  let pointsObject = {
+    points: 0,
+    appearence: false,
+    goals: 0,
+    assists: 0,
+    cleansheets: 0,
+    saves: 0,
+    teamWin: false,
+    teamTie: false,
+    yellows: 0,
+    secondYellows: 0,
+    reds: 0,
+  };
   if (
     !fixtures ||
     !players ||
@@ -199,7 +212,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     fixtures[fixtureId].isRemoved ||
     players[playerId].isRemoved
   ) {
-    return 0;
+    return pointsObject;
   }
 
   let points = 0;
@@ -221,25 +234,38 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     );
   });
 
-  if (!playerObject) return 0;
+  if (!playerObject) return pointsObject;
+
+  pointsObject.appearence = true;
 
   const teamId = playerObject.team;
+
+  pointsObject.isCaptain = playerObject.isCaptain;
+  pointsObject.isGoalkeeper = playerObject.isGoalkeeper;
+
+  pointsObject.goals = getGoals(playerObject, closedMatches);
+  pointsObject.assists = getAssists(playerObject, closedMatches);
+  pointsObject.saves = getSaves(playerObject, closedMatches);
+  pointsObject.yellows = getYellows(playerObject, closedMatches);
+  pointsObject.secondYellows = getSecondYellows(playerObject, closedMatches);
+  pointsObject.reds = getReds(playerObject, closedMatches);
+  pointsObject.cleansheets = getCleanSheet(playerObject, closedMatches);
+  pointsObject.fixtureType = fixtures[fixtureId].type;
 
   if (fixtures[fixtureId].type == FIXTURE_TYPE_STANDARD) {
     // STANDARD FIXTURE
 
     // calculate individual points
-    points += getGoals(playerObject, closedMatches) * RULES_GOAL;
-    points += getAssists(playerObject, closedMatches) * RULES_ASSIST;
-    points += getSaves(playerObject, closedMatches) * RULES_SAVE;
-    points += getYellows(playerObject, closedMatches) * RULES_YELLOW;
-    points +=
-      getSecondYellows(playerObject, closedMatches) * RULES_SECOND_YELLOW;
-    points += getReds(playerObject, closedMatches) * RULES_RED;
+    points += pointsObject.goals * RULES_GOAL;
+    points += pointsObject.assists * RULES_ASSIST;
+    points += pointsObject.saves * RULES_SAVE;
+    points += pointsObject.yellows * RULES_YELLOW;
+    points += pointsObject.secondYellows * RULES_SECOND_YELLOW;
+    points += pointsObject.reds * RULES_RED;
 
     // calculate team points
     points +=
-      getCleanSheet(playerObject, closedMatches) *
+      pointsObject.cleansheets *
       (playerObject.isGoalkeeper ? RULES_CLEANSHEET_GK : RULES_CLEANSHEET);
 
     // Team Win
@@ -302,6 +328,13 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         ).length == 0
     );
 
+    pointsObject.wins = wins.length;
+    pointsObject.penaltyWins = penaltyWins.length;
+    pointsObject.loses = loses.length;
+    pointsObject.penaltyLoses = penaltyLoses.length;
+    pointsObject.ties = ties.length;
+    pointsObject.noGoalsTies = no_goals_tie.length;
+
     if (playerObject.isCaptain) {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN_CAPTAIN;
 
@@ -310,7 +343,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_CAPTAIN;
 
       points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_CAPTAIN;
-      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_CAPTAIN
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_CAPTAIN;
     } else {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN;
 
@@ -319,7 +352,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES;
 
       points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE;
-      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE;
     }
 
     // calculate ended fixture points
@@ -327,6 +360,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
       // Check if mvp
       if (fixtures[fixtureId].mvpId == playerId) {
         points += 1 * RULES_MVP;
+        pointsObject.mvp = true;
+      } else {
+        pointsObject.mvp = false;
       }
 
       let teamWins = getWins(fixtures[fixtureId], teamId);
@@ -338,8 +374,12 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         maxRivalWins = Math.max(maxRivalWins, getWins(fixtures[fixtureId], i));
       }
 
+      pointsObject.teamWin = false;
+      pointsObject.teamTie = false;
+
       if (teamWins > maxRivalWins) {
         // team win fixture
+        pointsObject.teamWin = true;
         points +=
           1 *
           (playerObject.isCaptain
@@ -347,6 +387,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
             : RULES_FIXTURE_WIN);
       } else if (teamWins == maxRivalWins) {
         // team tie fixture
+        pointsObject.teamTie = true;
         points +=
           1 *
           (playerObject.isCaptain
@@ -361,17 +402,16 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     // FINAL FIXTURE
 
     // calculate individual points
-    points += getGoals(playerObject, closedMatches) * RULES_GOAL_FINAL;
-    points += getAssists(playerObject, closedMatches) * RULES_ASSIST_FINAL;
-    points += getSaves(playerObject, closedMatches) * RULES_SAVE_FINAL;
-    points += getYellows(playerObject, closedMatches) * RULES_YELLOW_FINAL;
-    points +=
-      getSecondYellows(playerObject, closedMatches) * RULES_SECOND_YELLOW_FINAL;
-    points += getReds(playerObject, closedMatches) * RULES_RED_FINAL;
+    points += pointsObject.goals * RULES_GOAL_FINAL;
+    points += pointsObject.assists * RULES_ASSIST_FINAL;
+    points += pointsObject.saves * RULES_SAVE_FINAL;
+    points += pointsObject.yellows * RULES_YELLOW_FINAL;
+    points += pointsObject.secondYellows * RULES_SECOND_YELLOW_FINAL;
+    points += pointsObject.reds * RULES_RED_FINAL;
 
     // calculate team points
     points +=
-      getCleanSheet(playerObject, closedMatches) *
+      pointsObject.cleansheets *
       (playerObject.isGoalkeeper
         ? RULES_CLEANSHEET_GK_FINAL
         : RULES_CLEANSHEET_FINAL);
@@ -436,6 +476,13 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         ).length == 0
     );
 
+    pointsObject.wins = wins.length;
+    pointsObject.penaltyWins = penaltyWins.length;
+    pointsObject.loses = loses.length;
+    pointsObject.penaltyLoses = penaltyLoses.length;
+    pointsObject.ties = ties.length;
+    pointsObject.noGoalsTies = no_goals_tie.length;
+
     if (playerObject.isCaptain) {
       points +=
         (wins.length - penaltyWins.length) * RULES_MATCH_WIN_FINAL_CAPTAIN;
@@ -444,8 +491,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_FINAL_CAPTAIN;
 
-      points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_FINAL_CAPTAIN;
-      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL_CAPTAIN
+      points +=
+        (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_FINAL_CAPTAIN;
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL_CAPTAIN;
     } else {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN_FINAL;
 
@@ -454,7 +502,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_FINAL;
 
       points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_FINAL;
-      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL;
     }
 
     // calculate ended fixture points
@@ -462,6 +510,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
       // Check if mvp
       if (fixtures[fixtureId].mvpId == playerId) {
         points += 1 * RULES_MVP_FINAL;
+        pointsObject.mvp = true;
+      } else {
+        pointsObject.mvp = false;
       }
 
       let teamWins = getWins(fixtures[fixtureId], teamId);
@@ -473,8 +524,12 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         maxRivalWins = Math.max(maxRivalWins, getWins(fixtures[fixtureId], i));
       }
 
+      pointsObject.teamWin = false;
+      pointsObject.teamTie = false;
+
       if (teamWins > maxRivalWins) {
         // team win fixture
+        pointsObject.teamWin = true;
         points +=
           1 *
           (playerObject.isCaptain
@@ -482,6 +537,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
             : RULES_FIXTURE_WIN_FINAL);
       } else if (teamWins == maxRivalWins) {
         // team tie fixture
+        pointsObject.teamTie = true;
         points +=
           1 *
           (playerObject.isCaptain
@@ -495,5 +551,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
   } else {
     // FRIENDLY
   }
-  return points.toFixed(1) == 0 ? 0 : points.toFixed(1);
+
+  pointsObject.points = points.toFixed(1) == 0 ? 0 : points.toFixed(1);
+  return pointsObject;
 };
