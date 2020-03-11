@@ -102,8 +102,8 @@ AllPlayersScreen.navigationOptions = navigationData => {
                 routeName: "RequirePassword",
                 params: {
                   routeName: "AddPlayer",
+                  params: {initialName: navigationData.navigation.getParam("initialName"),},
                   level: SECURE_LEVEL_ADMIN,
-                  initialName: navigationData.navigation.getParam("initialName")
                 }
               });
             }}

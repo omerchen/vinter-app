@@ -6,6 +6,7 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 import { useSelector } from "react-redux";
 import sleep from '../helpers/sleep'
+import {SECURE_LEVEL_ADMIN} from '../constants/security-levels'
 
 let PlayerSreen = props => {
   let players = useSelector(state => state.players);
@@ -54,13 +55,15 @@ PlayerSreen.navigationOptions = navigationData => {
           HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
         >
           <Item
-            title="Add Player"
+            title="Edit Player"
             iconName="circle-edit-outline"
             onPress={() => {
               navigationData.navigation.navigate({
-                routeName: "EditPlayer",
+                routeName: "RequirePassword",
                 params: {
-                  playerId: navigationData.navigation.getParam("playerId")
+                  routeName: "EditPlayer",
+                  params: {playerId: navigationData.navigation.getParam("playerId")},
+                  level: SECURE_LEVEL_ADMIN,
                 }
               });
             }}
