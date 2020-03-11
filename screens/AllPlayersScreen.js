@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import PlayerCard from "../components/PlayerCard";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
+import { SECURE_LEVEL_ADMIN } from "../constants/security-levels";
 
 let AllPlayersScreen = props => {
   let [search, setSearch] = useState("");
@@ -34,16 +35,20 @@ let AllPlayersScreen = props => {
     });
 
   useEffect(() => {
-    props.navigation.setParams({ initialName: search, amountOfPlayers: activePlayers.length});
+    props.navigation.setParams({
+      initialName: search,
+      amountOfPlayers: activePlayers.length
+    });
   }, [search, players]);
 
   let notPlayersExistsView = (
     <DismissKeyboardView
-      style={{ justifyContent: "center", flex: 1, alignItems: "strech" }}
+      style={{ justifyContent: "center", flex: 1, width:"100%"}}
     >
       <Text style={styles.nonPlayersTitle}>לא נמצאו שחקנים במערכת</Text>
     </DismissKeyboardView>
   );
+
   let numOfColumn = 1;
   let windowWidth = Dimensions.get("window").width;
   if (windowWidth > 500) numOfColumn = 2;
@@ -60,6 +65,7 @@ let AllPlayersScreen = props => {
       numColumns={numOfColumn}
     />
   );
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -81,7 +87,10 @@ let AllPlayersScreen = props => {
 
 AllPlayersScreen.navigationOptions = navigationData => {
   return {
-    headerTitle: "שחקני הקבוצה ("+(navigationData.navigation.getParam("amountOfPlayers"))+")",
+    headerTitle:
+      "שחקני הקבוצה (" +
+      navigationData.navigation.getParam("amountOfPlayers") +
+      ")",
     headerRight: () => {
       return (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
@@ -90,8 +99,10 @@ AllPlayersScreen.navigationOptions = navigationData => {
             iconName="ios-add"
             onPress={() => {
               navigationData.navigation.navigate({
-                routeName: "AddPlayer",
+                routeName: "RequirePassword",
                 params: {
+                  routeName: "AddPlayer",
+                  level: SECURE_LEVEL_ADMIN,
                   initialName: navigationData.navigation.getParam("initialName")
                 }
               });
@@ -112,7 +123,8 @@ const styles = StyleSheet.create({
   nonPlayersTitle: {
     fontSize: 20,
     fontFamily: "assistant-semi-bold",
-    color: Colors.darkGray
+    color: Colors.darkGray,
+    textAlign:"center"
   }
 });
 

@@ -9,8 +9,11 @@ import { setPlayers } from "../store/actions/players";
 import { setFixtures } from "../store/actions/fixtures";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
-import { SECURE_LEVEL_FOUNDER, SECURE_LEVEL_ADMIN } from "../constants/security-levels";
-import Spinner from 'react-native-loading-spinner-overlay';
+import {
+  SECURE_LEVEL_FOUNDER,
+  SECURE_LEVEL_ADMIN
+} from "../constants/security-levels";
+import Spinner from "react-native-loading-spinner-overlay";
 
 let FirstScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -27,7 +30,6 @@ let FirstScreen = props => {
 
   let fetchData = onFinish => {
     DBCommunicator.getPlayers().then(res => {
-
       if (res.status !== 200) {
         Alert.alert("Connection error (" + res.status + "");
         return;
@@ -57,31 +59,26 @@ let FirstScreen = props => {
   };
 
   useEffect(() => {
-    if (!dataLoaded)
-    {
+    if (!dataLoaded) {
       fetchData(() => {
         setDataLoaded(true);
       });
     }
   }, [dataLoaded]);
 
-  let refresh = useCallback(()=>{
-    setDataLoaded(false)
-  },[setDataLoaded])
+  let refresh = useCallback(() => {
+    setDataLoaded(false);
+  }, [setDataLoaded]);
 
-  useEffect(()=>{
+  useEffect(() => {
     props.navigation.setParams({
       refresh: refresh
-    })
-  },[setDataLoaded])
+    });
+  }, [setDataLoaded]);
 
   return (
     <View style={styles.container}>
-      <Spinner
-          visible={!dataLoaded}
-          textContent={""}
-          textStyle={{}}
-        />
+      <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
       <Image
         source={require("../assets/images/colorful-logo-280h.png")}
         style={styles.logo}
@@ -136,11 +133,7 @@ let FirstScreen = props => {
           offline={!dataLoaded}
           onPress={() => {
             props.navigation.navigate({
-              routeName: "RequirePassword",
-              params: {
-                routeName: "AllPlayers",
-                level: SECURE_LEVEL_FOUNDER
-              }
+              routeName: "AllPlayers"
             });
           }}
         />
@@ -150,7 +143,7 @@ let FirstScreen = props => {
 };
 
 FirstScreen.navigationOptions = navigationData => {
-  let refresh = navigationData.navigation.getParam("refresh")
+  let refresh = navigationData.navigation.getParam("refresh");
 
   return {
     headerTitle: "",
@@ -159,11 +152,7 @@ FirstScreen.navigationOptions = navigationData => {
         <HeaderButtons
           HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
         >
-          <Item
-            title="Add Player"
-            iconName="refresh"
-            onPress={refresh}
-          />
+          <Item title="Add Player" iconName="refresh" onPress={refresh} />
         </HeaderButtons>
       );
     }
