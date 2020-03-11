@@ -57,6 +57,7 @@ let ViewFixtureScreen = props => {
       </View>
       <MainButton
         title="משחקים"
+        icon="ios-football"
         style={styles.button}
         onPress={() => {
           props.navigation.navigate({
@@ -67,6 +68,7 @@ let ViewFixtureScreen = props => {
       />
       <MainButton
         title="סטטיסטיקה"
+        icon="ios-stats"
         style={{ ...styles.button }}
         onPress={() => {
           props.navigation.navigate({routeName:"FixtureStatistics", params:{fixtureId: fixtureId}});

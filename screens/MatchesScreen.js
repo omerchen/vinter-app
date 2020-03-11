@@ -112,7 +112,7 @@ let MatchesScreen = props => {
             }})
           }} />
         ) : (
-          <MainButton title="התחל משחק חדש" offline={!fixture.isOpen} onPress={()=>{
+          <MainButton title="התחל משחק חדש" icon="whistle" iconLib="material" offline={!fixture.isOpen} onPress={()=>{
             props.navigation.navigate({routeName:"CreateMatch", params: {fixtureId: fixtureId}})
           }} />
         )}
