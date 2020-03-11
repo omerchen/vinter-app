@@ -10,47 +10,51 @@ import {
   EVENT_TYPE_SECOND_YELLOW
 } from "../constants/event-types";
 
-export const RULES_GOAL = 0.4;
-export const RULES_ASSIST = 0.3;
-export const RULES_CLEANSHEET = 0.1;
-export const RULES_CLEANSHEET_GK = 0.2;
-export const RULES_SAVE = 0.3;
-export const RULES_GOAL_FINAL = 0.6;
-export const RULES_ASSIST_FINAL = 0.5;
-export const RULES_CLEANSHEET_FINAL = 0.2;
-export const RULES_CLEANSHEET_GK_FINAL = 0.4;
-export const RULES_SAVE_FINAL = 0.5;
-export const RULES_FIXTURE_WIN = 4;
-export const RULES_FIXTURE_WIN_CAPTAIN = 5;
-export const RULES_FIXTURE_WIN_FINAL = 10;
-export const RULES_FIXTURE_WIN_FINAL_CAPTAIN = 10;
-export const RULES_FIXTURE_TIE = 2;
-export const RULES_FIXTURE_TIE_CAPTAIN = 2.5;
-export const RULES_FIXTURE_TIE_FINAL = 5;
-export const RULES_FIXTURE_TIE_FINAL_CAPTAIN = 5;
-export const RULES_MATCH_WIN = 0.1;
+export const RULES_GOAL = 0.8;
+export const RULES_ASSIST = 0.6;
+export const RULES_CLEANSHEET = 0.2;
+export const RULES_CLEANSHEET_GK = 0.4;
+export const RULES_SAVE = 0.6;
+export const RULES_GOAL_FINAL = 1.2;
+export const RULES_ASSIST_FINAL = 1.5;
+export const RULES_CLEANSHEET_FINAL = 0.4;
+export const RULES_CLEANSHEET_GK_FINAL = 0.8;
+export const RULES_SAVE_FINAL = 1;
+export const RULES_FIXTURE_WIN = 8;
+export const RULES_FIXTURE_WIN_CAPTAIN = 10;
+export const RULES_FIXTURE_WIN_FINAL = 20;
+export const RULES_FIXTURE_WIN_FINAL_CAPTAIN = 20;
+export const RULES_FIXTURE_TIE = 4;
+export const RULES_FIXTURE_TIE_CAPTAIN = 5;
+export const RULES_FIXTURE_TIE_FINAL = 10;
+export const RULES_FIXTURE_TIE_FINAL_CAPTAIN = 10;
+export const RULES_MATCH_WIN = 0.2;
 export const RULES_MATCH_TIE = 0.1;
 export const RULES_MATCH_TIE_CAPTAIN = RULES_MATCH_TIE;
 export const RULES_MATCH_TIE_FINAL = 0.2;
 export const RULES_MATCH_TIE_FINAL_CAPTAIN = RULES_MATCH_TIE_FINAL;
+export const RULES_MATCH_NO_GOALS_TIE = 0;
+export const RULES_MATCH_NO_GOALS_TIE_CAPTAIN = RULES_MATCH_NO_GOALS_TIE;
+export const RULES_MATCH_NO_GOALS_TIE_FINAL = 0;
+export const RULES_MATCH_NO_GOALS_TIE_FINAL_CAPTAIN = RULES_MATCH_NO_GOALS_TIE_FINAL;
 export const RULES_MATCH_WIN_CAPTAIN = RULES_MATCH_WIN;
-export const RULES_MATCH_WIN_FINAL = 0.2;
+export const RULES_MATCH_WIN_FINAL = 0.4;
 export const RULES_MATCH_WIN_FINAL_CAPTAIN = RULES_MATCH_TIE_FINAL;
 export const RULES_MATCH_WIN_PENALTIES = RULES_MATCH_TIE;
 export const RULES_MATCH_WIN_PENALTIES_CAPTAIN = RULES_MATCH_WIN_PENALTIES;
-export const RULES_MATCH_WIN_PENALTIES_FINAL = RULES_MATCH_WIN_FINAL;
+export const RULES_MATCH_WIN_PENALTIES_FINAL = RULES_MATCH_TIE_FINAL;
 export const RULES_MATCH_WIN_PENALTIES_FINAL_CAPTAIN = RULES_MATCH_WIN_PENALTIES_FINAL;
-export const RULES_MATCH_LOSE_PENALTIES = RULES_MATCH_WIN_PENALTIES;
-export const RULES_MATCH_LOSE_PENALTIES_CAPTAIN = RULES_MATCH_WIN_PENALTIES_CAPTAIN;
-export const RULES_MATCH_LOSE_PENALTIES_FINAL = RULES_MATCH_WIN_PENALTIES_FINAL;
-export const RULES_MATCH_LOSE_PENALTIES_FINAL_CAPTAIN = RULES_MATCH_WIN_PENALTIES_FINAL;
-export const RULES_MVP = 1.5;
-export const RULES_MVP_FINAL = 5;
-export const RULES_FAIRPLAY = 1; // TODO: add later
-export const RULES_PUNISH = -1; // TODO: add later
-export const RULES_YELLOW = -0.1;
-export const RULES_SECOND_YELLOW = -0.2;
-export const RULES_RED = 0.3;
+export const RULES_MATCH_LOSE_PENALTIES = 0;
+export const RULES_MATCH_LOSE_PENALTIES_CAPTAIN = RULES_MATCH_LOSE_PENALTIES;
+export const RULES_MATCH_LOSE_PENALTIES_FINAL = RULES_MATCH_LOSE_PENALTIES;
+export const RULES_MATCH_LOSE_PENALTIES_FINAL_CAPTAIN = RULES_MATCH_LOSE_PENALTIES;
+export const RULES_MVP = 3;
+export const RULES_MVP_FINAL = 10;
+export const RULES_FAIRPLAY = 2; // TODO: add later
+export const RULES_PUNISH = -2; // TODO: add later
+export const RULES_YELLOW = -0.2;
+export const RULES_SECOND_YELLOW = -0.4;
+export const RULES_RED = -0.6;
 export const RULES_YELLOW_FINAL = RULES_YELLOW;
 export const RULES_SECOND_YELLOW_FINAL = RULES_SECOND_YELLOW;
 export const RULES_RED_FINAL = RULES_RED;
@@ -290,6 +294,14 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         (match.homeId == i || match.awayId == i)
     );
 
+    let no_goals_tie = ties.filter(
+      match =>
+        !match.events ||
+        match.events.filter(
+          event => !event.isRemoved && event.type == EVENT_TYPE_GOAL
+        ).length == 0
+    );
+
     if (playerObject.isCaptain) {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN_CAPTAIN;
 
@@ -297,7 +309,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_CAPTAIN;
 
-      points += penaltyLoses.length * RULES_MATCH_TIE_CAPTAIN;
+      points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_CAPTAIN;
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_CAPTAIN
     } else {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN;
 
@@ -305,7 +318,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES;
 
-      points += penaltyLoses.length * RULES_MATCH_TIE;
+      points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE;
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE
     }
 
     // calculate ended fixture points
@@ -320,7 +334,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       for (let i in fixtures[fixtureId].playersList) {
         if (i == teamId) continue;
-        
+
         maxRivalWins = Math.max(maxRivalWins, getWins(fixtures[fixtureId], i));
       }
 
@@ -414,14 +428,24 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         (match.homeId == i || match.awayId == i)
     );
 
+    let no_goals_tie = ties.filter(
+      match =>
+        !match.events ||
+        match.events.filter(
+          event => !event.isRemoved && event.type == EVENT_TYPE_GOAL
+        ).length == 0
+    );
+
     if (playerObject.isCaptain) {
-      points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN_FINAL_CAPTAIN;
+      points +=
+        (wins.length - penaltyWins.length) * RULES_MATCH_WIN_FINAL_CAPTAIN;
 
       points += penaltyWins.length * RULES_MATCH_WIN_PENALTIES_FINAL_CAPTAIN;
 
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_FINAL_CAPTAIN;
 
-      points += penaltyLoses.length * RULES_MATCH_TIE_FINAL_CAPTAIN;
+      points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_FINAL_CAPTAIN;
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL_CAPTAIN
     } else {
       points += (wins.length - penaltyWins.length) * RULES_MATCH_WIN_FINAL;
 
@@ -429,7 +453,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       points += penaltyLoses.length * RULES_MATCH_LOSE_PENALTIES_FINAL;
 
-      points += penaltyLoses.length * RULES_MATCH_TIE_FINAL;
+      points += (ties.length - no_goals_tie.length) * RULES_MATCH_TIE_FINAL;
+      points += no_goals_tie.length * RULES_MATCH_NO_GOALS_TIE_FINAL
     }
 
     // calculate ended fixture points
@@ -470,5 +495,5 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
   } else {
     // FRIENDLY
   }
-  return points.toFixed(1);
+  return points.toFixed(1) == 0 ? 0 : points.toFixed(1);
 };
