@@ -85,7 +85,7 @@ let LeagueTableScreen = props => {
         pointsObject.teamWins += currentPointsObject.teamWin ? 1 : 0;
         pointsObject.teamTies += currentPointsObject.teamTie ? 1 : 0;
         pointsObject.appearences += currentPointsObject.appearence ? 1 : 0;
-        pointsObject.mvp += currentPointsObject.mvp ? 1 : 0;
+        pointsObject.mvps += currentPointsObject.mvp ? 1 : 0;
         pointsObject.captain += currentPointsObject.isCaptain ? 1 : 0;
       }
 

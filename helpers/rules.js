@@ -203,6 +203,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     yellows: 0,
     secondYellows: 0,
     reds: 0,
+    isCaptain: false,
+    isGoalkeeper: false,
+    mvp: false
   };
   if (
     !fixtures ||
