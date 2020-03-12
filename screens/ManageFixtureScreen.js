@@ -34,7 +34,7 @@ let ManageFixtureScreen = props => {
 
   let deleteFixture = useCallback(() => {
     Alert.alert(
-      "מחיקת שחקן",
+      "מחיקת מחזור ("+fixtureId+")",
       "האם אתה בטוח שברצונך למחוק את מחזור " +
         props.fixtures[fixtureId].number +
         "?",

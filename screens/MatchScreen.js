@@ -238,7 +238,7 @@ let MatchScreen = props => {
 
   let showRemoveEventDialog = eventId => {
     Alert.alert(
-      "מחיקת אירוע",
+      "מחיקת אירוע ("+eventId+")",
       "האם אתה בטוח שאתה רוצה למחוק את האירוע הזה?",
       [
         { text: "לא", style: "cancel" },
@@ -291,7 +291,7 @@ let MatchScreen = props => {
 
   const showDeleteDialog = useCallback(() => {
     Alert.alert(
-      "מחיקת משחק",
+      "מחיקת משחק ("+matchId+")",
       "האם אתה בטוח שברצונך למחוק את המשחק הנוכחי?",
       [
         { text: "לא", style: "cancel" },
@@ -558,7 +558,7 @@ MatchScreen.navigationOptions = navigationData => {
                 navigationData.navigation.getParam("deleteMatch")();
               } else {
                 Alert.alert(
-                  "שגיאה בעת מחיקת המשחק",
+                  "שגיאה בעת מחיקת המשחק ("+navigationData.navigation.getParam("matchId")+")",
                   "נראה שהמחזור הנוכחי סגור ולכן לא ניתן לבצע שינויים נוספים בתוצאותיו",
                   null,
                   { cancelable: true }
