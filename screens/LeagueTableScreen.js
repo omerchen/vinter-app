@@ -8,8 +8,8 @@ import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
-import {HeaderButtons,  Item} from "react-navigation-header-buttons";
-import {IoniconsHeaderButton} from "../components/HeaderButton"
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import { IoniconsHeaderButton } from "../components/HeaderButton";
 
 let LeagueTableScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -32,7 +32,7 @@ let LeagueTableScreen = props => {
   const TABLE_SAVE_COL = 9;
   const TABLE_CAPTAIN_COL = 10;
   const TABLE_CLEAN_COL = -1;
-  const flexArr = [1, 2, 1, 1, 1, 1,1, 1, 1, 1,1];
+  const flexArr = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const playersTableHead = [
     "מקום",
     "שם השחקן",
@@ -63,7 +63,7 @@ let LeagueTableScreen = props => {
         saves: 0,
         teamWins: 0,
         appearences: 0,
-        cleansheet:0,
+        cleansheet: 0,
         mvps: 0,
         captain: 0,
         teamTies: 0
@@ -77,7 +77,10 @@ let LeagueTableScreen = props => {
           filteredFixtures[i].id
         );
 
-        pointsObject.points = (parseFloat(pointsObject.points) + parseFloat(currentPointsObject.points)).toFixed(1); // TODO: add punishes + fairplay
+        pointsObject.points = (
+          parseFloat(pointsObject.points) +
+          parseFloat(currentPointsObject.points)
+        ).toFixed(1); // TODO: add punishes + fairplay
         pointsObject.goals += currentPointsObject.goals;
         pointsObject.assists += currentPointsObject.assists;
         pointsObject.saves += currentPointsObject.saves;
@@ -131,13 +134,15 @@ let LeagueTableScreen = props => {
 
       return tableObject;
     })
-    .sort((a, b) => parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL]));
+    .sort(
+      (a, b) =>
+        parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL])
+    );
 
-
-    // add position label
-    for (let i in playersTableData) {
-      playersTableData[i][TABLE_POSITION_COL] = parseInt(i)+1
-    }
+  // add position label
+  for (let i in playersTableData) {
+    playersTableData[i][TABLE_POSITION_COL] = parseInt(i) + 1;
+  }
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
@@ -156,11 +161,15 @@ let LeagueTableScreen = props => {
           textStyle={styles.text}
           flexArr={flexArr}
         />
-        <Rows
-          data={playersTableData}
-          textStyle={styles.text}
-          flexArr={flexArr}
-        />
+        {playersTableData.map((rowData, index) => {
+          return <Row
+            key={index}
+            data={rowData}
+            textStyle={styles.text}
+            flexArr={flexArr}
+            style={index==0?{backgroundColor:'#FDEEBE'}:{}}
+          />;
+        })}
       </Table>
       <View style={{ height: 50 }} />
     </ScrollView>
@@ -196,18 +205,16 @@ LeagueTableScreen.navigationOptions = navigationData => {
     headerTitle: "טבלת הליגה",
     headerRight: () => {
       return (
-        <HeaderButtons
-          HeaderButtonComponent={IoniconsHeaderButton}
-        >
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           <Item
             title="Learn More"
             iconName="md-help"
-            onPress={()=>navigationData.navigation.navigate("Rules")}
+            onPress={() => navigationData.navigation.navigate("Rules")}
           />
         </HeaderButtons>
       );
     }
-  }
-}
+  };
+};
 
 export default LeagueTableScreen;
