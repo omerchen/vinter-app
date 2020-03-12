@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Alert, View, Image } from "react-native";
+import { StyleSheet, Alert, View, Image, Text } from "react-native";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
@@ -14,6 +14,7 @@ import {
   SECURE_LEVEL_ADMIN
 } from "../constants/security-levels";
 import Spinner from "react-native-loading-spinner-overlay";
+import {version} from "../constants/configs"
 
 let FirstScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -77,6 +78,7 @@ let FirstScreen = props => {
   }, [setDataLoaded]);
 
   return (
+    <View style={{flex:1, height:'100%', backgroundColor:Colors.white}}>
     <View style={styles.container}>
       <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
       <Image
@@ -147,6 +149,8 @@ let FirstScreen = props => {
         />
       </View>
     </View>
+      <Text style={styles.versionText}>{"מספר גרסא: "+version}</Text>
+      </View>
   );
 };
 
@@ -177,6 +181,12 @@ const styles = StyleSheet.create({
   logo: {
     height: 140,
     resizeMode: "contain"
+  },
+  versionText: {
+    color: Colors.darkGray,
+    textAlign:"center",
+    paddingBottom:20,
+    fontFamily:"assistant-regular"
   }
 });
 
