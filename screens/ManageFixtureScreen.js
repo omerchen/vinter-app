@@ -15,16 +15,23 @@ import DBCommunicator from "../helpers/db-communictor";
 import MainButton from "../components/MainButton";
 import { SET_FIXTURES } from "../store/actions/fixtures";
 import { Dropdown } from "react-native-material-dropdown";
-import Spinner from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay";
+import RadioForm from "react-native-simple-radio-button";
 
 let ManageFixtureScreen = props => {
-  let [loading, setLoading] = useState(false)
+  const mvpStatusRadioLabel = [
+    { label: "  בחירת מצטיין", value: 0 },
+    { label: "  ללא מצטיין", value: 1 }
+  ];
+
+  let [loading, setLoading] = useState(false);
   const fixtureId = props.navigation.getParam("fixtureId");
   let fixture = props.fixtures[fixtureId];
   let matches = fixture.matches ? fixture.matches : [];
 
   // states
   const [mvpId, setMvpId] = useState(fixture.mvpId);
+  const [mvpStatus, setMvpStatus] = useState(0);
 
   let playersData = [];
 
@@ -34,7 +41,7 @@ let ManageFixtureScreen = props => {
 
   let deleteFixture = useCallback(() => {
     Alert.alert(
-      "מחיקת מחזור ("+fixtureId+")",
+      "מחיקת מחזור (" + fixtureId + ")",
       "האם אתה בטוח שברצונך למחוק את מחזור " +
         props.fixtures[fixtureId].number +
         "?",
@@ -101,13 +108,13 @@ let ManageFixtureScreen = props => {
       newFixture.endTime = Date.now();
     }
 
-    newFixture.mvpId = mvpId;
+    newFixture.mvpId = mvpStatus == 0?mvpId:undefined;
 
-    updateFixtures(newFixture)
+    updateFixtures(newFixture);
   };
 
   let updateFixtures = newFixture => {
-    setLoading(true)
+    setLoading(true);
     let newFixtures = [...props.fixtures];
     newFixtures[fixtureId] = newFixture;
 
@@ -116,7 +123,7 @@ let ManageFixtureScreen = props => {
         props.setFixtures(newFixtures);
         props.navigation.pop();
       } else {
-        setLoading(false)
+        setLoading(false);
         Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
           cancelable: true
         });
@@ -126,33 +133,46 @@ let ManageFixtureScreen = props => {
 
   return (
     <View style={styles.container}>
-      <Spinner
-          visible={loading}
-          textContent={""}
-          textStyle={{}}
-        />
-      <View style={{ width: 450 }}>
-        <Dropdown
-          label="השחקן המצטיין"
-          data={playersData.sort(
-            (a, b) => props.players[a.id].name > props.players[b.id].name
-          )}
-          onChangeText={value => {
-            setMvpId(value);
+      <Spinner visible={loading} textContent={""} textStyle={{}} />
+      <View style={{ width: 350, alignItems: "center" }}>
+        <RadioForm
+          radio_props={mvpStatusRadioLabel}
+          initial={0}
+          onPress={value => {
+            setMvpStatus(value);
+            setMvpId(fixture.mvpId);
           }}
-          value={mvpId}
-          labelFontSize={20}
-          fontSize={25}
-          itemCount={6}
-          animationDuration={0}
-          valueExtractor={item => item.id}
-          labelExtractor={item => props.players[item.id].name}
+          animation={false}
+          style={styles.radio}
+          buttonColor={Colors.darkGray}
+          selectedButtonColor={Colors.primary}
+          labelStyle={{ fontSize: 18, marginTop: 4 }}
         />
+        {mvpStatus == 0 && (
+          <View style={{ width: "100%" }}>
+            <Dropdown
+              label="השחקן המצטיין"
+              data={playersData.sort(
+                (a, b) => props.players[a.id].name > props.players[b.id].name
+              )}
+              onChangeText={value => {
+                setMvpId(value);
+              }}
+              value={mvpId}
+              labelFontSize={20}
+              fontSize={25}
+              itemCount={6}
+              animationDuration={0}
+              valueExtractor={item => item.id}
+              labelExtractor={item => props.players[item.id].name}
+            />
+          </View>
+        )}
         <MainButton
-          offline={mvpId === null}
+          offline={(mvpId === null || mvpId === undefined) && mvpStatus == 0}
           title={fixture.isOpen ? "סיים מחזור" : "עדכן מחזור"}
           style={{ marginTop: 20 }}
-          width={450}
+          width={350}
           onPress={closeFixture}
         />
       </View>
@@ -190,8 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    width: 500,
-    marginBottom: 25
+    width: 400
   }
 });
 

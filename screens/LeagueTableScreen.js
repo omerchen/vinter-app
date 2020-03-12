@@ -25,22 +25,26 @@ let LeagueTableScreen = props => {
   const TABLE_POINTS_COL = 2;
   const TABLE_APPEARENCES_COL = 3;
   const TABLE_WINS_COL = 4;
-  const TABLE_MVP_COL = 5;
-  const TABLE_GOAL_COL = 6;
-  const TABLE_ASSIST_COL = 7;
-  const TABLE_SAVE_COL = 8;
+  const TABLE_TIES_COL = 5;
+  const TABLE_MVP_COL = 6;
+  const TABLE_GOAL_COL = 7;
+  const TABLE_ASSIST_COL = 8;
+  const TABLE_SAVE_COL = 9;
+  const TABLE_CAPTAIN_COL = 10;
   const TABLE_CLEAN_COL = -1;
-  const flexArr = [1, 2, 1, 1, 1, 1, 1, 1, 1];
+  const flexArr = [1, 2, 1, 1, 1, 1,1, 1, 1, 1,1];
   const playersTableHead = [
     "מקום",
     "שם השחקן",
     "נקודות",
     "הופעות",
     "נצחונות",
+    "תיקו",
     "MVP",
     "שערים",
     "בישולים",
-    "הצלות"
+    "הצלות",
+    "קפטן"
   ];
 
   const playersList = players
@@ -60,7 +64,9 @@ let LeagueTableScreen = props => {
         teamWins: 0,
         appearences: 0,
         cleansheet:0,
-        mvps: 0
+        mvps: 0,
+        captain: 0,
+        teamTies: 0
       };
 
       for (let i in filteredFixtures) {
@@ -77,8 +83,10 @@ let LeagueTableScreen = props => {
         pointsObject.saves += currentPointsObject.saves;
         pointsObject.cleansheets += currentPointsObject.cleansheets;
         pointsObject.teamWins += currentPointsObject.teamWin ? 1 : 0;
+        pointsObject.teamTies += currentPointsObject.teamTie ? 1 : 0;
         pointsObject.appearences += currentPointsObject.appearence ? 1 : 0;
-        pointsObject.goals += currentPointsObject.mvp ? 1 : 0;
+        pointsObject.mvp += currentPointsObject.mvp ? 1 : 0;
+        pointsObject.captain += currentPointsObject.isCaptain ? 1 : 0;
       }
 
       for (let i = 0; i < playersTableHead.length; i++) {
@@ -101,8 +109,14 @@ let LeagueTableScreen = props => {
           case TABLE_WINS_COL:
             tableObject.push(pointsObject.teamWins);
             break;
+          case TABLE_TIES_COL:
+            tableObject.push(pointsObject.teamTies);
+            break;
           case TABLE_MVP_COL:
             tableObject.push(pointsObject.mvps);
+            break;
+          case TABLE_CAPTAIN_COL:
+            tableObject.push(pointsObject.captain);
             break;
           case TABLE_CLEAN_COL:
             tableObject.push(pointsObject.cleansheets);
@@ -117,7 +131,7 @@ let LeagueTableScreen = props => {
 
       return tableObject;
     })
-    .sort((a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL]);
+    .sort((a, b) => parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL]));
 
 
     // add position label

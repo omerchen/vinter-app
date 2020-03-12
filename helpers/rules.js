@@ -60,7 +60,7 @@ export const RULES_SECOND_YELLOW_FINAL = RULES_SECOND_YELLOW;
 export const RULES_RED_FINAL = RULES_RED;
 
 const getWins = (fixture, teamId) => {
-  return fixture.matches.filter(match => match.winnerId == teamId).length;
+  return fixture.matches?fixture.matches.filter(match => match.winnerId == teamId).length:0;
 };
 
 const getGoals = (playerObject, closedMatches) => {
@@ -553,6 +553,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
   }
 
   let zero = 0
+
   pointsObject.points = points.toFixed(1) == 0 ? zero.toFixed(1) : points.toFixed(1);
   return pointsObject;
 };
