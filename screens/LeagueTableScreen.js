@@ -71,7 +71,7 @@ let LeagueTableScreen = props => {
           filteredFixtures[i].id
         );
 
-        pointsObject.points = parseFloat(pointsObject.points) + parseFloat(currentPointsObject.points); // TODO: add punishes + fairplay
+        pointsObject.points = (parseFloat(pointsObject.points) + parseFloat(currentPointsObject.points)).toFixed(1); // TODO: add punishes + fairplay
         pointsObject.goals += currentPointsObject.goals;
         pointsObject.assists += currentPointsObject.assists;
         pointsObject.saves += currentPointsObject.saves;

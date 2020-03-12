@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   lineView: {
     flexDirection: "row",
-    width: 400
+    width: 350
   }
 });
 

@@ -7,6 +7,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import { IoniconsHeaderButton } from "../components/HeaderButton";
 
 let FixtureStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -156,7 +158,8 @@ let FixtureStatisticsScreen = props => {
     return counter;
   };
   const getPoints = playerObject => {
-    return calculatePoints(players, fixtures, playerObject.id, fixtureId).points;
+    return calculatePoints(players, fixtures, playerObject.id, fixtureId)
+      .points;
   };
 
   const playersTableData = playersList
@@ -371,7 +374,7 @@ let FixtureStatisticsScreen = props => {
     <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-        resizeMode="contain"
+          resizeMode="contain"
           source={require("../assets/images/colorful-logo-280h.png")}
           style={styles.logo}
         />
@@ -417,13 +420,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20
   },
-  logoContainer:{
-    alignItems:"center"
+  logoContainer: {
+    alignItems: "center"
   },
   logo: {
     height: 180,
     marginBottom: 30
   }
 });
+
+FixtureStatisticsScreen.navigationOptions = navigationData => {
+  return {
+    headerRight: () => {
+      return (
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          <Item
+            title="Learn More"
+            iconName="md-help"
+            onPress={() => navigationData.navigation.navigate("Rules")}
+          />
+        </HeaderButtons>
+      );
+    }
+  };
+};
 
 export default FixtureStatisticsScreen;

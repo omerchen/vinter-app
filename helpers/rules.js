@@ -552,6 +552,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     // FRIENDLY
   }
 
-  pointsObject.points = points.toFixed(1) == 0 ? 0 : points.toFixed(1);
+  let zero = 0
+  pointsObject.points = points.toFixed(1) == 0 ? zero.toFixed(1) : points.toFixed(1);
   return pointsObject;
 };
