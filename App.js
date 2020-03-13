@@ -21,6 +21,7 @@ YellowBox.ignoreWarnings([
   "Failed prop type",
   "Cannot update during", // TODO: @scenario: when removing all the fixtures throught PreviousFixturesScreen and poping back to home screen
 ]);
+
 I18nManager.forceRTL(true);
 
 const rootReducer = combineReducers({

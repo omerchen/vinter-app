@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Dimensions, Text } from "react-native";
+import { StyleSheet, View, Dimensions, Text, Platform } from "react-native";
 import Colors from "../constants/colors";
 import moment from "moment";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -50,6 +50,8 @@ PlayerSreen.navigationOptions = navigationData => {
   return {
     headerTitle: "פרטי שחקן",
     headerRight: () => {
+      if (Platform.OS == "web") return null
+
       return (
         <HeaderButtons
           HeaderButtonComponent={MaterialCommunityIconsHeaderButton}

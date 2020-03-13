@@ -5,7 +5,8 @@ import {
   View,
   ScrollView,
   FlatList,
-  Dimensions
+  Dimensions,
+  Platform,
 } from "react-native";
 import Colors from "../constants/colors";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -92,6 +93,8 @@ AllPlayersScreen.navigationOptions = navigationData => {
       navigationData.navigation.getParam("amountOfPlayers") +
       ")",
     headerRight: () => {
+      if (Platform.OS == "web") return null
+      
       return (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           <Item

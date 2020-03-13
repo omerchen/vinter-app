@@ -55,7 +55,7 @@ let ViewFixtureScreen = props => {
             השחקן המצטיין: {players[fixture.mvpId].name}
             </Text>}
       </View>
-      <MainButton
+      {Platform.OS!="web"&&<MainButton
         title="משחקים"
         icon="ios-football"
         style={styles.button}
@@ -65,7 +65,7 @@ let ViewFixtureScreen = props => {
             params: { fixtureId: fixtureId }
           });
         }}
-      />
+      />}
       <MainButton
         title="סטטיסטיקה"
         icon="ios-stats"
@@ -82,6 +82,8 @@ ViewFixtureScreen.navigationOptions = navigationData => {
   return {
     headerTitle: "מחזור " + navigationData.navigation.getParam("fixtureNumber"),
     headerRight: () => {
+      if (Platform.OS == "web") return null
+
       return (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           <Item
