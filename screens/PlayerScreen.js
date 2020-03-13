@@ -25,22 +25,22 @@ let PlayerSreen = props => {
     <View style={styles.container}>
       <Text style={styles.title}>{players[playerId].name}</Text>
       <View style={styles.textView}>
-        <Text style={styles.text}>
-          <Text style={styles.categoryText}>מספר שחקן:</Text>{" "}
+        <View style={styles.textLineView}>
+          <Text style={styles.categoryText}>מספר שחקן:{" "}</Text>
           <Text style={styles.valueText}>{players[playerId].id}</Text>
-        </Text>
-        <Text style={styles.text}>
-          <Text style={styles.categoryText}>סטטוס:</Text>{" "}
+        </View>
+        <View style={styles.textLineView}>
+          <Text style={styles.categoryText}>סטטוס:{" "}</Text>
           <Text style={styles.valueText}>
             {players[playerId].type == 0 ? "רגיל" : "חייל"}
           </Text>
-        </Text>
-        <Text style={styles.text}>
-          <Text style={styles.categoryText}>תאריך הוספה למערכת:</Text>{" "}
+        </View>
+        <View style={styles.textLineView}>
+          <Text style={styles.categoryText}>תאריך הוספה למערכת:{" "}</Text>
           <Text style={styles.valueText}>
-            {moment(players[playerId].createTime).format("DD.MM.YYYY HH:mm:ss")}
+            {moment(players[playerId].createTime).format("HH:mm:ss DD.MM.YYYY")}
           </Text>
-        </Text>
+        </View>
       </View>
     </View>
   );
@@ -86,13 +86,15 @@ const styles = StyleSheet.create({
   textView: {
     alignItems: "flex-start"
   },
-  text: {
-    fontSize: 20
+  textLineView: {
+    flexDirection:"row"
   },
   categoryText: {
+    fontSize: 20,
     fontFamily: "assistant-regular"
   },
   valueText: {
+    fontSize: 20,
     fontFamily: "assistant-semi-bold"
   },
   title: {

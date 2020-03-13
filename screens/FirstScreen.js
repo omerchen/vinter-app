@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Alert, View, Image, Text } from "react-native";
+import { StyleSheet, Alert, View, Image, Text, Platform } from "react-native";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
@@ -81,10 +81,10 @@ let FirstScreen = props => {
     <View style={{flex:1, height:'100%', backgroundColor:Colors.white}}>
     <View style={styles.container}>
       <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
-      <Image
+      {Platform.OS!="web"&&<Image
         source={require("../assets/images/colorful-logo-280h.png")}
         style={styles.logo}
-      />
+      />}
       {currentFixture ? (
         <MainButton
           title="למחזור הנוכחי"
@@ -98,8 +98,7 @@ let FirstScreen = props => {
             });
           }}
         />
-      ) : (
-        <MainButton
+      ) : (Platform.OS == "web"?<Text style={styles.noFixtureTitle}>לא משוחק מחזור כרגע</Text>:(<MainButton
           title="מחזור חדש"
           offline={!dataLoaded}
           onPress={() => {
@@ -111,7 +110,7 @@ let FirstScreen = props => {
               }
             });
           }}
-        />
+        />)
       )}
 
       <View style={{ alignItems: "center" }}>
@@ -187,6 +186,11 @@ const styles = StyleSheet.create({
     textAlign:"center",
     paddingBottom:20,
     fontFamily:"assistant-regular"
+  },
+  noFixtureTitle: {
+    fontFamily:"assistant-semi-bold",
+    fontSize:25,
+    color:Colors.darkGray
   }
 });
 

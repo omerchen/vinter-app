@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, ColorPropType, Image } from "react-native";
+import { StyleSheet, Text, View, ColorPropType, Image, Platform } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows } from "react-native-table-component";
@@ -9,6 +9,7 @@ import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
+import { mergeSort } from "../helpers/mergeSort"
 
 let FixtureStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -162,7 +163,7 @@ let FixtureStatisticsScreen = props => {
       .points;
   };
 
-  const playersTableData = playersList
+  let playersTableData = playersList
     .map(playerObject => {
       let tableObject = [];
 
@@ -197,6 +198,10 @@ let FixtureStatisticsScreen = props => {
       return tableObject;
     })
     .sort((a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL]);
+
+  if (Platform.OS == "web") {
+    playersTableData = mergeSort(playersTableData, (a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL])
+  }
 
   let pad = (n, width, z) => {
     z = z || "0";
@@ -373,11 +378,11 @@ let FixtureStatisticsScreen = props => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image
+        {Platform.OS!="web"&&<Image
           resizeMode="contain"
           source={require("../assets/images/colorful-logo-280h.png")}
           style={styles.logo}
-        />
+        />}
       </View>
       <Text style={styles.tableTitle}>נתונים קבוצתיים</Text>
       <Table borderStyle={{ borderWidth: 2, borderColor: "#c8e1ff" }}>

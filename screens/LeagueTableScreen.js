@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, ColorPropType, Image } from "react-native";
+import { StyleSheet, Text, View, Platform, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows } from "react-native-table-component";
@@ -10,6 +10,7 @@ import { calculatePoints } from "../helpers/rules";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
+import { mergeSort } from "../helpers/mergeSort";
 
 let LeagueTableScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -53,7 +54,7 @@ let LeagueTableScreen = props => {
 
   // STATISTICS CALCULATIONS STARTS HERE (closedMatches.length > 0)
 
-  const playersTableData = playersList
+  let playersTableData = playersList
     .map(player => {
       let tableObject = [];
       let pointsObject = {
@@ -139,6 +140,15 @@ let LeagueTableScreen = props => {
         parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL])
     );
 
+  if (Platform.OS == "web") {
+    console.log("here")
+    playersTableData = mergeSort(
+      playersTableData,
+      (a, b) =>
+        parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL])
+    );
+  }
+
   // add position label
   for (let i in playersTableData) {
     playersTableData[i][TABLE_POSITION_COL] = parseInt(i) + 1;
@@ -146,11 +156,13 @@ let LeagueTableScreen = props => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image
-          resizeMode="contain"
-          source={require("../assets/images/colorful-logo-280h.png")}
-          style={styles.logo}
-        />
+        {Platform.OS != "web" && (
+          <Image
+            resizeMode="contain"
+            source={require("../assets/images/colorful-logo-280h.png")}
+            style={styles.logo}
+          />
+        )}
       </View>
       <Table
         borderStyle={{ borderWidth: 2, borderColor: Colors.primaryBright }}
@@ -162,13 +174,15 @@ let LeagueTableScreen = props => {
           flexArr={flexArr}
         />
         {playersTableData.map((rowData, index) => {
-          return <Row
-            key={index}
-            data={rowData}
-            textStyle={styles.text}
-            flexArr={flexArr}
-            style={index==0?{backgroundColor:'#FDEEBE'}:{}}
-          />;
+          return (
+            <Row
+              key={index}
+              data={rowData}
+              textStyle={styles.text}
+              flexArr={flexArr}
+              style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
+            />
+          );
         })}
       </Table>
       <View style={{ height: 50 }} />
