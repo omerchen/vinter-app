@@ -37,7 +37,7 @@ let PreviousFixturesScreen = props => {
             title += " - ידידות"
           } 
           
-          if (fixture.mvpId) {
+          if (fixture.mvpId != undefined && fixture.mvpId != null) {
             title += " ("+players[fixture.mvpId].name+")"
           }
 

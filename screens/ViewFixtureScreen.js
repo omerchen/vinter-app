@@ -51,7 +51,7 @@ let ViewFixtureScreen = props => {
           {fixtureTypesLabel[fixture.type]} | {fixture.date} |{" "}
           {fixture.startTime} | {fixtureCourtLabel[fixture.court]}
         </Text>
-          {fixture.mvpId&&<Text style={styles.metaDataText}>
+          {(fixture.mvpId!=undefined&&fixture.mvpId!=null)&&<Text style={styles.metaDataText}>
             השחקן המצטיין: {players[fixture.mvpId].name}
             </Text>}
       </View>
