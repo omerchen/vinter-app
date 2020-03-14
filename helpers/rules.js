@@ -60,7 +60,7 @@ export const RULES_SECOND_YELLOW_FINAL = RULES_SECOND_YELLOW;
 export const RULES_RED_FINAL = RULES_RED;
 
 const getWins = (fixture, teamId) => {
-  return fixture.matches?fixture.matches.filter(match => match.winnerId == teamId).length:0;
+  return fixture.matches?fixture.matches.filter(match => !match.isRemoved && match.winnerId == teamId).length:0;
 };
 
 const getGoals = (playerObject, closedMatches) => {
