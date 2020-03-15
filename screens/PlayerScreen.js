@@ -13,6 +13,15 @@ import SubButton from "../components/SubButton";
 let PlayerSreen = props => {
   let players = useSelector(state => state.players);
   let playerId = props.navigation.getParam("playerId");
+  let playerTransactions = players[playerId].transactions
+    ? players[playerId].transactions.filter(t => !t.isRemoved)
+    : [];
+  let playerTransactionsSum = 0;
+  for (let i in playerTransactions) {
+    playerTransactionsSum += playerTransactions[i].sum;
+  }
+
+  playerTransactionsSum = playerTransactionsSum.toFixed(1)
 
   if (!players[playerId] || players[playerId].isRemoved) {
     sleep(0).then(() => {
@@ -28,7 +37,7 @@ let PlayerSreen = props => {
       <Text style={styles.title}>{players[playerId].name}</Text>
       <View style={styles.textView}>
         <View style={styles.textLineView}>
-          <Text style={styles.categoryText}>מספר שחקן: </Text>
+          <Text style={styles.categoryText}>מזהה שחקן: </Text>
           <Text style={styles.valueText}>{players[playerId].id}</Text>
         </View>
         <View style={styles.textLineView}>
@@ -38,13 +47,37 @@ let PlayerSreen = props => {
           </Text>
         </View>
         <View style={styles.textLineView}>
+          <Text style={styles.categoryText}>מאזן כספי: </Text>
+          <Text
+            style={
+              playerTransactionsSum == 0
+                ? styles.valueText
+                : playerTransactionsSum > 0
+                ? styles.greenValueText
+                : styles.redValueText
+            }
+          >
+            {playerTransactionsSum + "₪"}
+          </Text>
+        </View>
+        <View style={styles.textLineView}>
           <Text style={styles.categoryText}>תאריך הוספה למערכת: </Text>
           <Text style={styles.valueText}>
-            {moment(players[playerId].createTime).format("HH:mm:ss DD.MM.YYYY")}
+            {moment(players[playerId].createTime).format("DD.MM.YYYY")}
           </Text>
         </View>
       </View>
-      <View style={{marginTop:15}}>
+      <View style={{ marginTop: 15, alignItems: "center" }}>
+        <SubButton
+          style={styles.featureButton}
+          title="מאזן כספי"
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "PlayerTransactions",
+              params: { playerId: playerId }
+            });
+          }}
+        />
         <SubButton
           style={styles.featureButton}
           title="צפייה במחזורים"
@@ -112,12 +145,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "assistant-semi-bold"
   },
+  redValueText: {
+    fontSize: 20,
+    fontFamily: "assistant-bold",
+    color: "red"
+  },
+  greenValueText: {
+    fontSize: 20,
+    fontFamily: "assistant-semi-bold",
+    color: "green"
+  },
   title: {
     fontFamily: "assistant-bold",
-    fontSize: 30
+    fontSize: 30,
+    marginBottom: 20
   },
   featureButton: {
-    marginTop:15
+    marginTop: 15
   }
 });
 

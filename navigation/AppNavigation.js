@@ -16,9 +16,11 @@ import CreateEventScreen from "../screens/CreateEventScreen"
 import ManageFixtureScreen from "../screens/ManageFixtureScreen"
 import RulesScreen from "../screens/RulesScreen"
 import CreateMatchScreen from "../screens/CreateMatchScreen"
+import AddTransactionScreen from "../screens/AddTransactionScreen"
 import PlayerScreen from "../screens/PlayerScreen"
 import LeagueTableScreen from "../screens/LeagueTableScreen"
 import AddPlayerScreen from "../screens/AddPlayerScreen"
+import PlayerTransactionsScreen from "../screens/PlayerTransactionsScreen"
 import EditPlayerScreen from "../screens/EditPlayerScreen"
 
 import Colors from "../constants/colors";
@@ -65,8 +67,17 @@ const MainNavigator = createStackNavigator(
         headerTitle: "שיטת הניקוד"
       }
     },
+    AddTransaction: {
+      screen: AddTransactionScreen,
+      navigationOptions: {
+        headerTitle: "הוספת טרנזקציה"
+      }
+    },
     LeagueTable: {
       screen: LeagueTableScreen,
+    },
+    PlayerTransactions: {
+      screen: PlayerTransactionsScreen,
     },
     FixtureStatistics: {
       screen: FixtureStatisticsScreen,
