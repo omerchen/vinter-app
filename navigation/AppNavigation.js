@@ -62,9 +62,6 @@ const MainNavigator = createStackNavigator(
     },
     FixtureStatistics: {
       screen: FixtureStatisticsScreen,
-      navigationOptions: {
-        headerTitle: "נתוני המחזור"
-      }
     },
     CreateMatch: {
       screen: CreateMatchScreen,

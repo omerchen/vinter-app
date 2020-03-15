@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View, ColorPropType, Image, Platform } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
@@ -18,6 +18,8 @@ let FixtureStatisticsScreen = props => {
   const fixture = fixtures[fixtureId];
   const matches = fixture.matches ? fixture.matches : [];
   const closedMatches = matches.filter(item => !item.isRemoved && !item.isOpen);
+
+  useEffect(()=>{props.navigation.setParams({fixtureNumber:fixture.number})},[fixture])
 
   const TABLE_TEAM_COL = 0;
   const TABLE_NAME_COL = 1;
@@ -435,7 +437,11 @@ const styles = StyleSheet.create({
 });
 
 FixtureStatisticsScreen.navigationOptions = navigationData => {
+  let fixtureNumebr = navigationData.navigation.getParam("fixtureNumber")
+  let title = fixtureNumebr!=null && fixtureNumebr != undefined?"נתוני מחזור "+fixtureNumebr:"נתוני המחזור"
+
   return {
+    headerTitle: title,
     headerRight: () => {
       return (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>

@@ -33,7 +33,7 @@ let LeagueTableScreen = props => {
   const TABLE_SAVE_COL = 9;
   const TABLE_CAPTAIN_COL = 10;
   const TABLE_CLEAN_COL = -1;
-  const flexArr = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  const flexArr = [1, 1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const playersTableHead = [
     "מקום",
     "שם השחקן",
@@ -178,7 +178,7 @@ let LeagueTableScreen = props => {
             <Row
               key={index}
               data={rowData}
-              textStyle={styles.text}
+              textStyle={index == 0 ? {...styles.text, fontFamily: "assistant-bold"}:styles.text}
               flexArr={flexArr}
               style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
             />
@@ -192,7 +192,7 @@ let LeagueTableScreen = props => {
 
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: Colors.primaryBrightest },
-  text: { margin: 6, textAlign: "left", fontSize: 17 },
+  text: { margin: 6, textAlign: "left", fontSize: 15 },
   container: {
     flex: 1,
     padding: 20,
