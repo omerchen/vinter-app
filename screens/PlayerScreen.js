@@ -44,8 +44,9 @@ let PlayerSreen = props => {
           </Text>
         </View>
       </View>
-      <View style={{marginTop:20}}>
+      <View style={{marginTop:15}}>
         <SubButton
+          style={styles.featureButton}
           title="צפייה במחזורים"
           onPress={() => {
             props.navigation.navigate({
@@ -114,6 +115,9 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "assistant-bold",
     fontSize: 30
+  },
+  featureButton: {
+    marginTop:15
   }
 });
 

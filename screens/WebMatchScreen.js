@@ -46,7 +46,6 @@ let WebMatchScreen = props => {
   let iconsSize = 36;
   let plusSize = 80;
   let vestPadding = 100;
-  let [requestsCounter, setRequestsCounter] = useState(0)
   let removable = fixture.isOpen;
   let editable = fixture.isOpen && match.isOpen;
   let isOtherMathcesOpen = fixture.matches
@@ -68,6 +67,10 @@ let WebMatchScreen = props => {
     }
   };
 
+  if (match.isRemoved) {
+    props.navigation.pop()
+  }
+
   const [clockTime, setClockTime] = useState(calculateClock());
 
   // sign up interval for updating the clock every second
@@ -79,38 +82,6 @@ let WebMatchScreen = props => {
       clearInterval(interval);
     };
   }, [match.startWhistleTime, match.endWhistleTime]);
-
-  useEffect(() => {
-    if (match.isOpen) {
-      let interval = setInterval(() => {
-        if (requestsCounter <= maxLiveRequests){
-          dbCommunictor.getMatch(fixtureId, matchId).then(res=>{
-            if (res.status == 200) {
-              let newFixture = {...fixture}
-  
-              newFixture.matches[matchId] = res.data
-  
-              let newFixtures = [...props.fixtures]
-  
-              newFixtures[fixtureId] = newFixture
-  
-              props.setFixtures(newFixtures)
-            }
-  
-            // increase counter
-            setRequestsCounter(prevCounter=>{
-              return prevCounter+1
-            })
-          })
-        }
-      }, liveRequestInterval);
-  
-      return ()=>{
-        clearInterval(interval)
-      }
-    }
-
-  }, [match.isOpen]);
 
   let pad = (n, width, z) => {
     z = z || "0";

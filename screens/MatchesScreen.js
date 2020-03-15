@@ -1,20 +1,57 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { StyleSheet, Text, View, Alert, Platform } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, connect } from "react-redux";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import FeedbackTouchable from "../components/PlatformTouchable";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
+import { liveRequestInterval, maxLiveRequests } from "../constants/configs";
+import {SET_FIXTURES} from '../store/actions/fixtures'
+import dbCommunictor from '../helpers/db-communictor'
+
 
 let MatchesScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
+  let [requestsCounter, setRequestsCounter] = useState(0)
   let fixture = fixtures[fixtureId];
   let matches = fixture.matches ? fixture.matches : [];
   let endMatches = matches.filter(item => !item.isRemoved && !item.isOpen);
   let currentMatch = null;
+
+  if (Platform.OS == "web")
+  {
+    // Live updates
+    useEffect(() => {
+      if (fixture.isOpen) {
+        let interval = setInterval(() => {
+          if (requestsCounter <= maxLiveRequests){
+            dbCommunictor.getFixture(fixtureId).then(res=>{
+              if (res.status == 200) {
+                let newFixtures = [...props.fixtures]
+    
+                newFixtures[fixtureId] = res.data
+    
+                props.setFixtures(newFixtures)
+              }
+    
+              // increase counter
+              setRequestsCounter(prevCounter=>{
+                return prevCounter+1
+              })
+            })
+          }
+        }, liveRequestInterval);
+    
+        return ()=>{
+          clearInterval(interval)
+        }
+      }
+  
+    }, [fixture.isOpen]);
+  }
 
   let calculateWins = teamId => {
     return endMatches.filter(item => item.winnerId === teamId).length;
@@ -123,7 +160,7 @@ let MatchesScreen = props => {
             }
           }} />
         ) : (
-          <MainButton title="התחל משחק חדש" icon="whistle" iconLib="material" offline={!fixture.isOpen||Platform.OS=="web"} onPress={()=>{
+          <MainButton title={Platform.OS=="web"?"ממתין למשחק..":"התחל משחק חדש"} icon={Platform.OS!="web"&&"whistle"} iconLib="material" offline={!fixture.isOpen||Platform.OS=="web"} onPress={()=>{
             props.navigation.navigate({routeName:"CreateMatch", params: {fixtureId: fixtureId}})
           }} />
         )}
@@ -189,4 +226,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MatchesScreen;
+const mapStateToProps = state => ({
+  fixtures: state.fixtures,
+  players: state.players
+});
+
+const mapDispatchToProps = {
+  setFixtures: fixtures => ({ type: SET_FIXTURES, newFixtures: fixtures })
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MatchesScreen);

@@ -19,14 +19,18 @@ let PreviousMatchesScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
   const fixtures = useSelector(state => state.fixtures);
   const fixture = fixtures[fixtureId];
+  const filteredMatches = fixture.matches?fixture.matches.filter(item => !item.isRemoved && !item.isOpen):[]
+
+  if (filteredMatches.length == 0) {
+    props.navigation.pop()
+  }
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ alignItems: "center" }}
     >
-      {fixture.matches
-        .filter(item => !item.isRemoved && !item.isOpen)
+      {filteredMatches
         .map((match, index) => {
           let homeName = shortTeamLabelsArray[match.homeId];
           let awayName = shortTeamLabelsArray[match.awayId];

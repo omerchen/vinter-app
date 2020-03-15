@@ -10,6 +10,7 @@ class DBCommunicator {
     getFixtures = () => Axios.get(this.url+this.fixturesTableName+'.json')
     setFixtures = (fixtures) => Axios.put(this.url+this.fixturesTableName+'.json', fixtures)
     getMatch = (fixtureId, matchId) => Axios.get(this.url+this.fixturesTableName+'/'+fixtureId+'/matches/'+matchId+'.json')
+    getFixture = (fixtureId) => Axios.get(this.url+this.fixturesTableName+'/'+fixtureId+'.json')
 }
 
 export default new DBCommunicator()
