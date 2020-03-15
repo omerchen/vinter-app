@@ -1,6 +1,6 @@
 // Deployment Configurations
 export const isDebug = false
-export const version = "2.0.0"
+export const version = "2.0.1"
 
 // UX Configurations
 export const timeToVibrate= [6*60,7*60,8*60,9*60] // minutes: 6,7,8,9
