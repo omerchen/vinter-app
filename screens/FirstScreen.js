@@ -160,8 +160,8 @@ let FirstScreen = props => {
           onPress={() => {
             props.navigation.navigate({
               routeName: "RequirePassword",
-              level: SECURE_LEVEL_ADMIN,
               params: {
+                level: SECURE_LEVEL_ADMIN,
                 routeName: "ManageLeague"
               }
             });

@@ -121,7 +121,7 @@ const MainNavigator = createStackNavigator(
     RequirePassword: {
       screen: RequirePasswordScreen,
       navigationOptions: {
-        headerTitle: "משחקי המחזור"
+        headerTitle: "בדיקת הרשאות"
       }
     },
     ViewFixture: {
