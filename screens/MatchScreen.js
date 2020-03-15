@@ -571,6 +571,18 @@ let MatchScreen = props => {
           </TouchableOpacity>
         </View>
       </View>
+      <View
+        style={{
+          position: "absolute",
+          height: "100%",
+          width: "100%",
+          zIndex: -10,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <Image style={{opacity:.4, marginTop:50}} source={require("../assets/images/colorful-logo-280h.png")} />
+      </View>
     </View>
   );
 };
@@ -670,7 +682,8 @@ const styles = StyleSheet.create({
   border: {
     width: 2,
     flex: 1,
-    backgroundColor: Colors.gray
+    backgroundColor: Colors.gray,
+    opacity: 0
   },
   gameLayer: {
     flexDirection: "row",
