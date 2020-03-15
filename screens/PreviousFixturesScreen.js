@@ -17,18 +17,30 @@ let PreviousFixturesScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
 
+  const playerId = props.navigation.getParam("playerId");
+  const filterByPlayer = playerId!=null&&playerId!=undefined
+
   if (!fixtures || fixtures.filter(item=>!item.isRemoved).length == 0) {
     props.navigation.pop()
   }
+
+  let filteredFixtures = fixtures?fixtures
+  .filter(item => !item.isRemoved && !item.isOpen).sort((a,b)=>a.id<b.id).filter(item=>{
+    if (!filterByPlayer) return true
+
+    for (let i in item.playersList) {
+      if (item.playersList[i].players.filter(p=>p.id==playerId).length>0) return true
+    }
+
+    return false
+  }):[]
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ alignItems: "center" }}
     >
-      {fixtures
-        .filter(item => !item.isRemoved && !item.isOpen).sort((a,b)=>a.id<b.id)
-        .map(fixture => {
+      {filteredFixtures.length>0?filteredFixtures.map(fixture => {
           let title = "מחזור "+fixture.number
 
           if (fixture.type == 1) /*final*/ {
@@ -56,7 +68,7 @@ let PreviousFixturesScreen = props => {
               }}
             />
           );
-        })}
+        }):<Text style={{marginTop:50, fontFamily:"assistant-semi-bold", fontSize:25, color: Colors.darkGray}}>לא נמצו מחזורים</Text>}
     </ScrollView>
   );
 };

@@ -191,7 +191,7 @@ let LeagueTableScreen = props => {
 
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: Colors.primaryBrightest },
-  text: { margin: 6, textAlign: "left", fontSize: 15 },
+  text: { margin: 6, textAlign: "left", fontSize: 14 },
   container: {
     flex: 1,
     padding: 20,
