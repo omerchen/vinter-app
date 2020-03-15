@@ -29,10 +29,10 @@ import {
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
 import { timeToVibrate, vibrateDuration } from "../constants/configs";
-import Spinner from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay";
 
 let MatchScreen = props => {
-  let [loading,setLoading] = useState(false)
+  let [loading, setLoading] = useState(false);
   const fixtureId = props.navigation.getParam("fixtureId");
   const matchId = props.navigation.getParam("matchId");
   let fixture = props.fixtures[fixtureId];
@@ -48,6 +48,10 @@ let MatchScreen = props => {
   let vestPadding = 100;
   let removable = fixture.isOpen;
   let editable = fixture.isOpen && match.isOpen;
+  let isOtherMathcesOpen = fixture.matches
+    ? fixture.matches.filter(m => !m.isRemoved && m.id != matchId && m.isOpen)
+        .length > 0
+    : false;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -132,12 +136,24 @@ let MatchScreen = props => {
     updateMatchState(newMatch);
   };
 
+  let reopenMatch = () => {
+    let newMatch = { ...match };
+    newMatch.winnerId = null;
+    newMatch.isOpen = true;
+    newMatch.endTime = null;
+
+    updateMatchState(newMatch);
+  };
+
   let endWithResult = winnerId => {
     let newMatch = { ...match };
     newMatch.winnerId = winnerId;
     newMatch.isOpen = false;
     newMatch.endTime = Date.now();
-    newMatch.endWhistleTime = newMatch.endTime;
+    newMatch.endWhistleTime =
+      match.endWhistleTime == null || match.endWhistleTime == undefined
+        ? newMatch.endTime
+        : match.endWhistleTime;
     newMatch.time = clockTime;
 
     updateMatchState(newMatch, () => {
@@ -238,7 +254,7 @@ let MatchScreen = props => {
 
   let showRemoveEventDialog = eventId => {
     Alert.alert(
-      "מחיקת אירוע ("+eventId+")",
+      "מחיקת אירוע (" + eventId + ")",
       "האם אתה בטוח שאתה רוצה למחוק את האירוע הזה?",
       [
         { text: "לא", style: "cancel" },
@@ -260,7 +276,7 @@ let MatchScreen = props => {
       console.log("update finished successfully!");
     }
   ) => {
-    setLoading(true)
+    setLoading(true);
     let newFixtures = [...props.fixtures];
 
     newFixtures[fixtureId].matches[matchId] = newMatch;
@@ -268,10 +284,10 @@ let MatchScreen = props => {
     DBCommunicator.setFixtures(newFixtures).then(res => {
       if (res.status === 200) {
         props.setFixtures(newFixtures);
-        setLoading(false)
+        setLoading(false);
         onFinish();
       } else {
-        setLoading(false)
+        setLoading(false);
         Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
           cancelable: true
         });
@@ -291,7 +307,7 @@ let MatchScreen = props => {
 
   const showDeleteDialog = useCallback(() => {
     Alert.alert(
-      "מחיקת משחק ("+matchId+")",
+      "מחיקת משחק (" + matchId + ")",
       "האם אתה בטוח שברצונך למחוק את המשחק הנוכחי?",
       [
         { text: "לא", style: "cancel" },
@@ -303,8 +319,8 @@ let MatchScreen = props => {
     );
   }, [props.fixtures, props.setFixtures, fixtureId]);
 
-  if (timeToVibrate.filter(item=>item==clockTime).length > 0) {
-    Vibration.vibrate(vibrateDuration)
+  if (timeToVibrate.filter(item => item == clockTime).length > 0) {
+    Vibration.vibrate(vibrateDuration);
   }
 
   useEffect(() => {
@@ -389,20 +405,22 @@ let MatchScreen = props => {
   let awayResult = awayEvents.filter(item => item.type === EVENT_TYPE_GOAL)
     .length;
 
-  let homeResultStyle = match.winnerId ===match.homeId?styles.winnerText:(
-    match.winnerId===match.awayId?styles.loserText:{}
-  )
-  let awayResultStyle = match.winnerId ===match.homeId?styles.loserText:(
-    match.winnerId===match.awayId?styles.winnerText:{}
-  )
+  let homeResultStyle =
+    match.winnerId === match.homeId
+      ? styles.winnerText
+      : match.winnerId === match.awayId
+      ? styles.loserText
+      : {};
+  let awayResultStyle =
+    match.winnerId === match.homeId
+      ? styles.loserText
+      : match.winnerId === match.awayId
+      ? styles.winnerText
+      : {};
 
   return (
     <View style={styles.container}>
-      <Spinner
-          visible={loading}
-          textContent={""}
-          textStyle={{}}
-        />
+      <Spinner visible={loading} textContent={""} textStyle={{}} />
       <View style={styles.timeLayer}>
         <View style={styles.timeView}>
           <View style={styles.clockWrapper}>
@@ -451,7 +469,9 @@ let MatchScreen = props => {
                 <Text style={styles.commandText}>אחורה</Text>
               </TouchableOpacity>
             </View>
-          ) : <Text style={styles.commandText}>המשחק הסתיים</Text>}
+          ) : (
+            <Text style={styles.commandText}>המשחק הסתיים</Text>
+          )}
         </View>
         <View style={styles.border} />
 
@@ -464,7 +484,18 @@ let MatchScreen = props => {
             />
             <Text style={styles.endMatchText}>שרוק לסיום!</Text>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          !isOtherMathcesOpen && (
+            <TouchableOpacity onPress={reopenMatch} style={styles.endMatchView}>
+              <MaterialCommunityIcons
+                name="restart"
+                size={60}
+                color={Colors.white}
+              />
+              <Text style={styles.endMatchText}>פתח משחק מחדש</Text>
+            </TouchableOpacity>
+          )
+        )}
       </View>
       <View style={styles.gameLayer}>
         <View style={styles.teamView}>
@@ -474,7 +505,9 @@ let MatchScreen = props => {
               source={vestArray[match.homeId]}
               style={styles.vestImage}
             />
-            <Text style={{...styles.resultText,...homeResultStyle}}>{homeResult}</Text>
+            <Text style={{ ...styles.resultText, ...homeResultStyle }}>
+              {homeResult}
+            </Text>
           </View>
           <View style={styles.eventsView}>{homeEventsComponent}</View>
           <TouchableOpacity
@@ -508,7 +541,9 @@ let MatchScreen = props => {
               source={vestArray[match.awayId]}
               style={styles.vestImage}
             />
-            <Text style={{...styles.resultText,...awayResultStyle}}>{awayResult}</Text>
+            <Text style={{ ...styles.resultText, ...awayResultStyle }}>
+              {awayResult}
+            </Text>
           </View>
           <View style={styles.eventsView}>{awayEventsComponent}</View>
           <TouchableOpacity
@@ -558,7 +593,9 @@ MatchScreen.navigationOptions = navigationData => {
                 navigationData.navigation.getParam("deleteMatch")();
               } else {
                 Alert.alert(
-                  "שגיאה בעת מחיקת המשחק ("+navigationData.navigation.getParam("matchId")+")",
+                  "שגיאה בעת מחיקת המשחק (" +
+                    navigationData.navigation.getParam("matchId") +
+                    ")",
                   "נראה שהמחזור הנוכחי סגור ולכן לא ניתן לבצע שינויים נוספים בתוצאותיו",
                   null,
                   { cancelable: true }
@@ -691,11 +728,11 @@ const styles = StyleSheet.create({
     fontFamily: "assistant-bold"
   },
   winnerText: {
-    fontFamily: "assistant-extra-bold",
+    fontFamily: "assistant-extra-bold"
   },
   loserText: {
     fontFamily: "assistant-semi-bold",
-    color: Colors.gray,
+    color: Colors.gray
   }
 });
 
