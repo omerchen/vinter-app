@@ -71,7 +71,7 @@ let ViewFixtureScreen = props => {
         icon="ios-stats"
         style={{ ...styles.button }}
         onPress={() => {
-          props.navigation.navigate({routeName:"FixtureStatistics", params:{fixtureId: fixtureId}});
+          props.navigation.navigate({routeName:"FixtureStatistics", params:{fixtureId: fixtureId, fixtureNumber: fixture.number}});
         }}
       />
     </View>

@@ -1,7 +1,8 @@
 import {Platform} from "react-native"
+import {isDebug} from "./configs"
 
 // Require password on android devices only!
-export const SECURE_MODE = Platform.OS != "ios"
+export const SECURE_MODE = !isDebug && Platform.OS != "ios"
 
 export const PASSWORDS = ["Omer8060","Vinter8060","Vl123456!","1"]
 export const SECURE_LEVEL_NO_PASSWORD = PASSWORDS.length // any player at the club

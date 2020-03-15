@@ -28,7 +28,7 @@ import {
 } from "@expo/vector-icons";
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
-import { timeToVibrate } from "../constants/configs";
+import { timeToVibrate, vibrateDuration } from "../constants/configs";
 import Spinner from 'react-native-loading-spinner-overlay';
 
 let MatchScreen = props => {
@@ -304,7 +304,7 @@ let MatchScreen = props => {
   }, [props.fixtures, props.setFixtures, fixtureId]);
 
   if (timeToVibrate.filter(item=>item==clockTime).length > 0) {
-    Vibration.vibrate(10000)
+    Vibration.vibrate(vibrateDuration)
   }
 
   useEffect(() => {

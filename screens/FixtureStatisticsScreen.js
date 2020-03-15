@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, View, ColorPropType, Image, Platform } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
@@ -15,11 +15,10 @@ let FixtureStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
   const fixtureId = props.navigation.getParam("fixtureId");
-  const fixture = fixtures[fixtureId];
+  const fixture = fixtures[fixtureId]
+
   const matches = fixture.matches ? fixture.matches : [];
   const closedMatches = matches.filter(item => !item.isRemoved && !item.isOpen);
-
-  useEffect(()=>{props.navigation.setParams({fixtureNumber:fixture.number})},[fixture])
 
   const TABLE_TEAM_COL = 0;
   const TABLE_NAME_COL = 1;
@@ -437,8 +436,7 @@ const styles = StyleSheet.create({
 });
 
 FixtureStatisticsScreen.navigationOptions = navigationData => {
-  let fixtureNumebr = navigationData.navigation.getParam("fixtureNumber")
-  let title = fixtureNumebr!=null && fixtureNumebr != undefined?"נתוני מחזור "+fixtureNumebr:"נתוני המחזור"
+  let title = "נתוני מחזור " + navigationData.navigation.getParam("fixtureNumber")
 
   return {
     headerTitle: title,

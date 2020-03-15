@@ -21,6 +21,7 @@ import AddPlayerScreen from "../screens/AddPlayerScreen"
 import EditPlayerScreen from "../screens/EditPlayerScreen"
 
 import Colors from "../constants/colors";
+import EditFixtureScreen from "../screens/EditFixtureScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -38,6 +39,9 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         headerTitle: "מחזור חדש"
       }
+    },
+    EditFixture: {
+      screen: EditFixtureScreen,
     },
     PreviousFixtures: {
       screen: PreviousFixturesScreen,

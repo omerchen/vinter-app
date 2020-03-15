@@ -6,11 +6,15 @@ let greenSign = "💚";
 let gkIdentifier = "(שוער)";
 let captainIdentifier = "(קפטן)";
 
-const MINIMUM_PLAYERS_PER_TEAM = 3
-const MAXIMUM_PLAYERS_PER_TEAM = 7
+const MINIMUM_PLAYERS_PER_TEAM = 3;
+const MAXIMUM_PLAYERS_PER_TEAM = 7;
 
-export let teamLabelsArray = ["הקבוצה הכחולה","הקבוצה הכתומה","הקבוצה הירוקה"]
-export let shortTeamLabelsArray = ["כחול","כתום","ירוק"]
+export let teamLabelsArray = [
+  "הקבוצה הכחולה",
+  "הקבוצה הכתומה",
+  "הקבוצה הירוקה"
+];
+export let shortTeamLabelsArray = ["כחול", "כתום", "ירוק"];
 let teamColorsArray = ["blue", "orange", "green"];
 
 export let codesToTeamColor = code => {
@@ -63,57 +67,66 @@ let occurrences = (string, subString, allowOverlapping = true) => {
   return n;
 };
 
-
 let getPlayerId = (playerName, players) => {
   for (let i in players) {
-    if (players[i].name === playerName && !players[i].isRemoved) return players[i].id
+    if (players[i].name === playerName && !players[i].isRemoved)
+      return players[i].id;
   }
 
-  return null
-}
+  return null;
+};
 
 let parsePlayer = (playerString, isCaptain, players, handleNonExistPlayer) => {
   let parsedPlayer = {
     isCaptain: isCaptain,
-    isGoalkeeper: (occurrences(playerString, gkIdentifier) ===1)
-  }
+    isGoalkeeper: occurrences(playerString, gkIdentifier) === 1
+  };
 
-  let playerName = ""
+  let playerName = "";
 
   if (parsedPlayer.isGoalkeeper) {
-    let nameWithoutGkPostfixArr = playerString.split(gkIdentifier)
-    
-    if (nameWithoutGkPostfixArr.length !== 2 || nameWithoutGkPostfixArr[1] != "" )
-    {
-      Alert.alert("שם לא חוקי לאחד השוערים")
-      return null
+    let nameWithoutGkPostfixArr = playerString.split(gkIdentifier);
+
+    if (
+      nameWithoutGkPostfixArr.length !== 2 ||
+      nameWithoutGkPostfixArr[1] != ""
+    ) {
+      Alert.alert("שם לא חוקי לאחד השוערים");
+      return null;
     }
 
-    playerName = nameWithoutGkPostfixArr[0].trim()
-
+    playerName = nameWithoutGkPostfixArr[0].trim();
   } else {
-    playerName = playerString.trim()
+    playerName = playerString.trim();
   }
 
-  let id = getPlayerId(playerName, players)
+  let id = getPlayerId(playerName, players);
 
-  if (id == null)
-  {
-    handleNonExistPlayer(playerName)
-    return null
+  if (id == null) {
+    handleNonExistPlayer(playerName);
+    return null;
   }
 
-  parsedPlayer.id = id
+  parsedPlayer.id = id;
 
-  return parsedPlayer
+  return parsedPlayer;
 };
 
 let parseTeam = (teamString, players, handleNonExistPlayer) => {
   let lines = teamString.split("\n");
 
   // validate number of players at a team
-  if (lines.length < MINIMUM_PLAYERS_PER_TEAM + 1 || lines.length > MAXIMUM_PLAYERS_PER_TEAM + 1) {
-    Alert.alert("על כל הקבוצות להיות בפורמט של שורת כותרת ולהכיל בין "+MINIMUM_PLAYERS_PER_TEAM+" ל"+MAXIMUM_PLAYERS_PER_TEAM+" שחקנים");
+  if (
+    lines.length < MINIMUM_PLAYERS_PER_TEAM + 1 ||
+    lines.length > MAXIMUM_PLAYERS_PER_TEAM + 1
+  ) {
+    Alert.alert(
+      "על כל הקבוצות להיות בפורמט של שורת כותרת ולהכיל בין " +
+        MINIMUM_PLAYERS_PER_TEAM +
+        " ל" +
+        MAXIMUM_PLAYERS_PER_TEAM +
+        " שחקנים"
+    );
     return null;
   }
 
@@ -132,21 +145,30 @@ let parseTeam = (teamString, players, handleNonExistPlayer) => {
   }
 
   for (let i in lines) {
-    if (i >0) {
-      let parsedPlayer = parsePlayer(lines[i], i == 1, players, handleNonExistPlayer);
+    if (i > 0) {
+      let parsedPlayer = parsePlayer(
+        lines[i],
+        i == 1,
+        players,
+        handleNonExistPlayer
+      );
 
       if (parsedPlayer == null) return null;
-  
+
       team.players.push(parsedPlayer);
     }
-    
   }
 
   return team;
 };
 
-
-export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Alert.alert("לא נמצא שחקן בשם: "+playerName)}) => {
+export const parseList = (
+  fixtureList,
+  players,
+  handleNonExistPlayer = playerName => {
+    Alert.alert("לא נמצא שחקן בשם: " + playerName);
+  }
+) => {
   // not empty
   if (fixtureList === "") {
     Alert.alert("רשימה ריקה");
@@ -154,7 +176,7 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
   }
 
   // remove unused captainIdentifier
-  fixtureList = fixtureList.split(captainIdentifier).join("")
+  fixtureList = fixtureList.split(captainIdentifier).join("");
 
   // 3 colors exists
   if (
@@ -177,7 +199,11 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
   let parsedList = [];
 
   for (let i in preParseTeams) {
-    let currentParsedTeam = parseTeam(preParseTeams[i], players, handleNonExistPlayer);
+    let currentParsedTeam = parseTeam(
+      preParseTeams[i],
+      players,
+      handleNonExistPlayer
+    );
 
     if (currentParsedTeam == null) {
       return null;
@@ -186,5 +212,50 @@ export default (fixtureList, players, handleNonExistPlayer = (playerName)=>{Aler
     }
   }
 
-  return parsedList.sort((a,b)=>a.teamColorCode>b.teamColorCode);
+  return parsedList.sort((a, b) => a.teamColorCode > b.teamColorCode);
+};
+
+export const reverseList = (playersList, players) => {
+  let list = "";
+
+  for (let i in playersList) {
+    if (i != 0) {
+      list += "\n\n";
+    }
+    list += "קבוצה ";
+
+    // Add team title
+    switch (teamColorsArray[playersList[i].teamColorCode]) {
+      case "blue":
+        list += blueSign;
+        break;
+      case "orange":
+        list += orangeSign;
+        break;
+      case "green":
+        list += greenSign;
+        break;
+      default:
+        return null;
+    }
+
+    // Add players
+    for (let j in playersList[i].players) {
+      list += "\n"
+      
+      let playerObject = playersList[i].players[j];
+
+      list += players[playerObject.id].name;
+
+      if (playerObject.isCaptain) {
+        list += " " + captainIdentifier;
+      }
+
+      if (playerObject.isGoalkeeper) {
+        list += " " + gkIdentifier;
+      }
+    }
+  }
+
+  return list;
 };

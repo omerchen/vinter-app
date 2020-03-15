@@ -141,7 +141,6 @@ let LeagueTableScreen = props => {
     );
 
   if (Platform.OS == "web") {
-    console.log("here")
     playersTableData = mergeSort(
       playersTableData,
       (a, b) =>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import DatePicker from "react-native-datepicker";
 import {
   StyleSheet,
@@ -21,17 +21,23 @@ import DBCommunicator from "../helpers/db-communictor";
 import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
 import {
   fixtureCourtRadio,
-  fixtureTypeRadio
+  fixtureTypeRadio,
+  fixtureOpenRadio
 } from "../constants/fixture-properties";
 import moment from "moment";
-import {parseList} from "../helpers/fixture-list-parser";
+import {reverseList, parseList} from "../helpers/fixture-list-parser";
 import Spinner from "react-native-loading-spinner-overlay";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
 
 let inputLength = 250;
 
-let CreateFixtureScreen = props => {
+let EditFixtureScreen = props => {
+  const fixtureId = props.navigation.getParam("fixtureId");
+  const fixture = props.fixtures[fixtureId];
   let [loading, setLoading] = useState(false);
   let lastFixture = null;
+  let isOtherFixtureOpen = props.fixtures.filter(f=>!f.isRemoved&&f.isOpen&&f.id!=fixtureId).length>0
   let players = useSelector(state => state.players);
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
@@ -43,29 +49,22 @@ let CreateFixtureScreen = props => {
   }
   const keyboardOffset = Dimensions.get("window").height > 500 ? 20 : 20;
 
-  const [fixtureNumber, setFixtureNumber] = useState(
-    lastFixture ? (parseInt(lastFixture.number) + 1).toString() : "1"
-  );
-  const [fixtureCourt, setFixtureCourt] = useState(
-    lastFixture ? lastFixture.court : 0
-  );
-  const [fixtureType, setFixtureType] = useState(0);
+  const [fixtureNumber, setFixtureNumber] = useState(fixture.number);
+  const [fixtureCourt, setFixtureCourt] = useState(fixture.court);
+  const [fixtureType, setFixtureType] = useState(fixture.type);
 
-  const [fixtureDate, setFixtureDate] = useState(
-    moment(Date.now()).format("DD.MM.YYYY")
-  );
+  const [fixtureDate, setFixtureDate] = useState(fixture.date);
 
-  const [fixtureTime, setFixtureTime] = useState(
-    lastFixture ? lastFixture.startTime : "17:00"
-  );
+  const [fixtureTime, setFixtureTime] = useState(fixture.startTime);
+  const [fixtureOpenStatus, setFixtureOpenStatus] = useState(fixture.isOpen?0:1);
 
-  const [fixtureList, setFixtureList] = useState("");
+  const [fixtureList, setFixtureList] = useState(reverseList(fixture.playersList, players));
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
   let readFromClipboard = async () => {
     const clipboardContent = await Clipboard.getString();
     setFixtureList(clipboardContent);
   };
-  let createFixture = () => {
+  let updateFixture = () => {
     let parsedFixtureList = parseList(fixtureList, players, playerName => {
       Alert.alert(
         "לא נמצא שחקן בשם: " + playerName,
@@ -91,35 +90,28 @@ let CreateFixtureScreen = props => {
     if (parsedFixtureList !== null) {
       setFixtureListValidation(true);
 
-      let newFixture = {
-        id: props.fixtures.length,
-        isRemoved: false,
-        createTime: Date.now(),
-        isOpen: true,
-        playersList: parsedFixtureList,
-        number: fixtureNumber,
-        court: fixtureCourt,
-        type: fixtureType,
-        date: fixtureDate,
-        startTime: fixtureTime
-      };
+      let updatedFixture = { ...fixture };
 
-      let newFixtures = [...props.fixtures, newFixture];
+      updatedFixture.playersList = parsedFixtureList;
+      updatedFixture.number = fixtureNumber;
+      updatedFixture.court = fixtureCourt;
+      updatedFixture.type = fixtureType;
+      updatedFixture.date = fixtureDate;
+      updatedFixture.startTime = fixtureTime;
+      updatedFixture.isOpen = fixtureOpenStatus!=1;
+
+      let newFixtures = [...props.fixtures];
+      newFixtures[fixtureId] = updatedFixture;
 
       setLoading(true);
       DBCommunicator.setFixtures(newFixtures).then(res => {
         if (res.status === 200) {
           props.setFixtures(newFixtures);
-          props.navigation.replace({
-            routeName: "ViewFixture",
-            params: {
-              fixtureId: newFixture.id
-            }
-          });
+          props.navigation.pop();
         } else {
           setLoading(false);
           Alert.alert(
-            "תהליך יצירת המחזור נכשל",
+            "תהליך עדכון המחזור נכשל",
             "ודא שהינך מחובר לרשת ונסה שנית",
             null,
             { cancelable: true }
@@ -129,6 +121,55 @@ let CreateFixtureScreen = props => {
     } else {
       setFixtureListValidation(false);
     }
+  };
+
+  let deleteFixture = useCallback(() => {
+    Alert.alert(
+      "מחיקת מחזור (" + fixtureId + ")",
+      "האם אתה בטוח שברצונך למחוק את מחזור " +
+        props.fixtures[fixtureId].number +
+        "?",
+      [
+        { text: "לא", style: "cancel" },
+        {
+          text: "מחק",
+          onPress: () => {
+            let newFixture = { ...fixture };
+            newFixture.isRemoved = true;
+            newFixture.removeTime = Date.now();
+            updateFixtures(newFixture);
+          },
+          style: "destructive"
+        }
+      ],
+      {
+        cancelable: true
+      }
+    );
+  }, [props.fixtures, props.setFixtures, fixtureId]);
+
+  useEffect(() => {
+    props.navigation.setParams({
+      deleteFixture: deleteFixture
+    });
+  }, [deleteFixture]);
+
+  let updateFixtures = newFixture => {
+    setLoading(true);
+    let newFixtures = [...props.fixtures];
+    newFixtures[fixtureId] = newFixture;
+
+    DBCommunicator.setFixtures(newFixtures).then(res => {
+      if (res.status === 200) {
+        props.setFixtures(newFixtures);
+        props.navigation.pop();
+      } else {
+        setLoading(false);
+        Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
+          cancelable: true
+        });
+      }
+    });
   };
 
   return (
@@ -217,6 +258,14 @@ let CreateFixtureScreen = props => {
             setFixtureTime(date);
           }}
         />
+        {!isOtherFixtureOpen&&<RadioForm
+          radio_props={fixtureOpenRadio}
+          initial={fixtureOpenStatus}
+          onPress={value => {
+            setFixtureOpenStatus(value);
+          }}
+          style={styles.radio}
+        />}
         <RadioForm
           radio_props={fixtureCourtRadio}
           initial={fixtureCourt}
@@ -264,12 +313,31 @@ let CreateFixtureScreen = props => {
         <MainButton
           width={inputLength}
           style={{ marginBottom: 100 }}
-          title="צור מחזור"
-          onPress={createFixture}
+          title="עדכן מחזור"
+          onPress={updateFixture}
         />
       </ScrollView>
     </KeyboardAvoidingView>
   );
+};
+
+EditFixtureScreen.navigationOptions = navigationData => {
+  return {
+    headerTitle: "עריכת מחזור",
+    headerRight: () => {
+      return (
+        <HeaderButtons
+          HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
+        >
+          <Item
+            title="Remove Fixture"
+            iconName="delete"
+            onPress={navigationData.navigation.getParam("deleteFixture")}
+          />
+        </HeaderButtons>
+      );
+    }
+  };
 };
 
 const styles = StyleSheet.create({
@@ -307,7 +375,4 @@ const mapDispatchToProps = {
   setFixtures: fixtures => ({ type: SET_FIXTURES, newFixtures: fixtures })
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CreateFixtureScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(EditFixtureScreen);

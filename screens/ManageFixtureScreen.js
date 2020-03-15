@@ -17,6 +17,7 @@ import { SET_FIXTURES } from "../store/actions/fixtures";
 import { Dropdown } from "react-native-material-dropdown";
 import Spinner from "react-native-loading-spinner-overlay";
 import RadioForm from "react-native-simple-radio-button";
+import sleep from "../helpers/sleep";
 
 let ManageFixtureScreen = props => {
   const mvpStatusRadioLabel = [
@@ -29,9 +30,15 @@ let ManageFixtureScreen = props => {
   let fixture = props.fixtures[fixtureId];
   let matches = fixture.matches ? fixture.matches : [];
 
+  if (fixture.isRemoved) {
+    sleep(0).then(() => {
+      props.navigation.pop();
+    });
+  }
+
   // states
   const [mvpId, setMvpId] = useState(fixture.mvpId);
-  const [mvpStatus, setMvpStatus] = useState(0);
+  const [mvpStatus, setMvpStatus] = useState(!fixture.isOpen&&(fixture.mvpId==null || fixture.mvpId == undefined)?1:0);
 
   let playersData = [];
 
@@ -108,7 +115,7 @@ let ManageFixtureScreen = props => {
       newFixture.endTime = Date.now();
     }
 
-    newFixture.mvpId = mvpStatus == 0?mvpId:undefined;
+    newFixture.mvpId = mvpStatus == 0 ? mvpId : undefined;
 
     updateFixtures(newFixture);
   };
@@ -137,7 +144,7 @@ let ManageFixtureScreen = props => {
       <View style={{ width: 350, alignItems: "center" }}>
         <RadioForm
           radio_props={mvpStatusRadioLabel}
-          initial={0}
+          initial={mvpStatus}
           onPress={value => {
             setMvpStatus(value);
             setMvpId(fixture.mvpId);
@@ -190,8 +197,15 @@ ManageFixtureScreen.navigationOptions = navigationData => {
         >
           <Item
             title="Remove Fixture"
-            iconName="delete"
-            onPress={navigationData.navigation.getParam("deleteFixture")}
+            iconName="circle-edit-outline"
+            onPress={() => {
+              navigationData.navigation.navigate({
+                routeName: "EditFixture",
+                params: {
+                  fixtureId: navigationData.navigation.getParam("fixtureId")
+                }
+              });
+            }}
           />
         </HeaderButtons>
       );

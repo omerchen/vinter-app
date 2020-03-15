@@ -9,6 +9,11 @@ export const fixtureTypeRadio = [
   { label: "  ידידות", value: FIXTURE_TYPE_FRIENDLY },
 ];
 
+export const fixtureOpenRadio = [
+  { label: "  פתוח", value: 0 },
+  { label: "  סגור", value: 1 },
+];
+
 
 export const fixtureCourtRadio = [
   { label: "  מגרש 1", value: 0 },
