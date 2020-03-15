@@ -10,6 +10,8 @@ export default {
     gray: '#bbbbbb',
     red: '#ff0000',
     green: '#4cbb17',
+    brightRed: '#fa8072',
+    brightGreen: '#c7ea46',
     opacityPlus: '#fffa',
     teamBlue: {
         primary: '#2073D1',

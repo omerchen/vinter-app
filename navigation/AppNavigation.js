@@ -27,6 +27,7 @@ import Colors from "../constants/colors";
 import EditFixtureScreen from "../screens/EditFixtureScreen";
 import EditTransactionScreen from "../screens/EditTransactionScreen";
 import ManageLeagueScreen from "../screens/ManageLeagueScreen";
+import TransactionsTableScreen from "../screens/TransactionsTableScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -79,6 +80,12 @@ const MainNavigator = createStackNavigator(
       screen: ManageLeagueScreen,
       navigationOptions: {
         headerTitle: "ניהול ליגה"
+      }
+    },
+    TransactionsTable: {
+      screen: TransactionsTableScreen,
+      navigationOptions: {
+        headerTitle: "טבלת כספים"
       }
     },
     LeagueTable: {

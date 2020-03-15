@@ -1,22 +1,24 @@
 import React, { useEffect } from "react";
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import Colors from "../constants/colors";
+import MainButton from "../components/MainButton";
 
 let ManageLeagueScreen = props => {
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ alignItems: "center" }}
-    >
-      <Text>ניהול ליגה</Text>
-    </ScrollView>
+    <View style={styles.container}>
+      <MainButton title="טבלת כספים" onPress={()=>{
+        props.navigation.navigate("TransactionsTable")
+      }}/>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
+    alignItems:"center",
+    justifyContent:"center"
   },
   button: {
     marginBottom: 70
