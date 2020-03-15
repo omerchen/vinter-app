@@ -55,7 +55,7 @@ let ViewFixtureScreen = props => {
             השחקן המצטיין: {players[fixture.mvpId].name}
             </Text>}
       </View>
-      {Platform.OS!="web"&&<MainButton
+      <MainButton
         title="משחקים"
         icon="ios-football"
         style={styles.button}
@@ -65,7 +65,8 @@ let ViewFixtureScreen = props => {
             params: { fixtureId: fixtureId }
           });
         }}
-      />}
+      />
+      {Platform.OS=="web"&&<View style={{height:30}}/>}
       <MainButton
         title="סטטיסטיקה"
         icon="ios-stats"

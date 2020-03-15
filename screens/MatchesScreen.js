@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { StyleSheet, Text, View, Alert, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
@@ -58,6 +58,7 @@ let MatchesScreen = props => {
           }}
         >
           <FeedbackTouchable
+          disabled={Platform.OS=="web"}
             style={{ flex: 1 }}
             onPress={showPlayers.bind(this, 0)}
           >
@@ -75,6 +76,7 @@ let MatchesScreen = props => {
           }}
         >
           <FeedbackTouchable
+            disabled={Platform.OS=="web"}
             style={{ flex: 1 }}
             onPress={showPlayers.bind(this, 1)}
           >
@@ -92,6 +94,7 @@ let MatchesScreen = props => {
           }}
         >
           <FeedbackTouchable
+          disabled={Platform.OS=="web"}
             style={{ flex: 1 }}
             onPress={showPlayers.bind(this, 2)}
           >
@@ -106,13 +109,21 @@ let MatchesScreen = props => {
       <View style={styles.menuWrapper}>
         {currentMatch ? (
           <MainButton title="מעבר למשחק" onPress={()=>{
-            props.navigation.navigate({routeName:"Match", params:{
-              fixtureId: fixtureId,
-              matchId: currentMatch.id
-            }})
+            if (Platform.OS == "web") {
+              props.navigation.navigate({routeName:"WebMatch", params:{
+                fixtureId: fixtureId,
+                matchId: currentMatch.id
+              }})
+            }
+            else {
+              props.navigation.navigate({routeName:"Match", params:{
+                fixtureId: fixtureId,
+                matchId: currentMatch.id
+              }})
+            }
           }} />
         ) : (
-          <MainButton title="התחל משחק חדש" icon="whistle" iconLib="material" offline={!fixture.isOpen} onPress={()=>{
+          <MainButton title="התחל משחק חדש" icon="whistle" iconLib="material" offline={!fixture.isOpen||Platform.OS=="web"} onPress={()=>{
             props.navigation.navigate({routeName:"CreateMatch", params: {fixtureId: fixtureId}})
           }} />
         )}

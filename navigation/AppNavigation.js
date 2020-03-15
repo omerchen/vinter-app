@@ -6,6 +6,7 @@ import CreateFixtureScreen from "../screens/CreateFixtureScreen";
 import PreviousFixturesScreen from "../screens/PreviousFixturesScreen";
 import FixtureStatisticsScreen from "../screens/FixtureStatisticsScreen";
 import MatchesScreen from "../screens/MatchesScreen";
+import WebMatchScreen from "../screens/WebMatchScreen";
 import ViewFixtureScreen from "../screens/ViewFixtureScreen";
 import AllPlayersScreen from "../screens/AllPlayersScreen"
 import RequirePasswordScreen from "../screens/RequirePasswordScreen"
@@ -30,6 +31,9 @@ const MainNavigator = createStackNavigator(
     },
     Match: {
       screen: MatchScreen,
+    },
+    WebMatch: {
+      screen: WebMatchScreen,
     },
     CreateEvent: {
       screen: CreateEventScreen,

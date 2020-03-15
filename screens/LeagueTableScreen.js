@@ -177,7 +177,7 @@ let LeagueTableScreen = props => {
             <Row
               key={index}
               data={rowData}
-              textStyle={index == 0 ? {...styles.text, fontFamily: "assistant-bold"}:styles.text}
+              textStyle={index == 0 && Platform.OS != "web" ? {...styles.text, fontFamily: "assistant-bold"}:styles.text}
               flexArr={flexArr}
               style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
             />

@@ -5,7 +5,8 @@ import {
   View,
   Image,
   TouchableWithoutFeedback,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
 import { useSelector } from "react-redux";
 import Colors from "../constants/colors";
@@ -62,13 +63,24 @@ let PreviousMatchesScreen = props => {
               key={match.id}
               title={title}
               onPress={() => {
-                props.navigation.navigate({
-                  routeName: "Match",
-                  params: {
-                    fixtureId: fixtureId,
-                    matchId: match.id
-                  }
-                });
+                if (Platform.OS =="web") {
+                  props.navigation.navigate({
+                    routeName: "WebMatch",
+                    params: {
+                      fixtureId: fixtureId,
+                      matchId: match.id
+                    }
+                  });
+                } else {
+                  props.navigation.navigate({
+                    routeName: "Match",
+                    params: {
+                      fixtureId: fixtureId,
+                      matchId: match.id
+                    }
+                  });
+                }
+                
               }}
             />
           );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Alert, View, Image, Text, Platform } from "react-native";
+import { StyleSheet, Alert, View, Image, Text, Platform, ImageBackground } from "react-native";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
@@ -81,10 +81,14 @@ let FirstScreen = props => {
     <View style={{flex:1, height:'100%', backgroundColor:Colors.white}}>
     <View style={styles.container}>
       <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
-      {Platform.OS!="web"&&<Image
+      {Platform.OS!="web"?<Image
         source={require("../assets/images/colorful-logo-280h.png")}
         style={styles.logo}
-      />}
+      />:<ImageBackground
+      resizeMode="contain"
+      source={require("../assets/images/colorful-logo-280h.png")}
+      style={{height:200,width:200}}
+    />}
       {currentFixture ? (
         <MainButton
           title="למחזור הנוכחי"

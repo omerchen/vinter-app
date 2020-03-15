@@ -581,7 +581,7 @@ let MatchScreen = props => {
           alignItems: "center"
         }}
       >
-        <Image style={{opacity:.4, marginTop:50}} source={require("../assets/images/colorful-logo-280h.png")} />
+        <Image style={{opacity:0, marginTop:50}} source={require("../assets/images/colorful-logo-200h.png")} />
       </View>
     </View>
   );
@@ -680,10 +680,10 @@ const styles = StyleSheet.create({
     color: Colors.white
   },
   border: {
-    width: 2,
+    width: 1,
     flex: 1,
     backgroundColor: Colors.gray,
-    opacity: 0
+    opacity: .5
   },
   gameLayer: {
     flexDirection: "row",
