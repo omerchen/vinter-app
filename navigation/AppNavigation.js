@@ -25,6 +25,7 @@ import EditPlayerScreen from "../screens/EditPlayerScreen"
 
 import Colors from "../constants/colors";
 import EditFixtureScreen from "../screens/EditFixtureScreen";
+import EditTransactionScreen from "../screens/EditTransactionScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -81,6 +82,9 @@ const MainNavigator = createStackNavigator(
     },
     FixtureStatistics: {
       screen: FixtureStatisticsScreen,
+    },
+    EditTransaction: {
+      screen: EditTransactionScreen,
     },
     CreateMatch: {
       screen: CreateMatchScreen,

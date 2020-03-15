@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Platform } from "react-native";
 import Colors from "../constants/colors";
 import PlatformTouchableFeedback from "./PlatformTouchable";
 import { useSelector } from "react-redux";
+import { SECURE_LEVEL_ADMIN } from "../constants/security-levels";
 
 let TransactionCard = props => {
   let player = useSelector(state => state.players[props.playerId]);
@@ -11,9 +12,19 @@ let TransactionCard = props => {
   return (
     <View style={styles.container}>
       <PlatformTouchableFeedback
+        disabled={Platform.OS=="web"}
         onPress={() => {
-          // TODO: make secure and not web!
-          console.log("edit transaction " + transaction.id);
+          props.navigation.navigate({
+            routeName:"RequirePassword",
+            params:{
+              routeName:"EditTransaction",
+              params:{
+                playerId: props.playerId,
+                transactionId: props.transactionId
+              },
+              level: SECURE_LEVEL_ADMIN
+            }
+          })
         }}
       >
         <View style={transaction.sum > 0 ? styles.greenView : styles.redView}>
