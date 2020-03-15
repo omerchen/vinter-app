@@ -26,6 +26,7 @@ import EditPlayerScreen from "../screens/EditPlayerScreen"
 import Colors from "../constants/colors";
 import EditFixtureScreen from "../screens/EditFixtureScreen";
 import EditTransactionScreen from "../screens/EditTransactionScreen";
+import ManageLeagueScreen from "../screens/ManageLeagueScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -72,6 +73,12 @@ const MainNavigator = createStackNavigator(
       screen: AddTransactionScreen,
       navigationOptions: {
         headerTitle: "הוספת טרנזקציה"
+      }
+    },
+    ManageLeague: {
+      screen: ManageLeagueScreen,
+      navigationOptions: {
+        headerTitle: "ניהול ליגה"
       }
     },
     LeagueTable: {

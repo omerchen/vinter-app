@@ -124,6 +124,7 @@ let FirstScreen = props => {
           onPress={() => {
             props.navigation.navigate("LeagueTable");
           }}
+          style={styles.subButton}
         />
         <SubButton
           title="למחזורים הקודמים"
@@ -138,7 +139,7 @@ let FirstScreen = props => {
           onPress={() => {
             props.navigation.navigate("PreviousFixtures");
           }}
-          style={{ marginVertical: 20 }}
+          style={styles.subButton}
 
         />
         <SubButton
@@ -149,7 +150,23 @@ let FirstScreen = props => {
               routeName: "AllPlayers"
             });
           }}
+          style={styles.subButton}
+
         />
+        {Platform.OS!="web"&&<SubButton
+          style={styles.subButton}
+          title="ניהול ליגה"
+          offline={!dataLoaded}
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "RequirePassword",
+              level: SECURE_LEVEL_ADMIN,
+              params: {
+                routeName: "ManageLeague"
+              }
+            });
+          }}
+        />}
       </View>
     </View>
       <Text style={styles.versionText}>{"מספר גרסא: "+version}</Text>
@@ -195,6 +212,9 @@ const styles = StyleSheet.create({
     fontFamily:"assistant-semi-bold",
     fontSize:25,
     color:Colors.darkGray
+  },
+  subButton: {
+    marginBottom: 15
   }
 });
 
