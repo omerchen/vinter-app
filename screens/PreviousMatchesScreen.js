@@ -26,7 +26,7 @@ let PreviousMatchesScreen = props => {
     >
       {fixture.matches
         .filter(item => !item.isRemoved && !item.isOpen)
-        .map(match => {
+        .map((match, index) => {
           let homeName = shortTeamLabelsArray[match.homeId];
           let awayName = shortTeamLabelsArray[match.awayId];
           let homeResult = match.events
@@ -55,7 +55,7 @@ let PreviousMatchesScreen = props => {
           }
 
           let title =
-            homeName + " " + homeResult + " - " + awayResult + " " + awayName;
+            "משחק "+(index+1) + ": " + homeName + " " + homeResult + " - " + awayResult + " " + awayName;
           return (
             <SubButton
               style={{ marginTop: 10, marginBottom: 10 }}
