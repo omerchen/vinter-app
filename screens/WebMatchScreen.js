@@ -29,7 +29,8 @@ import {
 } from "@expo/vector-icons";
 import { FootballIcon, footballIconTypes } from "../components/FootballIcon";
 import { teamLabelsArray } from "../helpers/fixture-list-parser";
-import { timeToVibrate, vibrateDuration } from "../constants/configs";
+import { liveRequestInterval, maxLiveRequests } from "../constants/configs";
+import dbCommunictor from "../helpers/db-communictor";
 
 let WebMatchScreen = props => {
   const fixtureId = props.navigation.getParam("fixtureId");
@@ -45,6 +46,7 @@ let WebMatchScreen = props => {
   let iconsSize = 36;
   let plusSize = 80;
   let vestPadding = 100;
+  let [requestsCounter, setRequestsCounter] = useState(0)
   let removable = fixture.isOpen;
   let editable = fixture.isOpen && match.isOpen;
   let isOtherMathcesOpen = fixture.matches
@@ -76,7 +78,39 @@ let WebMatchScreen = props => {
     return () => {
       clearInterval(interval);
     };
-  }, [match]);
+  }, [match.startWhistleTime, match.endWhistleTime]);
+
+  useEffect(() => {
+    if (match.isOpen) {
+      let interval = setInterval(() => {
+        if (requestsCounter <= maxLiveRequests){
+          dbCommunictor.getMatch(fixtureId, matchId).then(res=>{
+            if (res.status == 200) {
+              let newFixture = {...fixture}
+  
+              newFixture.matches[matchId] = res.data
+  
+              let newFixtures = [...props.fixtures]
+  
+              newFixtures[fixtureId] = newFixture
+  
+              props.setFixtures(newFixtures)
+            }
+  
+            // increase counter
+            setRequestsCounter(prevCounter=>{
+              return prevCounter+1
+            })
+          })
+        }
+      }, liveRequestInterval);
+  
+      return ()=>{
+        clearInterval(interval)
+      }
+    }
+
+  }, [match.isOpen]);
 
   let pad = (n, width, z) => {
     z = z || "0";
@@ -121,9 +155,9 @@ let WebMatchScreen = props => {
     return (
       <View style={styles.eventView} key={eventId}>
         <FootballIcon source={icon} />
-          <Text style={styles.regularText}>{parseToString(time)}</Text>
-          <Text style={styles.boldText}>{title}</Text>
-          <Text style={styles.regularText}>{description}</Text>
+        <Text style={styles.regularText}>{parseToString(time)}</Text>
+        <Text style={styles.boldText}>{title}</Text>
+        <Text style={styles.regularText}>{description}</Text>
       </View>
     );
   };
@@ -168,18 +202,45 @@ let WebMatchScreen = props => {
       ? { fontFamily: "assistant-extra-bold" }
       : {};
 
+  const updateMatchState = (
+    newMatch,
+    onFinish = () => {
+      console.log("update finished successfully!");
+    }
+  ) => {
+    let newFixtures = [...props.fixtures];
+
+    newFixtures[fixtureId].matches[matchId] = newMatch;
+
+    DBCommunicator.setFixtures(newFixtures).then(res => {
+      if (res.status === 200) {
+        props.setFixtures(newFixtures);
+        onFinish();
+      } else {
+        Alert.alert("הפעולה נכשלה", "ודא שהינך מחובר לרשת ונסה שנית", null, {
+          cancelable: true
+        });
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.timeLayer}>
         <View style={styles.timeView}>
           <View style={styles.clockWrapper}>
             <Text style={styles.clockText}>{parseToString(clockTime)}</Text>
-            {match.isOpen?(
-              (match.startWhistleTime == null || match.startWhistleTime == undefined)?
-              <Text style={styles.commandText}>המשחק עוד לא התחיל</Text>:
-              match.endWhistleTime != null && match.endWhistleTime != undefined?
-              <Text style={styles.commandText}>המשחק נעצר</Text>:null
-            ):<Text style={styles.commandText}>המשחק הסתיים</Text>}
+            {match.isOpen ? (
+              match.startWhistleTime == null ||
+              match.startWhistleTime == undefined ? (
+                <Text style={styles.commandText}>המשחק עוד לא התחיל</Text>
+              ) : match.endWhistleTime != null &&
+                match.endWhistleTime != undefined ? (
+                <Text style={styles.commandText}>המשחק נעצר</Text>
+              ) : null
+            ) : (
+              <Text style={styles.commandText}>המשחק הסתיים</Text>
+            )}
           </View>
         </View>
         <View style={styles.border} />
@@ -290,12 +351,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly"
   },
   clockWrapper: {
-    alignItems:"center",
+    alignItems: "center"
   },
   clockText: {
     fontFamily: "assistant-semi-bold",
     fontSize: 60,
-    textAlign:"center"
+    textAlign: "center"
   },
   commandsWrapper: {
     flexDirection: "row",
@@ -310,7 +371,7 @@ const styles = StyleSheet.create({
   commandText: {
     fontFamily: "assistant-semi-bold",
     fontSize: 20,
-    textAlign:"center"
+    textAlign: "center"
   },
   endMatchView: {
     backgroundColor: Colors.primary,
@@ -384,7 +445,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   eventTextView: {
-    flexDirection:"row"
+    flexDirection: "row"
   },
   regularText: {
     fontSize: 20,
