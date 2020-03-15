@@ -174,6 +174,12 @@ let WebMatchScreen = props => {
         <View style={styles.timeView}>
           <View style={styles.clockWrapper}>
             <Text style={styles.clockText}>{parseToString(clockTime)}</Text>
+            {match.isOpen?(
+              (match.startWhistleTime == null || match.startWhistleTime == undefined)?
+              <Text style={styles.commandText}>המשחק עוד לא התחיל</Text>:
+              match.endWhistleTime != null && match.endWhistleTime != undefined?
+              <Text style={styles.commandText}>המשחק נעצר</Text>:null
+            ):<Text style={styles.commandText}>המשחק הסתיים</Text>}
           </View>
         </View>
         <View style={styles.border} />
@@ -283,10 +289,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly"
   },
-  clockWrapper: {},
+  clockWrapper: {
+    alignItems:"center",
+  },
   clockText: {
     fontFamily: "assistant-semi-bold",
-    fontSize: 60
+    fontSize: 60,
+    textAlign:"center"
   },
   commandsWrapper: {
     flexDirection: "row",
@@ -300,7 +309,8 @@ const styles = StyleSheet.create({
   },
   commandText: {
     fontFamily: "assistant-semi-bold",
-    fontSize: 20
+    fontSize: 20,
+    textAlign:"center"
   },
   endMatchView: {
     backgroundColor: Colors.primary,
