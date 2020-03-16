@@ -25,7 +25,7 @@ import {
   fixtureOpenRadio
 } from "../constants/fixture-properties";
 import moment from "moment";
-import {reverseList, parseList} from "../helpers/fixture-list-parser";
+import { reverseList, parseList } from "../helpers/fixture-list-parser";
 import Spinner from "react-native-loading-spinner-overlay";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
@@ -37,7 +37,9 @@ let EditFixtureScreen = props => {
   const fixture = props.fixtures[fixtureId];
   let [loading, setLoading] = useState(false);
   let lastFixture = null;
-  let isOtherFixtureOpen = props.fixtures.filter(f=>!f.isRemoved&&f.isOpen&&f.id!=fixtureId).length>0
+  let isOtherFixtureOpen =
+    props.fixtures.filter(f => !f.isRemoved && f.isOpen && f.id != fixtureId)
+      .length > 0;
   let players = useSelector(state => state.players);
   for (let i in props.fixtures) {
     let ni = props.fixtures.length - i - 1;
@@ -56,9 +58,13 @@ let EditFixtureScreen = props => {
   const [fixtureDate, setFixtureDate] = useState(fixture.date);
 
   const [fixtureTime, setFixtureTime] = useState(fixture.startTime);
-  const [fixtureOpenStatus, setFixtureOpenStatus] = useState(fixture.isOpen?0:1);
+  const [fixtureOpenStatus, setFixtureOpenStatus] = useState(
+    fixture.isOpen ? 0 : 1
+  );
 
-  const [fixtureList, setFixtureList] = useState(reverseList(fixture.playersList, players));
+  const [fixtureList, setFixtureList] = useState(
+    reverseList(fixture.playersList, players)
+  );
   const [fixtureListValidation, setFixtureListValidation] = useState(true);
   let readFromClipboard = async () => {
     const clipboardContent = await Clipboard.getString();
@@ -93,12 +99,25 @@ let EditFixtureScreen = props => {
       let updatedFixture = { ...fixture };
 
       updatedFixture.playersList = parsedFixtureList;
+
+      for (let i in updatedFixture.playersList) {
+        if (
+          updatedFixture.playersList[i].players[0].id ==
+          fixture.playersList[i].players[0].id
+        ) {
+          updatedFixture.playersList[i].players[0].captainRating =
+            fixture.playersList[i].players[0].captainRating;
+          updatedFixture.playersList[i].players[0].captainDescription =
+            fixture.playersList[i].players[0].captainDescription;
+        }
+      }
+
       updatedFixture.number = fixtureNumber;
       updatedFixture.court = fixtureCourt;
       updatedFixture.type = fixtureType;
       updatedFixture.date = fixtureDate;
       updatedFixture.startTime = fixtureTime;
-      updatedFixture.isOpen = fixtureOpenStatus!=1;
+      updatedFixture.isOpen = fixtureOpenStatus != 1;
 
       let newFixtures = [...props.fixtures];
       newFixtures[fixtureId] = updatedFixture;
@@ -258,14 +277,16 @@ let EditFixtureScreen = props => {
             setFixtureTime(date);
           }}
         />
-        {!isOtherFixtureOpen&&<RadioForm
-          radio_props={fixtureOpenRadio}
-          initial={fixtureOpenStatus}
-          onPress={value => {
-            setFixtureOpenStatus(value);
-          }}
-          style={styles.radio}
-        />}
+        {!isOtherFixtureOpen && (
+          <RadioForm
+            radio_props={fixtureOpenRadio}
+            initial={fixtureOpenStatus}
+            onPress={value => {
+              setFixtureOpenStatus(value);
+            }}
+            style={styles.radio}
+          />
+        )}
         <RadioForm
           radio_props={fixtureCourtRadio}
           initial={fixtureCourt}
