@@ -5,7 +5,8 @@ import {
   View,
   Alert,
   TouchableOpacity,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import { connect } from "react-redux";
 import Colors from "../constants/colors";
@@ -18,9 +19,8 @@ import { Dropdown } from "react-native-material-dropdown";
 import Spinner from "react-native-loading-spinner-overlay";
 import RadioForm from "react-native-simple-radio-button";
 import sleep from "../helpers/sleep";
-import SubButton from "../components/SubButton";
 
-let ManageFixtureScreen = props => {
+let RateCaptainsScreen = props => {
   const mvpStatusRadioLabel = [
     { label: "  בחירת מצטיין", value: 0 },
     { label: "  ללא מצטיין", value: 1 }
@@ -39,11 +39,7 @@ let ManageFixtureScreen = props => {
 
   // states
   const [mvpId, setMvpId] = useState(fixture.mvpId);
-  const [mvpStatus, setMvpStatus] = useState(
-    !fixture.isOpen && (fixture.mvpId == null || fixture.mvpId == undefined)
-      ? 1
-      : 0
-  );
+  const [mvpStatus, setMvpStatus] = useState(!fixture.isOpen&&(fixture.mvpId==null || fixture.mvpId == undefined)?1:0);
 
   let playersData = [];
 
@@ -146,82 +142,42 @@ let ManageFixtureScreen = props => {
   return (
     <View style={styles.container}>
       <Spinner visible={loading} textContent={""} textStyle={{}} />
-      <View style={{ width: 350, alignItems: "center" }}>
-        <SubButton title="דרג קפטנים" style={{ marginBottom: 50 }} onPress={()=>{
-          props.navigation.navigate({
-            routeName: "RateCaptains",
-            params: {
-              fixtureId: fixtureId
-            }
-          })
-        }} />
-        <RadioForm
-          radio_props={mvpStatusRadioLabel}
-          initial={mvpStatus}
-          onPress={value => {
-            setMvpStatus(value);
-            setMvpId(fixture.mvpId);
-          }}
-          animation={false}
-          style={styles.radio}
-          buttonColor={Colors.darkGray}
-          selectedButtonColor={Colors.primary}
-          labelStyle={{ fontSize: 18, marginTop: 4 }}
-        />
-        {mvpStatus == 0 && (
-          <View style={{ width: "100%" }}>
-            <Dropdown
-              label="השחקן המצטיין"
-              data={playersData.sort(
-                (a, b) => props.players[a.id].name > props.players[b.id].name
-              )}
-              onChangeText={value => {
-                setMvpId(value);
-              }}
-              value={mvpId}
-              labelFontSize={20}
-              fontSize={25}
-              itemCount={6}
-              animationDuration={0}
-              valueExtractor={item => item.id}
-              labelExtractor={item => props.players[item.id].name}
-            />
-          </View>
-        )}
+      <ScrollView style={{flex:1, width:'100%', paddingTop: 30}} contentContainerStyle={{alignItems:'center'}} >
+        <Text>hello</Text>
         <MainButton
-          offline={(mvpId === null || mvpId === undefined) && mvpStatus == 0}
-          title={fixture.isOpen ? "סיים מחזור" : "עדכן מחזור"}
+          title="שמור שינויים"
           style={{ marginTop: 20 }}
           width={350}
           onPress={closeFixture}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 };
 
-ManageFixtureScreen.navigationOptions = navigationData => {
+RateCaptainsScreen.navigationOptions = navigationData => {
   return {
-    headerTitle: "ניהול מחזור",
+    headerTitle: "דרג קפטנים",
     headerRight: () => {
-      return (
-        <HeaderButtons
-          HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
-        >
-          <Item
-            title="Remove Fixture"
-            iconName="circle-edit-outline"
-            onPress={() => {
-              navigationData.navigation.navigate({
-                routeName: "EditFixture",
-                params: {
-                  fixtureId: navigationData.navigation.getParam("fixtureId")
-                }
-              });
-            }}
-          />
-        </HeaderButtons>
-      );
+      return null
+    //   return (
+    //     <HeaderButtons
+    //       HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
+    //     >
+    //       <Item
+    //         title="Remove Fixture"
+    //         iconName="circle-edit-outline"
+    //         onPress={() => {
+    //           navigationData.navigation.navigate({
+    //             routeName: "EditFixture",
+    //             params: {
+    //               fixtureId: navigationData.navigation.getParam("fixtureId")
+    //             }
+    //           });
+    //         }}
+    //       />
+    //     </HeaderButtons>
+    //   );
     }
   };
 };
@@ -230,8 +186,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    alignItems: "center",
-    justifyContent: "center"
   },
   radio: {
     flexDirection: "row",
@@ -253,4 +207,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ManageFixtureScreen);
+)(RateCaptainsScreen);

@@ -31,6 +31,7 @@ import TransactionsTableScreen from "../screens/TransactionsTableScreen";
 import PlayerExtraPointsScreen from "../screens/PlayerExtraPointsScreen";
 import AddExtraPointScreen from "../screens/AddExtraPointScreen";
 import EditExtraPointScreen from "../screens/EditExtraPointScreen";
+import RateCaptainsScreen from "../screens/RateCaptainsScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -54,6 +55,9 @@ const MainNavigator = createStackNavigator(
     },
     EditFixture: {
       screen: EditFixtureScreen,
+    },
+    RateCaptains: {
+      screen: RateCaptainsScreen,
     },
     PreviousFixtures: {
       screen: PreviousFixturesScreen,
