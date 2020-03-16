@@ -6,8 +6,11 @@ import MainButton from "../components/MainButton";
 let ManageLeagueScreen = props => {
   return (
     <View style={styles.container}>
-      <MainButton title="טבלת כספים" onPress={()=>{
+      <MainButton style={styles.button} title="כספים" onPress={()=>{
         props.navigation.navigate("TransactionsTable")
+      }}/>
+      <MainButton style={styles.button} title="קפטנים" onPress={()=>{
+        props.navigation.navigate("CaptainsTable")
       }}/>
     </View>
   );
@@ -21,7 +24,7 @@ const styles = StyleSheet.create({
     justifyContent:"center"
   },
   button: {
-    marginBottom: 70
+    marginBottom: 30
   },
   metaDataText: {
     fontFamily: "assistant-semi-bold",

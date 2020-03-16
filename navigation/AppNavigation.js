@@ -32,6 +32,7 @@ import PlayerExtraPointsScreen from "../screens/PlayerExtraPointsScreen";
 import AddExtraPointScreen from "../screens/AddExtraPointScreen";
 import EditExtraPointScreen from "../screens/EditExtraPointScreen";
 import RateCaptainsScreen from "../screens/RateCaptainsScreen";
+import CaptainsTableScreen from "../screens/CaptainsTableScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -99,6 +100,12 @@ const MainNavigator = createStackNavigator(
       screen: TransactionsTableScreen,
       navigationOptions: {
         headerTitle: "טבלת כספים"
+      }
+    },
+    CaptainsTable: {
+      screen: CaptainsTableScreen,
+      navigationOptions: {
+        headerTitle: "טבלת קפטנים"
       }
     },
     LeagueTable: {
