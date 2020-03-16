@@ -29,7 +29,7 @@ import { SET_PLAYERS } from "../store/actions/players";
 
 let RatePlayerScreen = props => {
   const reviewsAttackLevels = ["שחקן פחות","מחטיא מול שער ריק", "שישאר מאחורה","1-2 גולים למשחק", "עושה את העבודה", "לא מפספס", "אלוהים ישמור"];
-  const reviewsDefenseLevels = ["שחקן פחות","חורים בהגנה","בקבוצה בשביל הגולים","יודע לעשות הגנה","בלם מנוסה","גרזן","מלדיני"];
+  const reviewsDefenseLevels = ["שחקן פחות","חורים בהגנה","המינימום הנדרש","יודע לעשות הגנה","בלם מנוסה","גרזן","מלדיני"];
   const reviewColors = [Colors.darkGray, Colors.primary, Colors.primary, Colors.primary, Colors.primary, Colors.primary,Colors.blue]
   const keyboardOffset = Dimensions.get("window").height>500?100:20
 
