@@ -6,15 +6,19 @@ import MainButton from "../components/MainButton";
 let ManageLeagueScreen = props => {
   return (
     <View style={styles.container}>
+      <MainButton style={styles.button} title="בניית כוחות" onPress={()=>{
+        props.navigation.navigate("GenerateTeams")
+      }}/>
+      <MainButton style={styles.button} title="טבלת כוחות" onPress={()=>{
+        props.navigation.navigate("RatingTable")
+      }}/>
       <MainButton style={styles.button} title="כספים" onPress={()=>{
         props.navigation.navigate("TransactionsTable")
       }}/>
       <MainButton style={styles.button} title="קפטנים" onPress={()=>{
         props.navigation.navigate("CaptainsTable")
       }}/>
-      <MainButton style={styles.button} title="טבלת כוחות" onPress={()=>{
-        props.navigation.navigate("RatingTable")
-      }}/>
+      
     </View>
   );
 };

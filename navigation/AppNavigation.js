@@ -35,6 +35,7 @@ import RateCaptainsScreen from "../screens/RateCaptainsScreen";
 import CaptainsTableScreen from "../screens/CaptainsTableScreen";
 import RatePlayerScreen from "../screens/RatePlayerScreen";
 import RatingTableScreen from "../screens/RatingTableScreen";
+import GenerateTeamsScreen from "../screens/GenerateTeamsScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -55,6 +56,9 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         headerTitle: "מחזור חדש"
       }
+    },
+    GenerateTeams: {
+      screen: GenerateTeamsScreen,
     },
     EditFixture: {
       screen: EditFixtureScreen,
