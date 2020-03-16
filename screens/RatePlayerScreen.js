@@ -30,6 +30,7 @@ import { SET_PLAYERS } from "../store/actions/players";
 let RatePlayerScreen = props => {
   const reviewsAttackLevels = ["שחקן פחות","מחטיא מול שער ריק", "שישאר מאחורה","1-2 גולים למשחק", "עושה את העבודה", "לא מפספס", "אלוהים ישמור"];
   const reviewsDefenseLevels = ["שחקן פחות","חורים בהגנה","בקבוצה בשביל הגולים","יודע לעשות הגנה","בלם מנוסה","גרזן","מלדיני"];
+  const reviewColors = [Colors.darkGray, Colors.primary, Colors.primary, Colors.primary, Colors.primary, Colors.primary,Colors.blue]
   const keyboardOffset = Dimensions.get("window").height>500?100:20
 
   let [loading, setLoading] = useState(false);
@@ -90,7 +91,7 @@ let RatePlayerScreen = props => {
             reviews={reviewsAttackLevels}
             defaultRating={attackRating}
             onFinishRating={rating => setAttackRating(rating)}
-            selectedColor={Colors.primary}
+            selectedColor={reviewColors[attackRating-1]}
             reviewColor={Colors.gray}
             count={reviewsAttackLevels.length}
           />
@@ -110,7 +111,7 @@ let RatePlayerScreen = props => {
             reviews={reviewsDefenseLevels}
             defaultRating={defenseRating}
             onFinishRating={rating => setDefenseRating(rating)}
-            selectedColor={Colors.primary}
+            selectedColor={reviewColors[defenseRating-1]}
             reviewColor={Colors.gray}
             count={reviewsDefenseLevels.length}
           />
