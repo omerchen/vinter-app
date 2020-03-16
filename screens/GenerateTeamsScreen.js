@@ -18,12 +18,17 @@ import RadioForm from "react-native-simple-radio-button";
 import { connect, useSelector } from "react-redux";
 import DBCommunicator from "../helpers/db-communictor";
 import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
+import {generate} from "../helpers/team-generator"
 import {
   fixtureCourtRadio,
   fixtureTypeRadio
 } from "../constants/fixture-properties";
 import moment from "moment";
-import { parseList, parsePreList, parsePlayersArrayToList } from "../helpers/fixture-list-parser";
+import {
+  parseList,
+  parsePreList,
+  parsePlayersArrayToList
+} from "../helpers/fixture-list-parser";
 import Spinner from "react-native-loading-spinner-overlay";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import {
@@ -54,13 +59,14 @@ let GenerateTeamsScreen = props => {
 
   let generateTeams = useCallback(() => {
     // TODO: implement later
-    let playersArray = parsePreList(fixturePreList, players)
+    let playersArray = parsePreList(fixturePreList, players);
     if (playersArray == null) {
       setFixtureListValidation(false);
       setFixtureList("");
     } else {
       setFixtureListValidation(true);
-      setFixtureList(parsePlayersArrayToList(playersArray));
+
+      buildCompleteObject(playersArray)
     }
   }, [
     players,
@@ -70,6 +76,42 @@ let GenerateTeamsScreen = props => {
     fixturePreList,
     setFixtureListValidation
   ]);
+
+  let buildCompleteObject = playersArray => {
+
+    for (let i in playersArray) {
+      if (playersArray[i].overallRating == null && playersArray[i].skip != true) {
+        Alert.alert(
+          "בעיה בבניית האוברול של " + playersArray[i].name,
+          "ביכולתנו לנחש את היכולת שלו אך עדיף כמובן להזין יכולת מדוייקת",
+          [
+            { text: "נחש", onPress: ()=>{
+              let newPlayersArray = [...playersArray]
+              newPlayersArray[i].skip = true
+              buildCompleteObject(newPlayersArray)
+            } ,style: "default" },
+            {
+              text: "עדכן יכולת",
+              onPress: ()=>{
+                props.navigation.navigate({
+                  routeName: "RatePlayer",
+                  params: {
+                    playerId: playersArray[i].id,
+                    playerName: playersArray[i].name
+                  }
+                })
+              },
+              style: "cancel"
+            }
+          ], {cancelable:true}
+        );
+
+        return;
+      }
+    }
+
+    setFixtureList(parsePlayersArrayToList(generate(playersArray)))
+  }
 
   useEffect(() => {
     props.navigation.setParams({
