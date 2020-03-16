@@ -33,6 +33,8 @@ import AddExtraPointScreen from "../screens/AddExtraPointScreen";
 import EditExtraPointScreen from "../screens/EditExtraPointScreen";
 import RateCaptainsScreen from "../screens/RateCaptainsScreen";
 import CaptainsTableScreen from "../screens/CaptainsTableScreen";
+import RatePlayerScreen from "../screens/RatePlayerScreen";
+import RatingTableScreen from "../screens/RatingTableScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -59,6 +61,9 @@ const MainNavigator = createStackNavigator(
     },
     RateCaptains: {
       screen: RateCaptainsScreen,
+    },
+    RatePlayer: {
+      screen: RatePlayerScreen,
     },
     PreviousFixtures: {
       screen: PreviousFixturesScreen,
@@ -106,6 +111,12 @@ const MainNavigator = createStackNavigator(
       screen: CaptainsTableScreen,
       navigationOptions: {
         headerTitle: "טבלת קפטנים"
+      }
+    },
+    RatingTable: {
+      screen: RatingTableScreen,
+      navigationOptions: {
+        headerTitle: "טבלת כוחות"
       }
     },
     LeagueTable: {

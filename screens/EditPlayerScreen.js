@@ -110,6 +110,15 @@ let EditPlayerScreen = props => {
           textStyle={{}}
         />
       <DismissKeyboardView style={styles.container}>
+        <SubButton title="ערוך יכולת שחקן" style={{marginBottom:20}} onPress={()=>{
+          props.navigation.navigate({
+            routeName: "RatePlayer",
+            params: {
+              playerId: playerId,
+              playerName: props.players[playerId].name
+            }
+          })
+        }}/>
         <TextInput
           label="שם מלא"
           value={name}

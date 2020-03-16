@@ -22,6 +22,11 @@ let PlayerCard = props => {
           <Text style={styles.title}>{player.name}</Text>
           <Text style={styles.subtitle}>
             {player.type == 0 ? "משוחרר" : "חייל"}
+            {(player.attackRating == undefined ||
+              player.attackRating == null ||
+              player.defenseRating == undefined ||
+                player.defenseRating == null) && Platform.OS != "web" &&
+              "*"}
           </Text>
         </View>
       </PlatformTouchableFeedback>
@@ -29,7 +34,7 @@ let PlayerCard = props => {
   );
 };
 
-const overflow = Platform.OS=="android"?"hidden":"visible"
+const overflow = Platform.OS == "android" ? "hidden" : "visible";
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.2
   },
   title: {
     fontFamily: "assistant-bold",

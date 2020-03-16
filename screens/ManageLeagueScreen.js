@@ -12,6 +12,9 @@ let ManageLeagueScreen = props => {
       <MainButton style={styles.button} title="קפטנים" onPress={()=>{
         props.navigation.navigate("CaptainsTable")
       }}/>
+      <MainButton style={styles.button} title="טבלת כוחות" onPress={()=>{
+        props.navigation.navigate("RatingTable")
+      }}/>
     </View>
   );
 };
