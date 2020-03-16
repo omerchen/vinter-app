@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Alert, View, Image, Text, Platform, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  Alert,
+  View,
+  Image,
+  Text,
+  Platform,
+  ImageBackground
+} from "react-native";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import Colors from "../constants/colors";
@@ -14,7 +22,8 @@ import {
   SECURE_LEVEL_ADMIN
 } from "../constants/security-levels";
 import Spinner from "react-native-loading-spinner-overlay";
-import {version} from "../constants/configs"
+import { version } from "../constants/configs";
+import dbCommunictor from "../helpers/db-communictor";
 
 let FirstScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -77,100 +86,140 @@ let FirstScreen = props => {
     });
   }, [setDataLoaded]);
 
-  return (
-    <View style={{flex:1, height:'100%', backgroundColor:Colors.white}}>
-    <View style={styles.container}>
-      <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
-      {Platform.OS!="web"?<Image
-        source={require("../assets/images/colorful-logo-280h.png")}
-        style={styles.logo}
-      />:<ImageBackground
-      resizeMode="contain"
-      source={require("../assets/images/colorful-logo-280h.png")}
-      style={{height:200,width:200}}
-    />}
-      {currentFixture ? (
-        <MainButton
-          title="למחזור הנוכחי"
-          offline={!dataLoaded}
-          onPress={() => {
-            props.navigation.navigate({
-              routeName: "ViewFixture",
-              params: {
-                fixtureId: currentFixture.id
-              }
-            });
-          }}
-        />
-      ) : (Platform.OS == "web"?<Text style={styles.noFixtureTitle}>לא משוחק מחזור כרגע</Text>:(<MainButton
-          title="מחזור חדש"
-          offline={!dataLoaded}
-          onPress={() => {
-            props.navigation.navigate({
-              routeName: "RequirePassword",
-              params: {
-                routeName: "CreateFixture",
-                level: SECURE_LEVEL_ADMIN
-              }
-            });
-          }}
-        />)
-      )}
+  const [webVisits, setWebVisits] = useState([]);
 
-      <View style={{ alignItems: "center" }}>
-        <SubButton
-          title="טבלת הליגה"
-          offline={!dataLoaded}
-          onPress={() => {
-            props.navigation.navigate("LeagueTable");
-          }}
-          style={styles.subButton}
-        />
-        <SubButton
-          title="למחזורים הקודמים"
-          offline={
-            !dataLoaded ||
-            !fixtures ||
-            !(
-              fixtures.filter(item => !item.isRemoved && !item.isOpen).length >
-              0
-            )
+  if (Platform.OS == "web") {
+    useEffect(() => {
+      dbCommunictor.getVisits().then(res => {
+        let newWebVisits = [...webVisits];
+
+        if (res.status == 200) {
+          if (res.data != null && res.data != undefined) {
+            newWebVisits = [...res.data];
           }
-          onPress={() => {
-            props.navigation.navigate("PreviousFixtures");
-          }}
-          style={styles.subButton}
 
-        />
-        <SubButton
-          title="שחקני הקבוצה"
-          offline={!dataLoaded}
-          onPress={() => {
-            props.navigation.navigate({
-              routeName: "AllPlayers"
-            });
-          }}
-          style={styles.subButton}
+          newWebVisits.push({ time: Date.now() });
 
-        />
-        {Platform.OS!="web"&&<SubButton
-          style={styles.subButton}
-          title="ניהול ליגה"
-          offline={!dataLoaded}
-          onPress={() => {
-            props.navigation.navigate({
-              routeName: "RequirePassword",
-              params: {
-                level: SECURE_LEVEL_ADMIN,
-                routeName: "ManageLeague"
-              }
-            });
-          }}
-        />}
+          dbCommunictor.setVisits(newWebVisits).then(res => {
+            if (res.status == 200) {
+              setWebVisits(newWebVisits);
+            } else {
+              console.log("put request failed: " + res.status);
+            }
+          });
+        } else {
+          console.log("get requets failed: " + res.status);
+        }
+      });
+    }, []);
+  }
+
+  return (
+    <View style={{ flex: 1, height: "100%", backgroundColor: Colors.white }}>
+      <View style={styles.container}>
+        <Spinner visible={!dataLoaded} textContent={""} textStyle={{}} />
+        {Platform.OS != "web" ? (
+          <Image
+            source={require("../assets/images/colorful-logo-280h.png")}
+            style={styles.logo}
+          />
+        ) : (
+          <ImageBackground
+            resizeMode="contain"
+            source={require("../assets/images/colorful-logo-280h.png")}
+            style={{ height: 200, width: 200 }}
+          />
+        )}
+        {currentFixture ? (
+          <MainButton
+            title="למחזור הנוכחי"
+            offline={!dataLoaded}
+            onPress={() => {
+              props.navigation.navigate({
+                routeName: "ViewFixture",
+                params: {
+                  fixtureId: currentFixture.id
+                }
+              });
+            }}
+          />
+        ) : Platform.OS == "web" ? (
+          <Text style={styles.noFixtureTitle}>לא משוחק מחזור כרגע</Text>
+        ) : (
+          <MainButton
+            title="מחזור חדש"
+            offline={!dataLoaded}
+            onPress={() => {
+              props.navigation.navigate({
+                routeName: "RequirePassword",
+                params: {
+                  routeName: "CreateFixture",
+                  level: SECURE_LEVEL_ADMIN
+                }
+              });
+            }}
+          />
+        )}
+
+        <View style={{ alignItems: "center" }}>
+          <SubButton
+            title="טבלת הליגה"
+            offline={!dataLoaded}
+            onPress={() => {
+              props.navigation.navigate("LeagueTable");
+            }}
+            style={styles.subButton}
+          />
+          <SubButton
+            title="למחזורים הקודמים"
+            offline={
+              !dataLoaded ||
+              !fixtures ||
+              !(
+                fixtures.filter(item => !item.isRemoved && !item.isOpen)
+                  .length > 0
+              )
+            }
+            onPress={() => {
+              props.navigation.navigate("PreviousFixtures");
+            }}
+            style={styles.subButton}
+          />
+          <SubButton
+            title="שחקני הקבוצה"
+            offline={!dataLoaded}
+            onPress={() => {
+              props.navigation.navigate({
+                routeName: "AllPlayers"
+              });
+            }}
+            style={styles.subButton}
+          />
+          {Platform.OS != "web" && (
+            <SubButton
+              style={styles.subButton}
+              title="ניהול ליגה"
+              offline={!dataLoaded}
+              onPress={() => {
+                props.navigation.navigate({
+                  routeName: "RequirePassword",
+                  params: {
+                    level: SECURE_LEVEL_ADMIN,
+                    routeName: "ManageLeague"
+                  }
+                });
+              }}
+            />
+          )}
+        </View>
+      </View>
+      <View style={{flexDirection:"row", justifyContent:"center"}}>
+        {(Platform.OS == "web" && webVisits.length > 0) && (
+          <Text style={styles.visitsText}>{"צפיות: " + webVisits.length}</Text>
+        )}
+        <Text style={styles.versionText}>{"מספר גרסא: " + version}</Text>
       </View>
     </View>
-      <Text style={styles.versionText}>{"מספר גרסא: "+version}</Text>
-      </View>
   );
 };
 
@@ -204,14 +253,21 @@ const styles = StyleSheet.create({
   },
   versionText: {
     color: Colors.darkGray,
-    textAlign:"center",
-    paddingBottom:20,
-    fontFamily:"assistant-regular"
+    textAlign: "center",
+    paddingBottom: 20,
+    fontFamily: "assistant-regular"
+  },
+  visitsText: {
+    color: Colors.darkGray,
+    textAlign: "center",
+    paddingBottom: 20,
+    fontFamily: "assistant-regular",
+    marginEnd:20,
   },
   noFixtureTitle: {
-    fontFamily:"assistant-semi-bold",
-    fontSize:25,
-    color:Colors.darkGray
+    fontFamily: "assistant-semi-bold",
+    fontSize: 25,
+    color: Colors.darkGray
   },
   subButton: {
     marginBottom: 15

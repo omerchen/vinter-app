@@ -1,5 +1,5 @@
 // Deployment Configurations
-export const isDebug = false
+export const isDebug = true
 export const version = "2.0.1"
 
 // UX Configurations
