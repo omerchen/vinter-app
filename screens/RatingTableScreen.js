@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, Platform, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
@@ -26,8 +26,57 @@ let RatingTableScreen = props => {
   const TABLE_ATT_COL = 2;
   const TABLE_DEF_COL = 3;
 
+  const [orderBy, setOrderby] = useState(TABLE_AVG_COL);
+
   const flexArr = [2, 1, 1, 1];
-  const playersTableHead = ["שם השחקן", "ממוצע", "התקפה", "הגנה"];
+  const playersTableHead = [
+    "שם השחקן",
+    <TouchableOpacity
+      onPress={() => {
+        setOrderby(TABLE_AVG_COL);
+      }}
+    >
+      <Text
+        style={{
+          ...styles.text,
+          color: "#fff",
+          fontFamily: orderBy==TABLE_AVG_COL?"assistant-extra-bold":"assistant-semi-bold"
+        }}
+      >
+        {"ממוצע"}
+      </Text>
+    </TouchableOpacity>,
+    <TouchableOpacity
+      onPress={() => {
+        setOrderby(TABLE_ATT_COL);
+      }}
+    >
+      <Text
+        style={{
+          ...styles.text,
+          color: "#fff",
+          fontFamily: orderBy==TABLE_ATT_COL?"assistant-extra-bold":"assistant-semi-bold"
+        }}
+      >
+        {"התקפה"}
+      </Text>
+    </TouchableOpacity>,
+    <TouchableOpacity
+      onPress={() => {
+        setOrderby(TABLE_DEF_COL);
+      }}
+    >
+      <Text
+        style={{
+          ...styles.text,
+          color: "#fff",
+          fontFamily: orderBy==TABLE_DEF_COL?"assistant-extra-bold":"assistant-semi-bold"
+        }}
+      >
+        {"הגנה"}
+      </Text>
+    </TouchableOpacity>,
+  ];
 
   const playersList = players
     ? players.filter(player => !player.isRemoved)
@@ -50,15 +99,17 @@ let RatingTableScreen = props => {
         switch (i) {
           case TABLE_NAME_COL:
             tableObject.push(
-              <TouchableOpacity onPress={()=>{
-                props.navigation.navigate({
-                  routeName:"RatePlayer",
-                  params: {
-                    playerName: player.name,
-                    playerId: player.id
-                  }
-                })
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate({
+                    routeName: "RatePlayer",
+                    params: {
+                      playerName: player.name,
+                      playerId: player.id
+                    }
+                  });
+                }}
+              >
                 <Text style={styles.text}>{player.name}</Text>
               </TouchableOpacity>
             );
@@ -95,10 +146,13 @@ let RatingTableScreen = props => {
       return tableObject;
     })
     .sort((a, b) => {
-      if (a[TABLE_AVG_COL] == noRatingString) return true;
-      if (b[TABLE_AVG_COL] == noRatingString) return false;
+      if (a[orderBy] == noRatingString) return true;
+      if (b[orderBy] == noRatingString) return false;
+      if (parseFloat(a[orderBy]) == parseFloat(b[orderBy])) {
+        return parseFloat(a[TABLE_AVG_COL]) <= parseFloat(b[TABLE_AVG_COL])
+      }
 
-      return parseFloat(a[TABLE_AVG_COL]) <= parseFloat(b[TABLE_AVG_COL]);
+      return parseFloat(a[orderBy]) <= parseFloat(b[orderBy]);
     });
 
   return (
@@ -110,16 +164,11 @@ let RatingTableScreen = props => {
         style={{ maxWidth: 350, width: "90%" }}
         borderStyle={{ borderWidth: 1, borderColor: Colors.primaryDark }}
       >
-        <Row
-          data={playersTableHead}
-          style={styles.head}
-          textStyle={{
-            ...styles.text,
-            color: "#fff",
-            fontFamily: "assistant-bold"
-          }}
-          flexArr={flexArr}
-        />
+        <Row data={playersTableHead} style={styles.head} flexArr={flexArr} textStyle={{
+          ...styles.text,
+          color: "#fff",
+          fontFamily: "assistant-bold"
+        }} />
       </Table>
       <ScrollView style={{ marginTop: -1, maxWidth: 350, width: "90%" }}>
         <Table
