@@ -26,7 +26,7 @@ let RatingTableScreen = props => {
   const TABLE_ATT_COL = 2;
   const TABLE_DEF_COL = 3;
 
-  const flexArr = [1.5, 1, 1, 1];
+  const flexArr = [2, 1, 1, 1];
   const playersTableHead = ["שם השחקן", "ממוצע", "התקפה", "הגנה"];
 
   const playersList = players
@@ -53,9 +53,12 @@ let RatingTableScreen = props => {
             break;
           case TABLE_AVG_COL:
             tableObject.push(
-              player.attackRating == null || player.attackRating == undefined || player.defenseRating == null || player.defenseRating == undefined
+              player.attackRating == null ||
+                player.attackRating == undefined ||
+                player.defenseRating == null ||
+                player.defenseRating == undefined
                 ? noRatingString
-                : (player.attackRating + player.defenseRating)/2
+                : (player.attackRating + player.defenseRating) / 2
             );
             break;
           case TABLE_ATT_COL:
@@ -87,7 +90,7 @@ let RatingTableScreen = props => {
     });
 
   return (
-    <ScrollView
+    <View
       style={styles.container}
       contentContainerStyle={{ alignItems: "center" }}
     >
@@ -105,20 +108,31 @@ let RatingTableScreen = props => {
           }}
           flexArr={flexArr}
         />
-        {playersTableData.map((rowData, index) => {
-          return (
-            <Row
-              key={index}
-              data={rowData}
-              textStyle={styles.text}
-              flexArr={flexArr}
-              style={isNaN(playersTableData[index][TABLE_AVG_COL])?{backgroundColor:"yellow"}:{}}
-            />
-          );
-        })}
       </Table>
+      <ScrollView style={{marginTop:-1,maxWidth: 350, width: "90%" }}>
+        <Table
+          style={{ maxWidth: 350}}
+          borderStyle={{ borderWidth: 1, borderColor: Colors.primaryDark }}
+        >
+          {playersTableData.map((rowData, index) => {
+            return (
+              <Row
+                key={index}
+                data={rowData}
+                textStyle={styles.text}
+                flexArr={flexArr}
+                style={
+                  isNaN(playersTableData[index][TABLE_AVG_COL])
+                    ? { backgroundColor: "yellow" }
+                    : {}
+                }
+              />
+            );
+          })}
+        </Table>
+      </ScrollView>
       <View style={{ height: 50 }} />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -134,7 +148,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 30,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
+    alignItems:"center"
   },
   tableTitle: {
     fontFamily: "assistant-semi-bold",
