@@ -74,7 +74,7 @@ let PlayerSreen = props => {
           onPress={() => {
             props.navigation.navigate({
               routeName: "PlayerTransactions",
-              params: { playerId: playerId }
+              params: { playerId: playerId, playerName: players[playerId].name }
             });
           }}
         />
@@ -84,7 +84,7 @@ let PlayerSreen = props => {
           onPress={() => {
             props.navigation.navigate({
               routeName: "PlayerExtraPoints",
-              params: { playerId: playerId }
+              params: { playerId: playerId, playerName: players[playerId].name }
             });
           }}
         />

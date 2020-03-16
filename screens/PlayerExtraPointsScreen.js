@@ -87,7 +87,9 @@ let PlayerExtraPointsScreen = props => {
 
 PlayerExtraPointsScreen.navigationOptions = navigationData => {
   return {
-    headerTitle: "ניקוד נלווה",
+    headerTitle: navigationData.navigation.getParam("playerName")
+    ? navigationData.navigation.getParam("playerName")
+    : "ניקוד נלווה",
     headerRight: () => {
       if (Platform.OS == "web") return null;
 

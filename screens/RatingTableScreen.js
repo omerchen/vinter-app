@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Platform, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows, Col } from "react-native-table-component";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
@@ -49,7 +49,19 @@ let RatingTableScreen = props => {
       for (let i = 0; i < playersTableHead.length; i++) {
         switch (i) {
           case TABLE_NAME_COL:
-            tableObject.push(player.name);
+            tableObject.push(
+              <TouchableOpacity onPress={()=>{
+                props.navigation.navigate({
+                  routeName:"RatePlayer",
+                  params: {
+                    playerName: player.name,
+                    playerId: player.id
+                  }
+                })
+              }}>
+                <Text style={styles.text}>{player.name}</Text>
+              </TouchableOpacity>
+            );
             break;
           case TABLE_AVG_COL:
             tableObject.push(
@@ -109,9 +121,9 @@ let RatingTableScreen = props => {
           flexArr={flexArr}
         />
       </Table>
-      <ScrollView style={{marginTop:-1,maxWidth: 350, width: "90%" }}>
+      <ScrollView style={{ marginTop: -1, maxWidth: 350, width: "90%" }}>
         <Table
-          style={{ maxWidth: 350}}
+          style={{ maxWidth: 350 }}
           borderStyle={{ borderWidth: 1, borderColor: Colors.primaryDark }}
         >
           {playersTableData.map((rowData, index) => {
@@ -149,7 +161,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 30,
     backgroundColor: Colors.white,
-    alignItems:"center"
+    alignItems: "center"
   },
   tableTitle: {
     fontFamily: "assistant-semi-bold",

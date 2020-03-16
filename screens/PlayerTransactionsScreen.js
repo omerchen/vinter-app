@@ -16,7 +16,7 @@ import TransactionCard from "../components/TransactionCard";
 import TextInput from "react-native-material-textinput";
 import { DismissKeyboardView } from "../components/DismissKeyboardView";
 import { SECURE_LEVEL_ADMIN } from "../constants/security-levels";
-import {mergeSort} from "../helpers/mergeSort"
+import { mergeSort } from "../helpers/mergeSort";
 
 let PlayerTransactionsScreen = props => {
   let players = useSelector(state => state.players);
@@ -41,7 +41,7 @@ let PlayerTransactionsScreen = props => {
       else if (bArr[i] > aArr[i]) return false;
     }
 
-    return true
+    return true;
   };
 
   let numOfColumn = 1;
@@ -52,7 +52,11 @@ let PlayerTransactionsScreen = props => {
     <FlatList
       style={{ width: "100%" }}
       contentContainerStyle={{ alignItems: "center" }}
-      data={Platform.OS=="web"?mergeSort(transactions, sortByDateString):transactions.sort(sortByDateString)}
+      data={
+        Platform.OS == "web"
+          ? mergeSort(transactions, sortByDateString)
+          : transactions.sort(sortByDateString)
+      }
       keyExtractor={item => item.id.toString()}
       renderItem={({ item }) => (
         <TransactionCard
@@ -87,7 +91,9 @@ let PlayerTransactionsScreen = props => {
 
 PlayerTransactionsScreen.navigationOptions = navigationData => {
   return {
-    headerTitle: "מאזן כספי",
+    headerTitle: navigationData.navigation.getParam("playerName")
+      ? navigationData.navigation.getParam("playerName")
+      : "מאזן כספי",
     headerRight: () => {
       if (Platform.OS == "web") return null;
 

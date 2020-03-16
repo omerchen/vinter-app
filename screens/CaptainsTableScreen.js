@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Platform, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows, Col } from "react-native-table-component";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
@@ -66,7 +66,16 @@ let CaptainsTableScreen = props => {
       for (let i = 0; i < playersTableHead.length; i++) {
         switch (i) {
           case TABLE_NAME_COL:
-            tableObject.push(player.name);
+            tableObject.push(<TouchableOpacity onPress={()=>{
+              props.navigation.navigate({
+                routeName:"Player",
+                params: {
+                  playerId: player.id
+                }
+              })
+            }}>
+              <Text style={styles.text}>{player.name}</Text>
+            </TouchableOpacity>)
             break;
           case TABLE_CP_TIMES_COL:
             tableObject.push(cpCounter);
