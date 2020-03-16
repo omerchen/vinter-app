@@ -5,6 +5,7 @@ let orangeSign = "🧡";
 let greenSign = "💚";
 let gkIdentifier = "(שוער)";
 let captainIdentifier = "(קפטן)";
+const playerIdentifierInsidePrelist = ")";
 
 const MINIMUM_PLAYERS_PER_TEAM = 3;
 const MAXIMUM_PLAYERS_PER_TEAM = 7;
@@ -241,8 +242,8 @@ export const reverseList = (playersList, players) => {
 
     // Add players
     for (let j in playersList[i].players) {
-      list += "\n"
-      
+      list += "\n";
+
       let playerObject = playersList[i].players[j];
 
       list += players[playerObject.id].name;
@@ -258,4 +259,154 @@ export const reverseList = (playersList, players) => {
   }
 
   return list;
+};
+
+export const parsePreList = (fixturePreList, players) => {
+  if (players == null || players == undefined) {
+    Alert.alert("מאגר שחקנים ריק");
+    return null;
+  }
+
+  if (fixturePreList == "") {
+    Alert.alert("רשימה ריקה");
+    return null;
+  }
+
+  let relevantLines = fixturePreList.split("\n").filter(line => {
+    line = line
+      .split(blueSign)
+      .join("")
+      .split(orangeSign)
+      .join("")
+      .split(greenSign)
+      .join("")
+      .split(gkIdentifier)
+      .join("")
+      .trim();
+
+    if (line == "") return false;
+
+    if (line.indexOf(playerIdentifierInsidePrelist) == -1) return false;
+
+    let lineParts = line.split(playerIdentifierInsidePrelist);
+
+    if (lineParts.length != 2) return false;
+
+    let playerPotentialName = lineParts[1].trim();
+
+    if (
+      players.filter(p => !p.isRemoved && p.name == playerPotentialName)
+        .length == 0
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  if (relevantLines.length == 0) {
+    Alert.alert("לא אותרו שחקנים ברשימה");
+    return null;
+  }
+
+  if (relevantLines.length % 3 != 0) {
+    Alert.alert("מספר השחקנים לא מתחלק ב3");
+    return null;
+  }
+
+  let playersArray = [];
+
+  for (let i in relevantLines) {
+    let line = relevantLines[i]
+      .split(blueSign)
+      .join("")
+      .split(orangeSign)
+      .join("")
+      .split(greenSign)
+      .join("")
+      .split(gkIdentifier)
+      .join("")
+      .trim();
+
+    let lineParts = line.split(playerIdentifierInsidePrelist);
+
+    let playerPotentialName = lineParts[1].trim();
+
+    let player = players.filter(
+      p => !p.isRemoved && p.name == playerPotentialName
+    )[0];
+
+    let isGoalkeeper = occurrences(relevantLines[i], gkIdentifier) == 1;
+    let teamId = null; // TODO: implement later
+
+    if (relevantLines[i].indexOf(blueSign) != -1) {
+      teamId = 0;
+    } else if (relevantLines[i].indexOf(orangeSign) != -1) {
+      teamId = 1;
+    } else if (relevantLines[i].indexOf(greenSign) != -1) {
+      teamId = 2;
+    }
+
+    playersArray.push({
+      id: player.id,
+      name: player.name,
+      defenseRating:
+        player.defenseRating == undefined ? null : player.defenseRating,
+      attackRating:
+        player.defenseRating == undefined ? null : player.attackRating,
+      isGoalkeeper: isGoalkeeper,
+      overallRating: isGoalkeeper
+        ? player.defenseRating == undefined
+          ? null
+          : player.defenseRating
+        : player.defenseRating != null &&
+          player.defenseRating != undefined &&
+          player.attackRating != null &&
+          player.attackRating != undefined
+        ? (player.defenseRating + player.attackRating) / 2
+        : null,
+      teamId: teamId
+    });
+  }
+
+
+  // validate the team rules
+  let gkCounter = [0,0,0]
+
+  let playerCounter = [0,0,0]
+
+  let gkAmount = 0
+
+  for (let i in playersArray) {
+    if (playersArray[i].teamId != null) {
+      playerCounter[playersArray[i].teamId]+=1
+
+      if (playersArray[i].isGoalkeeper) {
+        gkCounter[playersArray[i].teamId]+=1
+      }
+    }
+
+    if (playersArray[i].isGoalkeeper) {
+      gkAmount+=1
+    }
+  }
+
+  if (gkAmount > 3) {
+    Alert.alert("יותר משלושה שוערים ברשימה")
+    return null
+  }
+
+  for (let i in playerCounter) {
+    if (playerCounter[i]>playersArray.length/3) {
+      Alert.alert("יותר מדי שחקנים בקבוצה מסויימת")
+      return null;
+    }
+
+    if (gkCounter[i]>1) {
+      Alert.alert("יותר משוער אחד בקבוצה מסויימת")
+      return null;
+    }
+  }
+
+  return playersArray;
 };

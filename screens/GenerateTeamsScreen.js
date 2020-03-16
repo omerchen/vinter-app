@@ -23,10 +23,13 @@ import {
   fixtureTypeRadio
 } from "../constants/fixture-properties";
 import moment from "moment";
-import { parseList } from "../helpers/fixture-list-parser";
+import { parseList, parsePreList } from "../helpers/fixture-list-parser";
 import Spinner from "react-native-loading-spinner-overlay";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import { MaterialIconsHeaderButton, MaterialCommunityIconsHeaderButton } from "../components/HeaderButton";
+import {
+  MaterialIconsHeaderButton,
+  MaterialCommunityIconsHeaderButton
+} from "../components/HeaderButton";
 
 let inputLength = 250;
 
@@ -51,8 +54,13 @@ let GenerateTeamsScreen = props => {
 
   let generateTeams = useCallback(() => {
     // TODO: implement later
-    setFixtureList("DONE");
-    setFixtureListValidation(false);
+    if (parsePreList(fixturePreList, players) == null) {
+      setFixtureListValidation(false);
+      setFixtureList("");
+    } else {
+      setFixtureListValidation(true);
+      setFixtureList("DONE");
+    }
   }, [
     players,
     loading,
@@ -177,7 +185,9 @@ GenerateTeamsScreen.navigationOptions = navigationData => {
     headerTitle: "בניית כוחות",
     headerRight: () => {
       return (
-        <HeaderButtons HeaderButtonComponent={MaterialCommunityIconsHeaderButton}>
+        <HeaderButtons
+          HeaderButtonComponent={MaterialCommunityIconsHeaderButton}
+        >
           <Item
             title="Remove Fixture"
             iconName="swap-horizontal"
