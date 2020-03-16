@@ -28,6 +28,9 @@ import EditFixtureScreen from "../screens/EditFixtureScreen";
 import EditTransactionScreen from "../screens/EditTransactionScreen";
 import ManageLeagueScreen from "../screens/ManageLeagueScreen";
 import TransactionsTableScreen from "../screens/TransactionsTableScreen";
+import PlayerExtraPointsScreen from "../screens/PlayerExtraPointsScreen";
+import AddExtraPointScreen from "../screens/AddExtraPointScreen";
+import EditExtraPointScreen from "../screens/EditExtraPointScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -76,6 +79,12 @@ const MainNavigator = createStackNavigator(
         headerTitle: "הוספת טרנזקציה"
       }
     },
+    AddExtraPoint: {
+      screen: AddExtraPointScreen,
+      navigationOptions: {
+        headerTitle: "הוספת ניקוד נלווה"
+      }
+    },
     ManageLeague: {
       screen: ManageLeagueScreen,
       navigationOptions: {
@@ -94,11 +103,17 @@ const MainNavigator = createStackNavigator(
     PlayerTransactions: {
       screen: PlayerTransactionsScreen,
     },
+    PlayerExtraPoints: {
+      screen: PlayerExtraPointsScreen,
+    },
     FixtureStatistics: {
       screen: FixtureStatisticsScreen,
     },
     EditTransaction: {
       screen: EditTransactionScreen,
+    },
+    EditExtraPoint: {
+      screen: EditExtraPointScreen,
     },
     CreateMatch: {
       screen: CreateMatchScreen,

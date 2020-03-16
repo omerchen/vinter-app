@@ -80,6 +80,16 @@ let PlayerSreen = props => {
         />
         <SubButton
           style={styles.featureButton}
+          title="ניקוד נלווה"
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "PlayerExtraPoints",
+              params: { playerId: playerId }
+            });
+          }}
+        />
+        <SubButton
+          style={styles.featureButton}
           title="צפייה במחזורים"
           onPress={() => {
             props.navigation.navigate({

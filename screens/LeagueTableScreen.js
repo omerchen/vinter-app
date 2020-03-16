@@ -6,7 +6,7 @@ import { Table, Row, Rows } from "react-native-table-component";
 import { ScrollView } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
-import { calculatePoints } from "../helpers/rules";
+import { calculatePoints, RULES_EXTRA_POINT } from "../helpers/rules";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
@@ -31,7 +31,7 @@ let LeagueTableScreen = props => {
   const TABLE_GOAL_COL = 7;
   const TABLE_ASSIST_COL = 8;
   const TABLE_SAVE_COL = 9;
-  const TABLE_CAPTAIN_COL = 10;
+  const TABLE_EXTRA_POINTS_COL = 10;
   const TABLE_CLEAN_COL = -1;
   const flexArr = [1, 1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const playersTableHead = [
@@ -45,7 +45,7 @@ let LeagueTableScreen = props => {
     "שערים",
     "בישולים",
     "הצלות",
-    "קפטן"
+    "נלווה"
   ];
 
   const playersList = players
@@ -67,8 +67,26 @@ let LeagueTableScreen = props => {
         cleansheet: 0,
         mvps: 0,
         captain: 0,
-        teamTies: 0
+        teamTies: 0,
+        extraPoints: 0,
       };
+
+      if (player.extraPoints != null && player.extraPoints != undefined) {
+        let filteredExtraPoints = player.extraPoints.filter(e=>!e.isRemoved)
+
+        for (let i in filteredExtraPoints) {
+          pointsObject.points = (
+            parseFloat(pointsObject.points) +
+            parseFloat(filteredExtraPoints[i].sum * RULES_EXTRA_POINT)
+          ).toFixed(1);
+
+          pointsObject.extraPoints = (
+            parseFloat(pointsObject.extraPoints) +
+            parseFloat(filteredExtraPoints[i].sum * RULES_EXTRA_POINT)
+          ).toFixed(1);
+
+        }
+      }
 
       for (let i in filteredFixtures) {
         let currentPointsObject = calculatePoints(
@@ -81,7 +99,7 @@ let LeagueTableScreen = props => {
         pointsObject.points = (
           parseFloat(pointsObject.points) +
           parseFloat(currentPointsObject.points)
-        ).toFixed(1); // TODO: add punishes + fairplay
+        ).toFixed(1);
         pointsObject.goals += currentPointsObject.goals;
         pointsObject.assists += currentPointsObject.assists;
         pointsObject.saves += currentPointsObject.saves;
@@ -119,8 +137,8 @@ let LeagueTableScreen = props => {
           case TABLE_MVP_COL:
             tableObject.push(pointsObject.mvps);
             break;
-          case TABLE_CAPTAIN_COL:
-            tableObject.push(pointsObject.captain);
+          case TABLE_EXTRA_POINTS_COL:
+            tableObject.push(pointsObject.extraPoints);
             break;
           case TABLE_CLEAN_COL:
             tableObject.push(pointsObject.cleansheets);
