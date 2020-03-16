@@ -23,7 +23,7 @@ import {
   fixtureTypeRadio
 } from "../constants/fixture-properties";
 import moment from "moment";
-import { parseList, parsePreList } from "../helpers/fixture-list-parser";
+import { parseList, parsePreList, parsePlayersArrayToList } from "../helpers/fixture-list-parser";
 import Spinner from "react-native-loading-spinner-overlay";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import {
@@ -54,12 +54,13 @@ let GenerateTeamsScreen = props => {
 
   let generateTeams = useCallback(() => {
     // TODO: implement later
-    if (parsePreList(fixturePreList, players) == null) {
+    let playersArray = parsePreList(fixturePreList, players)
+    if (playersArray == null) {
       setFixtureListValidation(false);
       setFixtureList("");
     } else {
       setFixtureListValidation(true);
-      setFixtureList("DONE");
+      setFixtureList(parsePlayersArrayToList(playersArray));
     }
   }, [
     players,

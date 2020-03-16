@@ -261,6 +261,44 @@ export const reverseList = (playersList, players) => {
   return list;
 };
 
+export const parsePlayersArrayToList = (playersArray) => {
+  let teamArrays = [[],[],[]]
+
+  for (let i in playersArray) {
+    if (playersArray[i].teamId!=null) {
+      teamArrays[playersArray[i].teamId].push(playersArray[i])
+    }
+  }
+
+  let strList = ""
+
+  for (let i in teamArrays) {
+    if (i != 0) strList += "\n\n"
+
+    let sign = ""
+
+    if (i == 0) {
+      sign = blueSign
+    } else if (i == 1) {
+      sign = orangeSign
+    } else if (i == 2) {
+      sign = greenSign
+    }
+
+    strList += "קבוצה "+sign+":"
+
+    for (let j in teamArrays[i]) {
+      strList += "\n"+teamArrays[i][j].name
+      
+      if (teamArrays[i][j].isGoalkeeper) {
+        strList += " "+gkIdentifier
+      }
+    }
+  }
+
+  return strList
+}
+
 export const parsePreList = (fixturePreList, players) => {
   if (players == null || players == undefined) {
     Alert.alert("מאגר שחקנים ריק");
