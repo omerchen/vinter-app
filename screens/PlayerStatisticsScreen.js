@@ -30,79 +30,143 @@ import {
 let PlayerStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
-  const playerId = props.navigation.getParam("playerId")
+  const playerId = props.navigation.getParam("playerId");
   const filteredFixtures = fixtures
     ? fixtures.filter(
         fixture => !fixture.isRemoved && fixture.type != FIXTURE_TYPE_FRIENDLY
       )
     : [];
 
-  const [goals, setGoals] = useState(0);
-  const [assists, setAssists] = useState(0);
-  const [saves, setSaves] = useState(0);
+  let goals = 0;
+  let assists = 0;
+  let saves = 0;
+  let fixturesPlayed = [];
 
-  const loadData = () => {
-    let goalsCounter = 0
-    let assistsCounter = 0
-    let savesCounter = 0
+  for (let i in filteredFixtures) {
+    let currentScore = calculatePoints(players, fixtures, playerId, filteredFixtures[i].id);
 
-    for (let i in fixtures) {
-      let currentScore = calculatePoints(players, fixtures, playerId, i)
+    goals += currentScore.goals;
+    assists += currentScore.assists;
+    saves += currentScore.saves;
 
-      goalsCounter += currentScore.goals
-      assistsCounter += currentScore.assists
-      savesCounter += currentScore.saves
+    if (currentScore.appearence) {
+      fixturesPlayed.push({ ...currentScore, fixtureId: filteredFixtures[i].id });
     }
-
-    setGoals(goalsCounter)
-    setAssists(assistsCounter)
-    setSaves(savesCounter)
   }
-
-  useEffect(()=>{
-    loadData()
-  },[])
 
   // charts configuration
 
-  const chartConfig = {
+  const pointsChartConfig = {
     backgroundGradientFrom: Colors.white,
     backgroundGradientFromOpacity: 1,
     backgroundGradientTo: Colors.white,
     backgroundGradientToOpacity: 1,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     color: (opacity = 1) => {
-      return `black`;
+      return `rgba(0, 150, 220, ${opacity})`;
     },
     barPercentage: 0.9
   };
+ 
+  const goalsChartConfig = {
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientFromOpacity: 1,
+    backgroundGradientTo: Colors.white,
+    backgroundGradientToOpacity: 1,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => {
+      return `rgba(0, 200, 140, ${opacity})`;
+    },
+    barPercentage: 0.9
+  };
+ 
+  const assistsChartConfig = {
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientFromOpacity: 1,
+    backgroundGradientTo: Colors.white,
+    backgroundGradientToOpacity: 1,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => {
+      return `rgba(250, 150, 0, ${opacity})`;
+    },
+    barPercentage: 0.9
+  };
+ 
+  const savesChartConfig = {
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientFromOpacity: 1,
+    backgroundGradientTo: Colors.white,
+    backgroundGradientToOpacity: 1,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => {
+      return `rgba(250, 0, 100, ${opacity})`;
+    },
+    barPercentage: 0.9
+  };
+ 
+  
+  let pointsLineChartData = {
+    labels: fixturesPlayed.map(f => fixtures[f.fixtureId].number),
+    datasets: [
+      {
+        data: fixturesPlayed.map(f => parseFloat(f.points)),
+      }
+    ]
+  };
 
-  let data = [
+  let goalsLineChartData = {
+    labels: fixturesPlayed.map(f => fixtures[f.fixtureId].number),
+    datasets: [
+      {
+        data: fixturesPlayed.map(f => parseFloat(f.goals)),
+      }
+    ]
+  };
+
+  let assistsLineChartData = {
+    labels: fixturesPlayed.map(f => fixtures[f.fixtureId].number),
+    datasets: [
+      {
+        data: fixturesPlayed.map(f => parseFloat(f.assists)),
+      }
+    ]
+  };
+
+  let savesLineChartData = {
+    labels: fixturesPlayed.map(f => fixtures[f.fixtureId].number),
+    datasets: [
+      {
+        data: fixturesPlayed.map(f => parseFloat(f.saves)),
+      }
+    ]
+  };
+
+  let pieData = [
     {
       name: "שערים",
       population: goals,
-      color: Platform.OS=="web"?'#ea728c':'#413c69',
+      color: "#ea728c",
       legendFontColor: Colors.black,
       legendFontSize: 17
     },
     {
       name: "בישולים",
       population: assists,
-      color: Platform.OS=="web"?'#fc9d9d':'#4a47a3',
+      color: "#fc9d9d",
       legendFontColor: Colors.black,
       legendFontSize: 17
     },
     {
       name: "הצלות",
       population: saves,
-      color: Platform.OS=="web"?'#f3d4d4':'#ad62aa',
+      color: "#f3d4d4",
       legendFontColor: Colors.black,
-      legendFontSize: 17,
+      legendFontSize: 17
     }
   ];
 
   if (Platform.OS == "android") {
-    data = data.map(d => {
+    pieData = pieData.map(d => {
       let nd = { ...d };
       nd.name = nd.name
         .split("")
@@ -112,29 +176,84 @@ let PlayerStatisticsScreen = props => {
     });
   }
 
-  const screenWidth = Math.min(Dimensions.get("window").width*.85, 500);
+  const screenWidth = Math.min(Dimensions.get("window").width * 0.85, 500);
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ alignItems: "center" }}
     >
-      {(goals>0||assists>0||saves>0)&&<View style={styles.card}>
-        <Text style={styles.title}>מאזן אישי</Text>
-        <PieChart
-          data={data}
-          width={screenWidth}
-          height={220}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          style={{
-            alignSelf: "center",
-          }}
-          absolute
-        />
-      </View>}
+      {fixturesPlayed.length == 0 && (
+        <View style={styles.card}>
+          <Text style={styles.title}>לא נמצאו נתונים</Text>
+          <Text style={styles.subText}>
+            ניתן לראות סטטיסטיקה רק עבור שחקנים שהגיעו העונה
+          </Text>
+        </View>
+      )}
+      {(goals > 0 || assists > 0 || saves > 0) && (
+        <View style={styles.card}>
+          <Text style={styles.title}>מאזן אישי</Text>
+          <PieChart
+            data={pieData}
+            width={screenWidth}
+            height={220}
+            chartConfig={pointsChartConfig}
+            accessor="population"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            style={{
+              alignSelf: "center"
+            }}
+            absolute
+          />
+        </View>
+      )}
+      {fixturesPlayed.length > 0 && (
+        <View style={{flex:1, width:'100%', alignItems:"center"}}>
+          <View style={styles.card}>
+            <Text style={styles.title}>התקדמות נקודות</Text>
+            <LineChart
+              data={pointsLineChartData}
+              width={screenWidth}
+              height={300}
+              chartConfig={pointsChartConfig}
+              bezier
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>התקדמות שערים</Text>
+            <LineChart
+              data={goalsLineChartData}
+              width={screenWidth}
+              height={300}
+              chartConfig={goalsChartConfig}
+              bezier
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>התקדמות בישולים</Text>
+            <LineChart
+              data={assistsLineChartData}
+              width={screenWidth}
+              height={300}
+              chartConfig={assistsChartConfig}
+              bezier
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>התקדמות הצלות</Text>
+            <LineChart
+              data={savesLineChartData}
+              width={screenWidth}
+              height={300}
+              chartConfig={savesChartConfig}
+              bezier
+            />
+          </View>
+        </View>
+      )}
+      <View style={{ height: 50 }} />
     </ScrollView>
   );
 };
@@ -142,27 +261,37 @@ let PlayerStatisticsScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 15,
     backgroundColor: Colors.gray
   },
   card: {
     backgroundColor: Colors.white,
-    justifyContent:"flex-start",
-    alignItems:"center",
-    elevation:5,
-    margin:5,
-    borderRadius:10,
-    padding:10,
-    maxWidth: '92%'
-  }, 
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    marginHorizontal: 5,
+    marginTop: 5,
+    marginBottom: 15,
+    borderRadius: 10,
+    padding: 10,
+    maxWidth: "92%",
+    width: 500,
+    minHeight: 200
+  },
   text: {
     fontFamily: "assistant-semi-bold",
-    fontSize: 25,
+    fontSize: 25
   },
   title: {
     fontFamily: "assistant-bold",
     fontSize: 25,
-    marginBottom:10
+    marginBottom: 10
+  },
+  subText: {
+    fontFamily: "assistant-semi-bold",
+    fontSize: 20,
+    marginBottom: 10,
+    color: Colors.darkGray
   }
 });
 
