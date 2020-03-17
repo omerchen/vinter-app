@@ -36,6 +36,7 @@ import CaptainsTableScreen from "../screens/CaptainsTableScreen";
 import RatePlayerScreen from "../screens/RatePlayerScreen";
 import RatingTableScreen from "../screens/RatingTableScreen";
 import GenerateTeamsScreen from "../screens/GenerateTeamsScreen";
+import PlayerStatisticsScreen from "../screens/PlayerStatisticsScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -65,6 +66,9 @@ const MainNavigator = createStackNavigator(
     },
     RateCaptains: {
       screen: RateCaptainsScreen,
+    },
+    PlayerStatistics: {
+      screen: PlayerStatisticsScreen,
     },
     RatePlayer: {
       screen: RatePlayerScreen,

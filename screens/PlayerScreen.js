@@ -68,7 +68,7 @@ let PlayerSreen = props => {
         </View>
       </View>
       <View style={{ marginTop: 15, alignItems: "center" }}>
-        <SubButton
+      <SubButton
           style={styles.featureButton}
           title="מאזן כספי"
           onPress={() => {
@@ -80,10 +80,10 @@ let PlayerSreen = props => {
         />
         <SubButton
           style={styles.featureButton}
-          title="ניקוד נלווה"
+          title="סטטיסטיקות אישיות"
           onPress={() => {
             props.navigation.navigate({
-              routeName: "PlayerExtraPoints",
+              routeName: "PlayerStatistics",
               params: { playerId: playerId, playerName: players[playerId].name }
             });
           }}
@@ -98,6 +98,17 @@ let PlayerSreen = props => {
             });
           }}
         />
+        <SubButton
+          style={styles.featureButton}
+          title="ניקוד נלווה"
+          onPress={() => {
+            props.navigation.navigate({
+              routeName: "PlayerExtraPoints",
+              params: { playerId: playerId, playerName: players[playerId].name }
+            });
+          }}
+        />
+        
       </View>
     </ScrollView>
   );
