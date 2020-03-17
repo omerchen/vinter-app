@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Platform, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  Image,
+  Dimensions
+} from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows } from "react-native-table-component";
@@ -34,8 +41,7 @@ let LeagueTableScreen = props => {
   const TABLE_EXTRA_POINTS_COL = 10;
   const TABLE_CLEAN_COL = -1;
 
-  const [orderBy, setOrderBy] = useState(TABLE_POINTS_COL)
-
+  const [orderBy, setOrderBy] = useState(TABLE_POINTS_COL);
 
   const flexArr = [1, 1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   let playersTableHead = [
@@ -52,22 +58,28 @@ let LeagueTableScreen = props => {
     "נלווה"
   ];
 
-  playersTableHead = playersTableHead.map((title, index)=>{
-    if (index < TABLE_POINTS_COL) return title
+  playersTableHead = playersTableHead.map((title, index) => {
+    if (index < TABLE_POINTS_COL) return title;
 
-    return <TouchableOpacity disabled={index==orderBy} onPress={()=>{
-      setOrderBy(index)
-    }}>
-      <Text style={orderBy==index?styles.textLight:styles.textBold}>{title}</Text>
-    </TouchableOpacity>
-  })
+    return (
+      <TouchableOpacity
+        disabled={index == orderBy}
+        onPress={() => {
+          setOrderBy(index);
+        }}
+      >
+        <Text style={orderBy == index ? styles.textLight : styles.textBold}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  });
 
   const playersList = players
     ? players.filter(player => !player.isRemoved)
     : [];
 
   // STATISTICS CALCULATIONS STARTS HERE (closedMatches.length > 0)
-
   let playersTableData = playersList
     .map(player => {
       let tableObject = [];
@@ -82,11 +94,11 @@ let LeagueTableScreen = props => {
         mvps: 0,
         captain: 0,
         teamTies: 0,
-        extraPoints: 0,
+        extraPoints: 0
       };
 
       if (player.extraPoints != null && player.extraPoints != undefined) {
-        let filteredExtraPoints = player.extraPoints.filter(e=>!e.isRemoved)
+        let filteredExtraPoints = player.extraPoints.filter(e => !e.isRemoved);
 
         for (let i in filteredExtraPoints) {
           pointsObject.points = (
@@ -98,7 +110,6 @@ let LeagueTableScreen = props => {
             parseFloat(pointsObject.extraPoints) +
             parseFloat(filteredExtraPoints[i].sum * RULES_EXTRA_POINT)
           ).toFixed(1);
-
         }
       }
 
@@ -128,16 +139,20 @@ let LeagueTableScreen = props => {
       for (let i = 0; i < playersTableHead.length; i++) {
         switch (i) {
           case TABLE_NAME_COL:
-            tableObject.push(<TouchableOpacity onPress={()=>{
-              props.navigation.navigate({
-                routeName:"Player",
-                params: {
-                  playerId: player.id
-                }
-              })
-            }}>
-              <Text style={styles.text}>{player.name}</Text>
-            </TouchableOpacity>)
+            tableObject.push(
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate({
+                    routeName: "Player",
+                    params: {
+                      playerId: player.id
+                    }
+                  });
+                }}
+              >
+                <Text style={styles.text}>{player.name}</Text>
+              </TouchableOpacity>
+            );
             break;
           case TABLE_POINTS_COL:
             tableObject.push(pointsObject.points);
@@ -176,16 +191,12 @@ let LeagueTableScreen = props => {
 
       return tableObject;
     })
-    .sort(
-      (a, b) =>
-        parseFloat(a[orderBy]) <= parseFloat(b[orderBy])
-    );
+    .sort((a, b) => parseFloat(a[orderBy]) <= parseFloat(b[orderBy]));
 
   if (Platform.OS == "web") {
     playersTableData = mergeSort(
       playersTableData,
-      (a, b) =>
-        parseFloat(a[orderBy]) < parseFloat(b[orderBy])
+      (a, b) => parseFloat(a[orderBy]) < parseFloat(b[orderBy])
     );
   }
 
@@ -194,16 +205,16 @@ let LeagueTableScreen = props => {
     playersTableData[i][TABLE_POSITION_COL] = parseInt(i) + 1;
   }
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.logoContainer}>
-        {Platform.OS != "web" && (
+    <View style={styles.container}>
+      {(Platform.OS == "android") && (
+        <View style={styles.logoContainer}>
           <Image
             resizeMode="contain"
-            source={require("../assets/images/colorful-logo-280h.png")}
+            source={require("../assets/images/colorful-logo-200h.png")}
             style={styles.logo}
           />
-        )}
-      </View>
+        </View>
+      )}
       <Table
         borderStyle={{ borderWidth: 2, borderColor: Colors.primaryBright }}
       >
@@ -213,28 +224,52 @@ let LeagueTableScreen = props => {
           textStyle={styles.text}
           flexArr={flexArr}
         />
-        {playersTableData.map((rowData, index) => {
-          return (
-            <Row
-              key={index}
-              data={rowData}
-              textStyle={index == 0 && Platform.OS != "web" ? {...styles.text, fontFamily: "assistant-bold"}:styles.text}
-              flexArr={flexArr}
-              style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
-            />
-          );
-        })}
       </Table>
-      <View style={{ height: 50 }} />
-    </ScrollView>
+      <ScrollView style={{ marginTop: -2 }}>
+        <Table
+          borderStyle={{ borderWidth: 2, borderColor: Colors.primaryBright }}
+        >
+          {playersTableData.map((rowData, index) => {
+            return (
+              <Row
+                key={index}
+                data={rowData}
+                textStyle={
+                  index == 0 && Platform.OS != "web"
+                    ? { ...styles.text, fontFamily: "assistant-bold" }
+                    : styles.text
+                }
+                flexArr={flexArr}
+                style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
+              />
+            );
+          })}
+        </Table>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: Colors.primaryBrightest },
-  text: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-semi-bold" },
-  textLight: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-bold" },
-  textBold: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-semi-bold" },
+  text: {
+    margin: 6,
+    textAlign: "left",
+    fontSize: 14,
+    fontFamily: "assistant-semi-bold"
+  },
+  textLight: {
+    margin: 6,
+    textAlign: "left",
+    fontSize: 14,
+    fontFamily: "assistant-bold"
+  },
+  textBold: {
+    margin: 6,
+    textAlign: "left",
+    fontSize: 14,
+    fontFamily: "assistant-semi-bold"
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -251,7 +286,8 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   logo: {
-    height: 180,
+    height: 120,
+    width: 120,
     marginBottom: 30
   }
 });
