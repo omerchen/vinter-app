@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, Platform, Image } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
@@ -33,8 +33,12 @@ let LeagueTableScreen = props => {
   const TABLE_SAVE_COL = 9;
   const TABLE_EXTRA_POINTS_COL = 10;
   const TABLE_CLEAN_COL = -1;
+
+  const [orderBy, setOrderBy] = useState(TABLE_POINTS_COL)
+
+
   const flexArr = [1, 1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-  const playersTableHead = [
+  let playersTableHead = [
     "מקום",
     "שם השחקן",
     "נקודות",
@@ -47,6 +51,16 @@ let LeagueTableScreen = props => {
     "הצלות",
     "נלווה"
   ];
+
+  playersTableHead = playersTableHead.map((title, index)=>{
+    if (index < TABLE_POINTS_COL) return title
+
+    return <TouchableOpacity disabled={index==orderBy} onPress={()=>{
+      setOrderBy(index)
+    }}>
+      <Text style={orderBy==index?styles.textLight:styles.textBold}>{title}</Text>
+    </TouchableOpacity>
+  })
 
   const playersList = players
     ? players.filter(player => !player.isRemoved)
@@ -164,14 +178,14 @@ let LeagueTableScreen = props => {
     })
     .sort(
       (a, b) =>
-        parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL])
+        parseFloat(a[orderBy]) <= parseFloat(b[orderBy])
     );
 
   if (Platform.OS == "web") {
     playersTableData = mergeSort(
       playersTableData,
       (a, b) =>
-        parseFloat(a[TABLE_POINTS_COL]) <= parseFloat(b[TABLE_POINTS_COL])
+        parseFloat(a[orderBy]) < parseFloat(b[orderBy])
     );
   }
 
@@ -218,7 +232,9 @@ let LeagueTableScreen = props => {
 
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: Colors.primaryBrightest },
-  text: { margin: 6, textAlign: "left", fontSize: 14 },
+  text: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-semi-bold" },
+  textLight: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-bold" },
+  textBold: { margin: 6, textAlign: "left", fontSize: 14, fontFamily:"assistant-semi-bold" },
   container: {
     flex: 1,
     padding: 20,
