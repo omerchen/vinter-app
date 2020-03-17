@@ -149,7 +149,6 @@ let PlayerStatisticsScreen = props => {
 
     for (let w in awayMatches) {
       let awayEvents = awayMatches[w].events ? awayMatches[w].events : [];
-      console.log(awayMatches[w]);
 
       if (!awayMatches[w].isOpen) {
         secondsPlayed += awayMatches[w].time;
@@ -676,7 +675,7 @@ const styles = StyleSheet.create({
     color: "#61d4b3",
     textAlign: "center",
     marginHorizontal: 20,
-    minWidth: 100
+    minWidth: 300
   },
   metaText: {
     fontFamily: "assistant-semi-bold",
