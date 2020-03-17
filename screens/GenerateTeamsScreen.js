@@ -110,7 +110,7 @@ let GenerateTeamsScreen = props => {
       }
     }
 
-    setFixtureList(parsePlayersArrayToList(generate(playersArray)))
+    setFixtureList(parsePlayersArrayToList(generate(playersArray).array))
   }
 
   useEffect(() => {
@@ -155,7 +155,7 @@ let GenerateTeamsScreen = props => {
             ...styles.listInput,
             ...(fixtureListValidation ? {} : styles.error)
           }}
-          numberOfLines={21}
+          numberOfLines={16}
           multiline={true}
         />
         <View
