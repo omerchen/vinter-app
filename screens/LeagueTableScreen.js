@@ -41,7 +41,7 @@ let LeagueTableScreen = props => {
   const TABLE_EXTRA_POINTS_COL = 10;
   const TABLE_CLEAN_COL = -1;
 
-  const [orderBy, setOrderBy] = useState(TABLE_POINTS_COL);
+  const [orderBy, setOrderBy] = useState(TABLE_POSITION_COL);
 
   const flexArr = [1, 1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   let playersTableHead = [
@@ -59,8 +59,6 @@ let LeagueTableScreen = props => {
   ];
 
   playersTableHead = playersTableHead.map((title, index) => {
-    if (index < TABLE_POINTS_COL) return title;
-
     return (
       <TouchableOpacity
         disabled={index == orderBy}
@@ -80,8 +78,8 @@ let LeagueTableScreen = props => {
     : [];
 
   // STATISTICS CALCULATIONS STARTS HERE (closedMatches.length > 0)
-  let playersTableData = playersList
-    .map(player => {
+  let playersTableData = mergeSort(
+    playersList.map(player => {
       let tableObject = [];
       let pointsObject = {
         points: 0,
@@ -190,23 +188,32 @@ let LeagueTableScreen = props => {
       }
 
       return tableObject;
-    })
-    .sort((a, b) => parseFloat(a[orderBy]) <= parseFloat(b[orderBy]));
-
-  if (Platform.OS == "web") {
-    playersTableData = mergeSort(
-      playersTableData,
-      (a, b) => parseFloat(a[orderBy]) < parseFloat(b[orderBy])
-    );
-  }
+    }),
+    (a, b) => {
+      if (orderBy == TABLE_NAME_COL) {
+        return a[orderBy].props.children.props.children > b[orderBy].props.children.props.children
+      }
+      if (orderBy == TABLE_POSITION_COL) {
+        return parseFloat(a[TABLE_POINTS_COL]) < parseFloat(b[TABLE_POINTS_COL]);
+      }
+      return parseFloat(a[orderBy]) < parseFloat(b[orderBy]);
+    }
+  );
 
   // add position label
   for (let i in playersTableData) {
-    playersTableData[i][TABLE_POSITION_COL] = parseInt(i) + 1;
+    playersTableData[i][TABLE_POSITION_COL] = 1;
+
+    for (let j in playersTableData) {
+      if (parseFloat(playersTableData[i][TABLE_POINTS_COL]) < parseFloat(playersTableData[j][TABLE_POINTS_COL])) {
+        playersTableData[i][TABLE_POSITION_COL] += 1
+      }
+
+    }
   }
   return (
     <View style={styles.container}>
-      {(Platform.OS == "android") && (
+      {Platform.OS == "android" && (
         <View style={styles.logoContainer}>
           <Image
             resizeMode="contain"
@@ -230,17 +237,18 @@ let LeagueTableScreen = props => {
           borderStyle={{ borderWidth: 2, borderColor: Colors.primaryBright }}
         >
           {playersTableData.map((rowData, index) => {
+            let isFirst = rowData[TABLE_POSITION_COL] == 1
             return (
               <Row
                 key={index}
                 data={rowData}
                 textStyle={
-                  index == 0 && Platform.OS != "web"
+                  isFirst && Platform.OS != "web"
                     ? { ...styles.text, fontFamily: "assistant-bold" }
                     : styles.text
                 }
                 flexArr={flexArr}
-                style={index == 0 ? { backgroundColor: "#FDEEBE" } : {}}
+                style={isFirst ? { backgroundColor: "#FDEEBE" } : {}}
               />
             );
           })}

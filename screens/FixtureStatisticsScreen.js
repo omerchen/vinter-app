@@ -236,8 +236,17 @@ let FixtureStatisticsScreen = props => {
       return tableObject;
     }),
     (a, b) => {
+      if (playersOrderBy == TABLE_POINTS_COL) {
+        return parseFloat(a[playersOrderBy]) <= parseFloat(b[playersOrderBy]);
+      }
+
+      if (playersOrderBy == TABLE_NAME_COL) {
+        return a[playersOrderBy].props.children.props.children > b[playersOrderBy].props.children.props.children
+      }
+
       if (playersOrderDirection[playersOrderBy]) return a[playersOrderBy] > b[playersOrderBy];
-      else return a[playersOrderBy] <= b[playersOrderBy];
+
+      return a[playersOrderBy] <= b[playersOrderBy];
     }
   );
 
