@@ -75,9 +75,6 @@ const MainNavigator = createStackNavigator(
     },
     PreviousFixtures: {
       screen: PreviousFixturesScreen,
-      navigationOptions: {
-        headerTitle: "מחזורים קודמים"
-      }
     },
     PreviousMatches: {
       screen: PreviousMatchesScreen,

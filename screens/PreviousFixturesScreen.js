@@ -12,6 +12,7 @@ import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
 import SubButton from "../components/SubButton";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
+import {mergeSort} from "../helpers/mergeSort"
 
 let PreviousFixturesScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
@@ -24,8 +25,8 @@ let PreviousFixturesScreen = props => {
     props.navigation.pop()
   }
 
-  let filteredFixtures = fixtures?fixtures
-  .filter(item => !item.isRemoved && !item.isOpen).sort((a,b)=>a.id<b.id).filter(item=>{
+  let filteredFixtures = fixtures?mergeSort(fixtures
+  .filter(item => !item.isRemoved && !item.isOpen),(a,b)=>a.id<b.id).filter(item=>{
     if (!filterByPlayer) return true
 
     for (let i in item.playersList) {
@@ -71,6 +72,14 @@ let PreviousFixturesScreen = props => {
         }):<Text style={{marginTop:50, fontFamily:"assistant-semi-bold", fontSize:25, color: Colors.darkGray}}>לא נמצו מחזורים</Text>}
     </ScrollView>
   );
+};
+
+PreviousFixturesScreen.navigationOptions = navigationData => {
+  return {
+    headerTitle: navigationData.navigation.getParam("playerName")
+      ? navigationData.navigation.getParam("playerName")
+      : "מחזורים קודמים",
+  };
 };
 
 const styles = StyleSheet.create({

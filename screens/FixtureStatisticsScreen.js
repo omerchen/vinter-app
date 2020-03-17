@@ -1,21 +1,28 @@
-import React from "react";
-import { StyleSheet, Text, View, ColorPropType, Image, Platform } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ColorPropType,
+  Image,
+  Platform
+} from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { Table, Row, Rows } from "react-native-table-component";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { shortTeamLabelsArray } from "../helpers/fixture-list-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { calculatePoints } from "../helpers/rules";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
-import { mergeSort } from "../helpers/mergeSort"
+import { mergeSort } from "../helpers/mergeSort";
 
 let FixtureStatisticsScreen = props => {
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
   const fixtureId = props.navigation.getParam("fixtureId");
-  const fixture = fixtures[fixtureId]
+  const fixture = fixtures[fixtureId];
 
   const matches = fixture.matches ? fixture.matches : [];
   const closedMatches = matches.filter(item => !item.isRemoved && !item.isOpen);
@@ -28,7 +35,9 @@ let FixtureStatisticsScreen = props => {
   const TABLE_SAVE_COL = 5;
   const TABLE_CLEAN_COL = -1;
 
-  const playersTableHead = [
+  const [playersOrderBy, setPlayersOrderBy] = useState(TABLE_POINTS_COL);
+
+  let playersTableHead = [
     "קבוצה",
     "שם השחקן",
     "צבירת נקודות",
@@ -37,6 +46,26 @@ let FixtureStatisticsScreen = props => {
     // "שער נקי",
     "הצלות גדולות"
   ];
+
+  let playersOrderDirection = [true, true, false, false, false, false];
+
+  playersTableHead = playersTableHead.map((title, index) => {
+    return (
+      <TouchableOpacity
+        disabled={index == playersOrderBy}
+        onPress={() => {
+          setPlayersOrderBy(index);
+        }}
+      >
+        <Text
+          style={playersOrderBy == index ? styles.textLight : styles.textBold}
+        >
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  });
+
   const playersList = [];
   for (let i in fixture.playersList) {
     playersList.push(
@@ -76,7 +105,15 @@ let FixtureStatisticsScreen = props => {
     if (playerObject.isGoalkeeper) {
       name += " (GK)";
     }
-    return name;
+
+    return <TouchableOpacity onPress={()=>{
+      props.navigation.navigate({
+        routeName: "Player",
+        params: {
+          playerId: playerObject.id
+        }
+      })
+    }}><Text style={styles.text}>{name}</Text></TouchableOpacity>;
   };
 
   const getGoals = playerObject => {
@@ -164,8 +201,8 @@ let FixtureStatisticsScreen = props => {
       .points;
   };
 
-  let playersTableData = playersList
-    .map(playerObject => {
+  let playersTableData = mergeSort(
+    playersList.map(playerObject => {
       let tableObject = [];
 
       for (let i = 0; i < playersTableHead.length; i++) {
@@ -197,12 +234,16 @@ let FixtureStatisticsScreen = props => {
       }
 
       return tableObject;
-    })
-    .sort((a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL]);
+    }),
+    (a, b) => {
+      if (playersOrderDirection[playersOrderBy]) return a[playersOrderBy] > b[playersOrderBy];
+      else return a[playersOrderBy] <= b[playersOrderBy];
+    }
+  );
 
-  if (Platform.OS == "web") {
-    playersTableData = mergeSort(playersTableData, (a, b) => a[TABLE_POINTS_COL] <= b[TABLE_POINTS_COL])
-  }
+  // if (Platform.OS == "web") {
+  //   playersTableData = mergeSort(playersTableData, (a, b) => a[TABLE_POINTS_COL] < b[TABLE_POINTS_COL])
+  // }
 
   let pad = (n, width, z) => {
     z = z || "0";
@@ -379,11 +420,13 @@ let FixtureStatisticsScreen = props => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
-        {Platform.OS!="web"&&<Image
-          resizeMode="contain"
-          source={require("../assets/images/colorful-logo-280h.png")}
-          style={styles.logo}
-        />}
+        {Platform.OS != "web" && (
+          <Image
+            resizeMode="contain"
+            source={require("../assets/images/colorful-logo-280h.png")}
+            style={styles.logo}
+          />
+        )}
       </View>
       <Text style={styles.tableTitle}>נתונים קבוצתיים</Text>
       <Table borderStyle={{ borderWidth: 2, borderColor: "#c8e1ff" }}>
@@ -414,6 +457,18 @@ let FixtureStatisticsScreen = props => {
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: Colors.primaryBrightest },
   text: { margin: 6, textAlign: "left" },
+  textLight: {
+    margin: 6,
+    textAlign: "left",
+    fontSize: 14,
+    fontFamily: "assistant-bold"
+  },
+  textBold: {
+    margin: 6,
+    textAlign: "left",
+    fontSize: 14,
+    fontFamily: "assistant-semi-bold"
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -436,7 +491,8 @@ const styles = StyleSheet.create({
 });
 
 FixtureStatisticsScreen.navigationOptions = navigationData => {
-  let title = "נתוני מחזור " + navigationData.navigation.getParam("fixtureNumber")
+  let title =
+    "נתוני מחזור " + navigationData.navigation.getParam("fixtureNumber");
 
   return {
     headerTitle: title,

@@ -94,7 +94,7 @@ let PlayerSreen = props => {
           onPress={() => {
             props.navigation.navigate({
               routeName: "PreviousFixtures",
-              params: { playerId: playerId }
+              params: { playerId: playerId, playerName: players[playerId].name }
             });
           }}
         />
