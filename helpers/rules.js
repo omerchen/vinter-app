@@ -204,7 +204,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     reds: 0,
     isCaptain: false,
     isGoalkeeper: false,
-    mvp: false
+    mvp: false,
+    matchWins:0,
+    teamId: null,
   };
   if (
     !fixtures ||
@@ -238,9 +240,10 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
   if (!playerObject) return pointsObject;
 
-  pointsObject.appearence = true;
-
   const teamId = playerObject.team;
+  
+  pointsObject.appearence = true;
+  pointsObject.teamId = teamId;
 
   pointsObject.isCaptain = playerObject.isCaptain;
   pointsObject.isGoalkeeper = playerObject.isGoalkeeper;
@@ -253,6 +256,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
   pointsObject.reds = getReds(playerObject, closedMatches);
   pointsObject.cleansheets = getCleanSheet(playerObject, closedMatches);
   pointsObject.fixtureType = fixtures[fixtureId].type;
+
 
   if (fixtures[fixtureId].type == FIXTURE_TYPE_STANDARD) {
     // STANDARD FIXTURE
@@ -273,6 +277,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     // Team Win
     let i = teamId;
     let wins = closedMatches.filter(match => match.winnerId == i);
+    pointsObject.matchWins+= wins.length
     let penaltyWins = wins.filter(match => {
       let homeGoals = match.events
         ? match.events.filter(
@@ -421,6 +426,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     // Team Win
     let i = teamId;
     let wins = closedMatches.filter(match => match.winnerId == i);
+    pointsObject.matchWins+= wins.length
     let penaltyWins = wins.filter(match => {
       let homeGoals = match.events
         ? match.events.filter(
