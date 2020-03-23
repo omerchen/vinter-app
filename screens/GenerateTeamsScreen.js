@@ -8,7 +8,8 @@ import {
   Dimensions,
   View,
   Clipboard,
-  TextInput
+  TextInput,
+  Text
 } from "react-native";
 import Colors from "../constants/colors";
 import MainButton from "../components/MainButton";
@@ -18,7 +19,7 @@ import RadioForm from "react-native-simple-radio-button";
 import { connect, useSelector } from "react-redux";
 import DBCommunicator from "../helpers/db-communictor";
 import { SET_FIXTURES, setFixtures } from "../store/actions/fixtures";
-import {generate} from "../helpers/team-generator"
+import { generate, BAD_GRADE } from "../helpers/team-generator";
 import {
   fixtureCourtRadio,
   fixtureTypeRadio
@@ -40,6 +41,7 @@ let inputLength = 250;
 
 let GenerateTeamsScreen = props => {
   let [loading, setLoading] = useState(false);
+  let [grade, setGrade] = useState(null);
 
   let players = useSelector(state => state.players);
 
@@ -66,7 +68,7 @@ let GenerateTeamsScreen = props => {
     } else {
       setFixtureListValidation(true);
 
-      buildCompleteObject(playersArray)
+      buildCompleteObject(playersArray);
     }
   }, [
     players,
@@ -78,40 +80,49 @@ let GenerateTeamsScreen = props => {
   ]);
 
   let buildCompleteObject = playersArray => {
-
     for (let i in playersArray) {
-      if (playersArray[i].overallRating == null && playersArray[i].skip != true) {
+      if (
+        playersArray[i].overallRating == null &&
+        playersArray[i].skip != true
+      ) {
         Alert.alert(
           "בעיה בבניית האוברול של " + playersArray[i].name,
           "ביכולתנו לנחש את היכולת שלו אך עדיף כמובן להזין יכולת מדוייקת",
           [
-            { text: "נחש", onPress: ()=>{
-              let newPlayersArray = [...playersArray]
-              newPlayersArray[i].skip = true
-              buildCompleteObject(newPlayersArray)
-            } ,style: "default" },
+            {
+              text: "נחש",
+              onPress: () => {
+                let newPlayersArray = [...playersArray];
+                newPlayersArray[i].skip = true;
+                buildCompleteObject(newPlayersArray);
+              },
+              style: "default"
+            },
             {
               text: "עדכן יכולת",
-              onPress: ()=>{
+              onPress: () => {
                 props.navigation.navigate({
                   routeName: "RatePlayer",
                   params: {
                     playerId: playersArray[i].id,
                     playerName: playersArray[i].name
                   }
-                })
+                });
               },
               style: "cancel"
             }
-          ], {cancelable:true}
+          ],
+          { cancelable: true }
         );
 
         return;
       }
     }
 
-    setFixtureList(parsePlayersArrayToList(generate(playersArray).array))
-  }
+    teamsResult = generate(playersArray);
+    setFixtureList(parsePlayersArrayToList(teamsResult.array));
+    setGrade(teamsResult.grade);
+  };
 
   useEffect(() => {
     props.navigation.setParams({
@@ -174,9 +185,26 @@ let GenerateTeamsScreen = props => {
             title="נקה רשימה"
             onPress={() => {
               setFixtureList("");
+              setGrade(null)
             }}
           />
         </View>
+        {grade!=null && (
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={{ fontFamily: "assistant-semi-bold", fontSize: 22 }}>
+              ציון:
+            </Text>
+            <Text
+              style={{
+                fontFamily: "assistant-bold",
+                fontSize: 22,
+                marginStart: 2
+              }}
+            >
+              {grade.toFixed(2)}
+            </Text>
+          </View>
+        )}
         <TextInput
           value={fixtureList}
           onChange={e => {
