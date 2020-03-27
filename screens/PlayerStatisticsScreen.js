@@ -44,9 +44,11 @@ let PlayerStatisticsScreen = props => {
   let captains = 0;
   let wins = 0;
   let ties = 0;
+  let matches = 0;
   let cleansheets = 0;
   let matchWins = 0;
   let fixturesPlayed = [];
+  let fixturesGKPlayed = [];
   let goalsFor = 0;
   let goalAgaints = 0;
   let secondsPlayed = 0;
@@ -75,36 +77,48 @@ let PlayerStatisticsScreen = props => {
     ties += currentScore.teamTie ? 1 : 0;
     captains += currentScore.isCaptain ? 1 : 0;
     points = parseFloat(points) + parseFloat(currentScore.points);
+    matches += currentScore.matches;
 
     if (currentScore.appearence) {
       fixturesPlayed.push({
         ...currentScore,
         fixtureId: filteredFixtures[i].id
       });
+
+      if (currentScore.isGoalkeeper) {
+        fixturesGKPlayed.push({
+          ...currentScore,
+          fixtureId: filteredFixtures[i].id
+        });
+      }
     }
   }
 
   for (let i in fixturesPlayed) {
     // Statistics about the fixture itself
-    let playerTeam = fixtures[fixturesPlayed[i].fixtureId].playersList[fixturesPlayed[i].teamId].players
+    let playerTeam =
+      fixtures[fixturesPlayed[i].fixtureId].playersList[
+        fixturesPlayed[i].teamId
+      ].players;
     for (let j in playerTeam) {
-      playerTracking[playerTeam[j].id].playedTogether += 1
+      playerTracking[playerTeam[j].id].playedTogether += 1;
 
       if (fixturesPlayed[i].teamWin) {
-        playerTracking[playerTeam[j].id].winTogether += 1
+        playerTracking[playerTeam[j].id].winTogether += 1;
       }
     }
-
 
     // Statistics About matches
     let matches = fixtures[fixturesPlayed[i].fixtureId].matches;
     matches = matches ? matches : [];
 
-    let activeMatches = matches.filter(m=>!m.isRemoved)
+    let activeMatches = matches.filter(m => !m.isRemoved);
 
     // check global events
     for (let w in activeMatches) {
-      let events = activeMatches[w].events ? activeMatches[w].events.filter(e=>!e.isRemoved) : [];
+      let events = activeMatches[w].events
+        ? activeMatches[w].events.filter(e => !e.isRemoved)
+        : [];
 
       for (let j in events) {
         if (
@@ -128,7 +142,12 @@ let PlayerStatisticsScreen = props => {
       let homeEvents = homeMatches[w].events ? homeMatches[w].events : [];
 
       if (!homeMatches[w].isOpen) {
-        secondsPlayed += homeMatches[w].time;
+        let matchTime = Math.floor(
+          (homeMatches[w].endWhistleTime - homeMatches[w].startWhistleTime) /
+            1000
+        );
+        matchTime = matchTime ? matchTime : homeMatches[w].time;
+        secondsPlayed += matchTime;
       }
 
       for (let j in homeEvents) {
@@ -151,7 +170,12 @@ let PlayerStatisticsScreen = props => {
       let awayEvents = awayMatches[w].events ? awayMatches[w].events : [];
 
       if (!awayMatches[w].isOpen) {
-        secondsPlayed += awayMatches[w].time;
+        let matchTime = Math.floor(
+          (awayMatches[w].endWhistleTime - awayMatches[w].startWhistleTime) /
+            1000
+        );
+        matchTime = matchTime ? matchTime : awayMatches[w].time;
+        secondsPlayed += matchTime;
       }
 
       for (let j in awayEvents) {
@@ -190,16 +214,97 @@ let PlayerStatisticsScreen = props => {
 
     if (bestPlayedTogether == null) bestPlayedTogether = i;
     else if (
-      playerTracking[i].playedTogether > playerTracking[bestPlayedTogether].playedTogether
+      playerTracking[i].playedTogether >
+      playerTracking[bestPlayedTogether].playedTogether
     ) {
       bestPlayedTogether = i;
     }
 
     if (bestWinTogether == null) bestWinTogether = i;
     else if (
-      playerTracking[i].winTogether > playerTracking[bestWinTogether].winTogether
+      playerTracking[i].winTogether >
+      playerTracking[bestWinTogether].winTogether
     ) {
       bestWinTogether = i;
+    }
+  }
+
+  // gk statistics
+  let gkGoalsAgainst = 0;
+  let gkCleansheets = 0;
+  let gkSaves = 0;
+  let gkMatches = 0;
+  let gkCleanSheetmaxTime = 0;
+  let gkCurrentRecord = 0;
+  let gkRecordStillActive = false;
+  let gkPlayingSeconds = 0;
+
+  for (let i in fixturesGKPlayed) {
+    gkMatches += fixturesGKPlayed[i].matches;
+    gkSaves += fixturesGKPlayed[i].saves;
+    gkCleansheets += fixturesGKPlayed[i].cleansheets;
+    gkGoalsAgainst += fixturesGKPlayed[i].teamGoalAgainst;
+
+    let currentFixture = fixtures[fixturesGKPlayed[i].fixtureId];
+    let teamId = fixturesGKPlayed[i].teamId;
+    if (currentFixture.matches) {
+      for (let j in currentFixture.matches) {
+        if (
+          currentFixture.matches[j].isRemoved ||
+          currentFixture.matches[j].isOpen
+        ) {
+          continue;
+        }
+
+        let isHome = false;
+        if (currentFixture.matches[j].homeId == teamId) {
+          isHome = true;
+        } else if (currentFixture.matches[j].awayId != teamId) {
+          continue;
+        }
+
+        let matchTime = Math.floor(
+          (currentFixture.matches[j].endWhistleTime -
+            currentFixture.matches[j].startWhistleTime) /
+            1000
+        );
+        if (matchTime == null || matchTime == undefined) {
+          matchTime = currentFixture.matches[j].time;
+        }
+        gkPlayingSeconds += matchTime;
+
+        let relevantEvents = mergeSort(
+          currentFixture.matches[j].events
+            ? currentFixture.matches[j].events.filter(
+                e =>
+                  !e.isRemoved &&
+                  e.isHome != isHome &&
+                  e.type == EVENT_TYPE_GOAL
+              )
+            : [],
+          (a, b) => {
+            return a.time > b.time;
+          }
+        );
+
+        let lastAddedTime = 0;
+
+        for (let w in relevantEvents) {
+          gkCurrentRecord += relevantEvents[w].time - lastAddedTime;
+          if (gkCurrentRecord > gkCleanSheetmaxTime) {
+            gkCleanSheetmaxTime = gkCurrentRecord;
+          }
+          gkCurrentRecord = 0;
+          lastAddedTime = relevantEvents[w].time;
+        }
+        gkCurrentRecord += matchTime - lastAddedTime;
+      }
+    }
+
+    if (gkCurrentRecord > gkCleanSheetmaxTime) {
+      gkCleanSheetmaxTime = gkCurrentRecord;
+      gkCurrentRecord = 0;
+      gkRecordStillActive = true;
     }
   }
 
@@ -212,18 +317,18 @@ let PlayerStatisticsScreen = props => {
     if (seconds < 60) return { time: seconds, unit: "שניות" };
     if (seconds < 60 * 60)
       return {
-        time: (seconds / 60).toFixed(0) + ":" + pad(seconds % 60, 2),
+        time: Math.floor(seconds / 60) + ":" + pad(seconds % 60, 2),
         unit: "דקות"
       };
     if (seconds < 60 * 60 * 99)
       return {
         time:
-          (seconds / (60 * 60)).toFixed(0) +
+          Math.floor(seconds / (60 * 60)) +
           ":" +
-          pad(((seconds % (60 * 60)) / 60).toFixed(0), 2),
+          pad(Math.floor((seconds % (60 * 60)) / 60), 2),
         unit: "שעות"
       };
-    return { time: (seconds / (60 * 60)).toFixed(0), unit: "שעות" };
+    return { time: Math.floor(seconds / (60 * 60)), unit: "שעות" };
   };
 
   // charts configuration
@@ -522,7 +627,12 @@ let PlayerStatisticsScreen = props => {
           </View>
           <View style={styles.card}>
             <Text style={styles.title}>זמן משחק עונתי</Text>
-
+            <View style={styles.row}>
+              <View style={styles.dataView}>
+                <Text style={styles.dataText4}>{matches}</Text>
+                <Text style={styles.metaText2}>משחקונים</Text>
+              </View>
+            </View>
             <View style={styles.row}>
               <View style={styles.dataView}>
                 <Text style={styles.dataText4}>
@@ -592,6 +702,69 @@ let PlayerStatisticsScreen = props => {
                 )}
             </View>
           </View>
+          {gkMatches > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.title}>נתוני שוערים</Text>
+
+              <View style={styles.col}>
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    זמן שיא ללא ספיגות{gkRecordStillActive && "*"}
+                  </Text>
+                  <Text style={styles.dataText6}>
+                    {parseSecondsToTime(gkCleanSheetmaxTime).time}
+                  </Text>
+                  <Text style={styles.metaText2}>
+                    {parseSecondsToTime(gkCleanSheetmaxTime).unit}
+                  </Text>
+                </View>
+                <View style={styles.dataView}>
+                  <Text style={styles.dataText6}>
+                    {((gkCleansheets / gkMatches) * 100).toFixed(2) + "%"}
+                  </Text>
+                  <Text style={styles.metaText2}>שערים נקיים</Text>
+                </View>
+
+                <View style={styles.dataView}>
+                  <Text style={styles.dataText6}>
+                    {(gkGoalsAgainst / gkMatches).toFixed(2)}
+                  </Text>
+                  <Text style={styles.metaText2}>ספיגות למשחקון</Text>
+                </View>
+
+                <View style={styles.dataView}>
+                  <Text style={styles.dataText6}>
+                    {(gkSaves / gkMatches).toFixed(2)}
+                  </Text>
+                  <Text style={styles.metaText2}>הצלות למשחקון</Text>
+                </View>
+
+                {gkGoalsAgainst>0&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    ספיגה כל
+                  </Text>
+                  <Text style={styles.dataText6}>
+                    {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkGoalsAgainst)).time}
+                  </Text>
+                  <Text style={styles.metaText2}>
+                  {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkGoalsAgainst)).unit}
+                  </Text>
+                </View>}
+                {gkSaves>0&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    הצלה כל
+                  </Text>
+                  <Text style={styles.dataText6}>
+                    {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkSaves)).time}
+                  </Text>
+                  <Text style={styles.metaText2}>
+                  {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkSaves)).unit}
+                  </Text>
+                </View>}
+
+              </View>
+            </View>
+          )}
         </View>
       )}
       <View style={{ height: 50 }} />
@@ -640,6 +813,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     flexWrap: "wrap"
   },
+  col: {
+    flexDirection: "column",
+    width: "100%",
+    alignItems: "center"
+  },
   dataText: {
     fontFamily: "assistant-bold",
     fontSize: 65,
@@ -677,6 +855,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     minWidth: 300
   },
+  dataText6: {
+    fontFamily: "assistant-bold",
+    fontSize: 70,
+    color: "#fdd365",
+    textAlign: "center",
+    minWidth: 150
+  },
   metaText: {
     fontFamily: "assistant-semi-bold",
     fontSize: 18,
@@ -689,6 +874,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginTop: -10,
     marginBottom: 12,
+    color: Colors.darkGray
+  },
+  metaText2op: {
+    fontFamily: "assistant-semi-bold",
+    fontSize: 25,
+    marginTop: 10,
+    marginBottom: -15,
     color: Colors.darkGray
   },
   metaText3: {

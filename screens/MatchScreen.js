@@ -150,6 +150,11 @@ let MatchScreen = props => {
     newMatch.winnerId = winnerId;
     newMatch.isOpen = false;
     newMatch.endTime = Date.now();
+    newMatch.startTime = newMatch.startTime == null || newMatch.startTime == undefined?newMatch.endTime:newMatch.startTime
+    newMatch.startWhistleTime =
+      match.startWhistleTime == null || match.startWhistleTime == undefined
+        ? newMatch.startTime
+        : match.startWhistleTime;
     newMatch.endWhistleTime =
       match.endWhistleTime == null || match.endWhistleTime == undefined
         ? newMatch.endTime
@@ -581,7 +586,10 @@ let MatchScreen = props => {
           alignItems: "center"
         }}
       >
-        <Image style={{opacity:0, marginTop:50}} source={require("../assets/images/colorful-logo-200h.png")} />
+        <Image
+          style={{ opacity: 0, marginTop: 50 }}
+          source={require("../assets/images/colorful-logo-200h.png")}
+        />
       </View>
     </View>
   );
@@ -683,7 +691,7 @@ const styles = StyleSheet.create({
     width: 1,
     flex: 1,
     backgroundColor: Colors.gray,
-    opacity: .5
+    opacity: 0.5
   },
   gameLayer: {
     flexDirection: "row",

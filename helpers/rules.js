@@ -78,6 +78,54 @@ const getGoals = (playerObject, closedMatches) => {
   return counter;
 };
 
+const getGoalsFor = (teamId, closedMatches) => {
+  let counter = 0;
+  for (let i in closedMatches) {
+    let isHome = false
+    if (closedMatches[i].homeId == teamId) {
+      isHome = true;
+    } else if (closedMatches[i].awayId != teamId) {
+      continue;
+    }
+    counter += closedMatches[i].events
+      ? closedMatches[i].events.filter(
+          item =>
+            !item.isRemoved &&
+            item.isHome === isHome &&
+            item.type === EVENT_TYPE_GOAL
+        ).length
+      : 0;
+  }
+
+  return counter;
+};
+
+const getGoalsAgainst = (teamId, closedMatches) => {
+  let counter = 0;
+  for (let i in closedMatches) {
+    let isHome = false
+    if (closedMatches[i].homeId == teamId) {
+      isHome = true;
+    } else if (closedMatches[i].awayId != teamId) {
+      continue;
+    }
+    counter += closedMatches[i].events
+      ? closedMatches[i].events.filter(
+          item =>
+            !item.isRemoved &&
+            item.isHome !== isHome &&
+            item.type === EVENT_TYPE_GOAL
+        ).length
+      : 0;
+  }
+
+  return counter;
+};
+
+const getMatches = (teamId, closedMatches) => {
+  return closedMatches.filter(match => match.homeId==teamId || match.awayId==teamId).length;
+};
+
 const getYellows = (playerObject, closedMatches) => {
   let counter = 0;
   for (let i in closedMatches) {
@@ -207,6 +255,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     mvp: false,
     matchWins:0,
     teamId: null,
+    matches: 0,
+    teamGoalsFor:0,
+    teamGoalAgainst: 0,
   };
   if (
     !fixtures ||
@@ -255,6 +306,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
   pointsObject.secondYellows = getSecondYellows(playerObject, closedMatches);
   pointsObject.reds = getReds(playerObject, closedMatches);
   pointsObject.cleansheets = getCleanSheet(playerObject, closedMatches);
+  pointsObject.matches = getMatches(teamId, closedMatches)
+  pointsObject.teamGoalsFor = getGoalsFor(teamId, closedMatches)
+  pointsObject.teamGoalAgainst = getGoalsAgainst(teamId, closedMatches)
   pointsObject.fixtureType = fixtures[fixtureId].type;
 
 

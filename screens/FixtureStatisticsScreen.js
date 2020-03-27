@@ -106,14 +106,20 @@ let FixtureStatisticsScreen = props => {
       name += " (GK)";
     }
 
-    return <TouchableOpacity onPress={()=>{
-      props.navigation.navigate({
-        routeName: "Player",
-        params: {
-          playerId: playerObject.id
-        }
-      })
-    }}><Text style={styles.text}>{name}</Text></TouchableOpacity>;
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate({
+            routeName: "Player",
+            params: {
+              playerId: playerObject.id
+            }
+          });
+        }}
+      >
+        <Text style={styles.text}>{name}</Text>
+      </TouchableOpacity>
+    );
   };
 
   const getGoals = playerObject => {
@@ -241,10 +247,14 @@ let FixtureStatisticsScreen = props => {
       }
 
       if (playersOrderBy == TABLE_NAME_COL) {
-        return a[playersOrderBy].props.children.props.children > b[playersOrderBy].props.children.props.children
+        return (
+          a[playersOrderBy].props.children.props.children >
+          b[playersOrderBy].props.children.props.children
+        );
       }
 
-      if (playersOrderDirection[playersOrderBy]) return a[playersOrderBy] > b[playersOrderBy];
+      if (playersOrderDirection[playersOrderBy])
+        return a[playersOrderBy] > b[playersOrderBy];
 
       return a[playersOrderBy] <= b[playersOrderBy];
     }
@@ -384,15 +394,23 @@ let FixtureStatisticsScreen = props => {
     let loseTime = 0;
 
     for (let j in wins) {
-      if (j == 0 || wins[j].time < minWin) {
-        minWin = wins[j].time;
+      let matchTime = Math.floor(
+        (wins[j].endWhistleTime - wins[j].startWhistleTime) / 1000
+      );
+      matchTime = matchTime ? matchTime : wins[j].time;
+      if (j == 0 || matchTime < minWin) {
+        minWin = matchTime;
       }
 
-      winTime += wins[j].time;
+      winTime += matchTime;
     }
 
     for (let j in loses) {
-      loseTime += loses[j].time;
+      let matchTime = Math.floor(
+        (loses[j].endWhistleTime - loses[j].startWhistleTime) / 1000
+      );
+      matchTime = matchTime ? matchTime : loses[j].time;
+      loseTime += matchTime;
     }
 
     let fastestWin = minWin == null ? "--" : parseToString(minWin);
