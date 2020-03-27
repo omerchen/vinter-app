@@ -238,15 +238,46 @@ let PlayerStatisticsScreen = props => {
   let gkCurrentRecord = 0;
   let gkRecordStillActive = false;
   let gkPlayingSeconds = 0;
-  let gkZeroGoals = 0
-  let gkOneGoal = 0
-  let gkMultiGoals = 0
+  let gkZeroGoals = 0;
+  let gkOneGoal = 0;
+  let gkMultiGoals = 0;
+  let gkBestFixtureSaves = null;
+  let gkBestFixtureCleanSheet = null;
+  let gkBestFixtureGoalAgainst = null;
 
   for (let i in fixturesGKPlayed) {
     gkMatches += fixturesGKPlayed[i].matches;
     gkSaves += fixturesGKPlayed[i].saves;
     gkCleansheets += fixturesGKPlayed[i].cleansheets;
     gkGoalsAgainst += fixturesGKPlayed[i].teamGoalAgainst;
+
+    if (
+      gkBestFixtureSaves == null ||
+      gkBestFixtureSaves.value < fixturesGKPlayed[i].saves
+    ) {
+      gkBestFixtureSaves = {
+        fixtureId: fixturesGKPlayed[i].fixtureId,
+        value: fixturesGKPlayed[i].saves
+      };
+    }
+    if (
+      gkBestFixtureCleanSheet == null ||
+      gkBestFixtureCleanSheet.value < fixturesGKPlayed[i].cleansheets
+    ) {
+      gkBestFixtureCleanSheet = {
+        fixtureId: fixturesGKPlayed[i].fixtureId,
+        value: fixturesGKPlayed[i].cleansheets
+      };
+    }
+    if (
+      gkBestFixtureGoalAgainst == null ||
+      gkBestFixtureGoalAgainst.value > fixturesGKPlayed[i].teamGoalAgainst
+    ) {
+      gkBestFixtureGoalAgainst = {
+        fixtureId: fixturesGKPlayed[i].fixtureId,
+        value: fixturesGKPlayed[i].teamGoalAgainst
+      };
+    }
 
     let currentFixture = fixtures[fixturesGKPlayed[i].fixtureId];
     let teamId = fixturesGKPlayed[i].teamId;
@@ -290,9 +321,9 @@ let PlayerStatisticsScreen = props => {
           }
         );
 
-        if (relevantEvents.length == 0) gkZeroGoals+=1
-        else if (relevantEvents.length == 1) gkOneGoal +=1
-        else gkMultiGoals += 1
+        if (relevantEvents.length == 0) gkZeroGoals += 1;
+        else if (relevantEvents.length == 1) gkOneGoal += 1;
+        else gkMultiGoals += 1;
 
         let lastAddedTime = 0;
 
@@ -745,40 +776,11 @@ let PlayerStatisticsScreen = props => {
               <Text style={styles.title}>נתוני שוערים</Text>
 
               <View style={styles.col}>
-              <Text style={styles.metaText2op}>
-                    התפלגות ספיגות במשחקונים
-                  </Text>
-                  <View style={{height:10}}/>
-              <PieChart
-                data={gkPieData}
-                width={screenWidth}
-                height={220}
-                chartConfig={chartConfig}
-                accessor="population"
-                backgroundColor="transparent"
-                paddingLeft="15"
-                style={{
-                  alignSelf: "center"
-                }}
-                absolute
-              /><View style={{height:20}}/>
                 <View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    זמן שיא ללא ספיגות{gkRecordStillActive && "*"}
-                  </Text>
-                  <Text style={styles.dataText6}>
-                    {parseSecondsToTime(gkCleanSheetmaxTime).time}
-                  </Text>
-                  <Text style={styles.metaText2}>
-                    {parseSecondsToTime(gkCleanSheetmaxTime).unit}
-                  </Text>
-                </View>
-                <View style={styles.dataView}>
-                  <Text style={styles.dataText6}>
-                    {gkMatches}
-                  </Text>
+                  <Text style={styles.dataText6}>{gkMatches}</Text>
                   <Text style={styles.metaText2}>משחקונים כשוער</Text>
                 </View>
+
                 <View style={styles.dataView}>
                   <Text style={styles.dataText6}>
                     {((gkCleansheets / gkMatches) * 100).toFixed(2) + "%"}
@@ -800,33 +802,161 @@ let PlayerStatisticsScreen = props => {
                   <Text style={styles.metaText2}>הצלות למשחקון</Text>
                 </View>
 
-                {gkGoalsAgainst>0&&<View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    ספיגה כל
-                  </Text>
-                  <Text style={styles.dataText6}>
-                    {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkGoalsAgainst)).time}
-                  </Text>
-                  <Text style={styles.metaText2}>
-                  {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkGoalsAgainst)).unit}
-                  </Text>
-                </View>}
-                {gkSaves>0&&<View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    הצלה כל
-                  </Text>
-                  <Text style={styles.dataText6}>
-                    {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkSaves)).time}
-                  </Text>
-                  <Text style={styles.metaText2}>
-                  {parseSecondsToTime(Math.floor(gkPlayingSeconds/gkSaves)).unit}
-                  </Text>
-                </View>}
-
-                
+                {gkGoalsAgainst > 0 && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>ספיגה כל</Text>
+                    <Text style={styles.dataText6}>
+                      {
+                        parseSecondsToTime(
+                          Math.floor(gkPlayingSeconds / gkGoalsAgainst)
+                        ).time
+                      }
+                    </Text>
+                    <Text style={styles.metaText2}>
+                      {
+                        parseSecondsToTime(
+                          Math.floor(gkPlayingSeconds / gkGoalsAgainst)
+                        ).unit
+                      }
+                    </Text>
+                  </View>
+                )}
+                {gkSaves > 0 && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>הצלה כל</Text>
+                    <Text style={styles.dataText6}>
+                      {
+                        parseSecondsToTime(
+                          Math.floor(gkPlayingSeconds / gkSaves)
+                        ).time
+                      }
+                    </Text>
+                    <Text style={styles.metaText2}>
+                      {
+                        parseSecondsToTime(
+                          Math.floor(gkPlayingSeconds / gkSaves)
+                        ).unit
+                      }
+                    </Text>
+                  </View>
+                )}
+                <Text style={styles.metaText2op}>התפלגות ספיגות במשחקונים</Text>
+                <View style={{ height: 10 }} />
+                <PieChart
+                  data={gkPieData}
+                  width={screenWidth}
+                  height={220}
+                  chartConfig={chartConfig}
+                  accessor="population"
+                  backgroundColor="transparent"
+                  paddingLeft="15"
+                  style={{
+                    alignSelf: "center"
+                  }}
+                  absolute
+                />
+              </View>
             </View>
+          )}
+          {gkMatches > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.title}>שיאי שוערים</Text>
+
+              <View style={styles.col}>
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    זמן שיא ללא ספיגות{gkRecordStillActive && "*"}
+                  </Text>
+                  <Text style={styles.dataText3}>
+                    {parseSecondsToTime(gkCleanSheetmaxTime).time}
+                  </Text>
+                  <Text style={styles.metaText2}>
+                    {parseSecondsToTime(gkCleanSheetmaxTime).unit}
+                  </Text>
+                </View>
+
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    הכי הרבה הצלות במחזור
+                  </Text>
+                  <Text style={styles.dataText3}>
+                    {gkBestFixtureSaves.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: gkBestFixtureSaves.fixtureId,
+                          fixtureNumber:
+                            fixtures[gkBestFixtureSaves.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " + fixtures[gkBestFixtureSaves.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    הכי הרבה שערים נקיים במחזור
+                  </Text>
+                  <Text style={styles.dataText3}>
+                    {gkBestFixtureCleanSheet.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: gkBestFixtureCleanSheet.fixtureId,
+                          fixtureNumber:
+                            fixtures[gkBestFixtureCleanSheet.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " + fixtures[gkBestFixtureCleanSheet.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    הכי פחות ספיגות במחזור
+                  </Text>
+                  <Text style={styles.dataText3}>
+                    {gkBestFixtureGoalAgainst.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: gkBestFixtureGoalAgainst.fixtureId,
+                          fixtureNumber:
+                            fixtures[gkBestFixtureGoalAgainst.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " + fixtures[gkBestFixtureGoalAgainst.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
 
               </View>
+
+              
+            </View>
           )}
         </View>
       )}
