@@ -238,6 +238,9 @@ let PlayerStatisticsScreen = props => {
   let gkCurrentRecord = 0;
   let gkRecordStillActive = false;
   let gkPlayingSeconds = 0;
+  let gkZeroGoals = 0
+  let gkOneGoal = 0
+  let gkMultiGoals = 0
 
   for (let i in fixturesGKPlayed) {
     gkMatches += fixturesGKPlayed[i].matches;
@@ -286,6 +289,10 @@ let PlayerStatisticsScreen = props => {
             return a.time > b.time;
           }
         );
+
+        if (relevantEvents.length == 0) gkZeroGoals+=1
+        else if (relevantEvents.length == 1) gkOneGoal +=1
+        else gkMultiGoals += 1
 
         let lastAddedTime = 0;
 
@@ -452,9 +459,40 @@ let PlayerStatisticsScreen = props => {
       legendFontSize: 17
     }
   ];
+  let gkPieData = [
+    {
+      name: "שער נקי",
+      population: gkZeroGoals,
+      color: "#ea728c",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "גול בודד",
+      population: gkOneGoal,
+      color: "#fc9d9d",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "כמה גולים",
+      population: gkMultiGoals,
+      color: "#f3d4d4",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    }
+  ];
 
   if (Platform.OS == "android") {
     pieData = pieData.map(d => {
+      let nd = { ...d };
+      nd.name = nd.name
+        .split("")
+        .reverse()
+        .join("");
+      return nd;
+    });
+    gkPieData = gkPieData.map(d => {
       let nd = { ...d };
       nd.name = nd.name
         .split("")
@@ -707,6 +745,23 @@ let PlayerStatisticsScreen = props => {
               <Text style={styles.title}>נתוני שוערים</Text>
 
               <View style={styles.col}>
+              <Text style={styles.metaText2op}>
+                    התפלגות ספיגות במשחקונים
+                  </Text>
+                  <View style={{height:10}}/>
+              <PieChart
+                data={gkPieData}
+                width={screenWidth}
+                height={220}
+                chartConfig={chartConfig}
+                accessor="population"
+                backgroundColor="transparent"
+                paddingLeft="15"
+                style={{
+                  alignSelf: "center"
+                }}
+                absolute
+              /><View style={{height:20}}/>
                 <View style={styles.dataView}>
                   <Text style={styles.metaText2op}>
                     זמן שיא ללא ספיגות{gkRecordStillActive && "*"}
@@ -717,6 +772,12 @@ let PlayerStatisticsScreen = props => {
                   <Text style={styles.metaText2}>
                     {parseSecondsToTime(gkCleanSheetmaxTime).unit}
                   </Text>
+                </View>
+                <View style={styles.dataView}>
+                  <Text style={styles.dataText6}>
+                    {gkMatches}
+                  </Text>
+                  <Text style={styles.metaText2}>משחקונים כשוער</Text>
                 </View>
                 <View style={styles.dataView}>
                   <Text style={styles.dataText6}>
@@ -762,8 +823,10 @@ let PlayerStatisticsScreen = props => {
                   </Text>
                 </View>}
 
-              </View>
+                
             </View>
+
+              </View>
           )}
         </View>
       )}
