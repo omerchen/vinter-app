@@ -408,12 +408,12 @@ let LeagueRecordsScreen = props => {
           )}
           {/* Match Records */}
           {generateMatchRecordComponent(
-            records.matchRecords.longestMatch,
-            "המשחק הארוך ביותר"
+            records.matchRecords.longestWin,
+            "הניצחון הארוך ביותר"
           )}
           {generateMatchRecordComponent(
-            records.matchRecords.fastestMatch,
-            "המשחק הקצר ביותר"
+            records.matchRecords.fastestWin,
+            "הניצחון הקצר ביותר"
           )}
           {/* Fixture Records */}
           {generateFixtureRecordComponent(

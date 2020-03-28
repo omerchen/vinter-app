@@ -727,8 +727,8 @@ const calculatePlayerRecords = (players, fixtures) => {
 
 const calculateMatchRecords = fixtures => {
   let matchRecord = {
-    longestMatch: undefined,
-    fastestMatch: undefined
+    longestWin: undefined,
+    fastestWin: undefined
   };
 
   for (let f in fixtures) {
@@ -738,7 +738,7 @@ const calculateMatchRecords = fixtures => {
       for (let m in fixtures[f].matches) {
         let match = fixtures[f].matches[m];
 
-        if (match.isRemoved || match.isOpen) continue;
+        if (match.isRemoved || match.isOpen || match.winnerId == null || match.winnerId == undefined) continue;
 
         let matchTime = Math.floor(
           (match.endWhistleTime - match.startWhistleTime) / 1000
@@ -748,10 +748,10 @@ const calculateMatchRecords = fixtures => {
         let parsedTime = parseSecondsToTime(matchTime);
 
         if (
-          matchRecord.longestMatch == undefined ||
-          matchRecord.longestMatch.realValue < matchTime
+          matchRecord.longestWin == undefined ||
+          matchRecord.longestWin.realValue < matchTime
         ) {
-          matchRecord.longestMatch = {
+          matchRecord.longestWin = {
             fixtureId: f,
             matchId: m,
             realValue: matchTime,
@@ -760,10 +760,10 @@ const calculateMatchRecords = fixtures => {
         }
 
         if (
-          matchRecord.fastestMatch == undefined ||
-          matchRecord.fastestMatch.realValue > matchTime
+          matchRecord.fastestWin == undefined ||
+          matchRecord.fastestWin.realValue > matchTime
         ) {
-          matchRecord.fastestMatch = {
+          matchRecord.fastestWin = {
             fixtureId: f,
             matchId: m,
             realValue: matchTime,
@@ -996,6 +996,24 @@ const calculateMatchPlayerRecords = (players, fixtures) => {
   return matchPlayerRecord;
 };
 
+const calculateFixtureTeamRecords = fixtures => {
+  let fixtureTeamRecords = {
+    mostWinsInRow: undefined,
+    mostGoalsFor: undefined,
+    leastGoalsFor: undefined,
+    mostGoalsAgainst: undefined,
+    leastGoalsAgainst: undefined,
+    mostSaves: undefined,
+    mostCleansheets: undefined,
+    mostWins: undefined,
+    leastWins: undefined,
+    mostTimeOnPitch: undefined,
+    mostGoalsDifference: undefined,
+  }
+
+  return fixtureTeamRecords
+}
+
 export const calculateRecords = (players, fixtures) => {
   let records = {
     fixturePlayerRecord: calculateFixturePlayerRecords(players, fixtures),
@@ -1003,7 +1021,7 @@ export const calculateRecords = (players, fixtures) => {
     matchRecords: calculateMatchRecords(fixtures),
     fixtureRecords: calculateFixtureRecords(fixtures),
     matchPlayerReacords: calculateMatchPlayerRecords(players, fixtures),
-    fixtureTeamRecords: {},
+    fixtureTeamRecords: calculateFixtureTeamRecords(fixtures),
     twoPlayersRecords: {}
   };
 
