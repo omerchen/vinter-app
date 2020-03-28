@@ -10,7 +10,8 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
       mostGoals: undefined,
       mostAssists: undefined,
       mostSaves: undefined,
-      mostPoints: undefined
+      mostPoints: undefined,
+      mostSavesGk: undefined,
     };
   }
 
@@ -31,9 +32,7 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
             value: pointsObject.goals
           };
         }
-      }
 
-      if (pointsObject.appearence) {
         if (
           playersTracker[p].mostAssists == undefined ||
           playersTracker[p].mostAssists.value < pointsObject.assists
@@ -43,9 +42,7 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
             value: pointsObject.assists
           };
         }
-      }
 
-      if (pointsObject.appearence) {
         if (
           playersTracker[p].mostPoints == undefined ||
           playersTracker[p].mostPoints.value < pointsObject.points
@@ -55,18 +52,30 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
             value: pointsObject.points
           };
         }
-      }
 
-      if (pointsObject.appearence) {
-        if (
-          playersTracker[p].mostSaves == undefined ||
-          playersTracker[p].mostSaves.value < pointsObject.saves
-        ) {
-          playersTracker[p].mostSaves = {
-            fixtureId: f,
-            value: pointsObject.saves
-          };
+        if (pointsObject.isGoalkeeper) {
+          if (
+            playersTracker[p].mostSavesGk == undefined ||
+            playersTracker[p].mostSavesGk.value < pointsObject.saves
+          ) {
+            playersTracker[p].mostSavesGk = {
+              fixtureId: f,
+              value: pointsObject.saves
+            };
+          }
+        } else {
+          if (
+            playersTracker[p].mostSaves == undefined ||
+            playersTracker[p].mostSaves.value < pointsObject.saves
+          ) {
+            playersTracker[p].mostSaves = {
+              fixtureId: f,
+              value: pointsObject.saves
+            };
+          }
         }
+
+        
       }
     }
   }
@@ -76,7 +85,8 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
     mostGoals: undefined,
     mostAssists: undefined,
     mostPoints: undefined,
-    mostSaves: undefined
+    mostSaves: undefined,
+    mostSavesGk: undefined,
   };
 
   // find the best record
@@ -106,13 +116,23 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
       }
 
       if (
-        playersTracker[p].mostPoints != undefined &&
-        (fixturePlayerRecord.mostPoints == undefined ||
-          fixturePlayerRecord.mostPoints.value < playersTracker[p].mostPoints.value)
+        playersTracker[p].mostSaves != undefined &&
+        (fixturePlayerRecord.mostSaves == undefined ||
+          fixturePlayerRecord.mostSaves.value < playersTracker[p].mostSaves.value)
       ) {
-          fixturePlayerRecord.mostPoints = {playerId: p, ...playersTracker[p].mostPoints}
+          fixturePlayerRecord.mostSaves = {playerId: p, ...playersTracker[p].mostSaves}
+      }
+
+      if (
+        playersTracker[p].mostSavesGk != undefined &&
+        (fixturePlayerRecord.mostSavesGk == undefined ||
+          fixturePlayerRecord.mostSavesGk.value < playersTracker[p].mostSavesGk.value)
+      ) {
+          fixturePlayerRecord.mostSavesGk = {playerId: p, ...playersTracker[p].mostSavesGk}
       }
   }
+
+  return fixturePlayerRecord
 };
 
 export const calculateRecords = (players, fixtures) => {

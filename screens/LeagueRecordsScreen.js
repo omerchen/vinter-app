@@ -6,21 +6,82 @@ import {
   Platform,
   Image,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TouchableOpacity
 } from "react-native";
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
+import {calculateRecords} from '../helpers/records-calculator'
 
 let LeagueRecordsScreen = props => {
+  const COLOR_SET = ["#61d4b3", "#fdd365", "#fd2eb3", "#fb8d62"];
+  const getColor = index => COLOR_SET[index%COLOR_SET.length]
+
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
+  let records = calculateRecords(players, fixtures)
   const filteredFixtures = fixtures
     ? fixtures.filter(
         fixture => !fixture.isRemoved && fixture.type != FIXTURE_TYPE_FRIENDLY
       )
     : [];
 
+  const generateFixturePlayerRecordComponent = (data, color, title) => {
+    return (
+      data && (
+        <View style={styles.card}>
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 75,
+                  color: color,
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "Player",
+                      params: {
+                        playerId: data.playerId
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {players[data.playerId].name}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "ViewFixture",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        fixtureNumber: fixtures[data.fixtureId].number
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {"מחזור " + fixtures[data.fixtureId].number}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
 
   return (
     <ScrollView
@@ -31,13 +92,37 @@ let LeagueRecordsScreen = props => {
         <View style={styles.card}>
           <Text style={styles.title}>לא נמצאו נתונים</Text>
           <Text style={styles.subText}>
-            ניתן לראות סטטיסטיקה רק עבור שחקנים שהגיעו העונה
+            נראה שהעונה עוד לא התחילה ולכן היכל התהילה ריק
           </Text>
         </View>
       ) : (
         <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
-          <Text>Hello world</Text>
-          </View>
+          {generateFixturePlayerRecordComponent(
+            records.fixturePlayerRecord.mostGoals,
+            getColor(0),
+            "הכי הרבה שערים לשחקן במחזור"
+          )}
+          {generateFixturePlayerRecordComponent(
+            records.fixturePlayerRecord.mostAssists,
+            getColor(1),
+            "הכי הרבה בישולים לשחקן במחזור"
+          )}
+          {generateFixturePlayerRecordComponent(
+            records.fixturePlayerRecord.mostPoints,
+            getColor(2),
+            "הכי הרבה נקודות לשחקן במחזור"
+          )}
+          {generateFixturePlayerRecordComponent(
+            records.fixturePlayerRecord.mostSaves,
+            getColor(3),
+            "הכי הרבה הצלות לשחקן במחזור"
+          )}
+          {generateFixturePlayerRecordComponent(
+            records.fixturePlayerRecord.mostSavesGk,
+            getColor(4),
+            "הכי הרבה הצלות לשוער במחזור"
+          )}
+        </View>
       )}
       <View style={{ height: 50 }} />
     </ScrollView>
@@ -90,95 +175,16 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center"
   },
-  dataText: {
-    fontFamily: "assistant-bold",
-    fontSize: 65,
-    color: "#61d4b3",
-    textAlign: "center"
-  },
-  dataText2: {
-    fontFamily: "assistant-bold",
-    fontSize: 100,
-    color: "#fdd365",
-    textAlign: "center",
-    minWidth: 150
-  },
-  dataText3: {
-    fontFamily: "assistant-bold",
-    fontSize: 100,
-    color: "#fd2eb3",
-    textAlign: "center",
-    marginHorizontal: 20,
-    minWidth: 100
-  },
-  dataText4: {
-    fontFamily: "assistant-bold",
-    fontSize: 100,
-    color: "#fb8d62",
-    textAlign: "center",
-    marginHorizontal: 20,
-    minWidth: 100
-  },
-  dataText5: {
-    fontFamily: "assistant-bold",
-    fontSize: 40,
-    color: "#61d4b3",
-    textAlign: "center",
-    marginHorizontal: 20,
-    minWidth: 300
-  },
-  dataText6: {
-    fontFamily: "assistant-bold",
-    fontSize: 70,
-    color: "#fdd365",
-    textAlign: "center",
-    minWidth: 150
-  },
   metaText: {
     fontFamily: "assistant-semi-bold",
-    fontSize: 18,
-    marginTop: -10,
-    marginBottom: 12,
-    color: Colors.darkGray
-  },
-  metaText2: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 25,
-    marginTop: -10,
-    marginBottom: 12,
-    color: Colors.darkGray
-  },
-  metaText2op: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 25,
-    marginTop: 10,
-    marginBottom: -15,
-    color: Colors.darkGray
-  },
-  metaText3: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 25,
-    marginTop: -10,
-    marginBottom: 12,
-    color: Colors.darkGray
-  },
-  metaText5: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 25,
-    marginTop: 0,
+    fontSize: 22,
+    marginHorizontal: 10,
     marginBottom: 12,
     color: Colors.darkGray
   },
   title: {
     fontFamily: "assistant-bold",
-    fontSize: 25,
-    marginBottom: 10
-  },
-  subText: {
-    fontFamily: "assistant-semi-bold",
-    fontSize: 20,
-    marginBottom: 10,
-    color: Colors.darkGray
+    fontSize: 23
   }
 });
 
