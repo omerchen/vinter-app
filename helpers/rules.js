@@ -257,6 +257,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     matchWinsPenalty: 0,
     matchLoses: 0,
     matchLosesPenalty: 0,
+    matchTies: 0,
     teamId: null,
     matches: 0,
     teamGoalsFor:0,
@@ -387,6 +388,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         (match.winnerId == null || match.winnerId == undefined) &&
         (match.homeId == i || match.awayId == i)
     );
+
+    pointsObject.matchTies += ties.length
 
     let no_goals_tie = ties.filter(
       match =>
@@ -539,6 +542,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         (match.winnerId == null || match.winnerId == undefined) &&
         (match.homeId == i || match.awayId == i)
     );
+
+    pointsObject.matchTies += ties.length
 
     let no_goals_tie = ties.filter(
       match =>

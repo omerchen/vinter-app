@@ -12,120 +12,179 @@ import {
 import Colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import { FIXTURE_TYPE_FRIENDLY } from "../constants/fixture-properties";
-import {calculateRecords} from '../helpers/records-calculator'
+import { calculateRecords } from "../helpers/records-calculator";
 
 let LeagueRecordsScreen = props => {
   const COLOR_SET = ["#61d4b3", "#fdd365", "#fd2eb3", "#fb8d62"];
-  const getColor = index => COLOR_SET[index%COLOR_SET.length]
-  let currentColorIndex = 0
+  const getColor = index => COLOR_SET[index % COLOR_SET.length];
+  let currentColorIndex = 0;
   const getNextColor = () => {
-    currentColorIndex+=1
-    return getColor(currentColorIndex-1)
-  }
+    currentColorIndex += 1;
+    return getColor(currentColorIndex - 1);
+  };
 
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
-  let records = calculateRecords(players, fixtures)
+  let records = calculateRecords(players, fixtures);
   const filteredFixtures = fixtures
     ? fixtures.filter(
         fixture => !fixture.isRemoved && fixture.type != FIXTURE_TYPE_FRIENDLY
       )
     : [];
 
-    const generateFixturePlayerRecordComponent = (data, title) => {
-      return (
-        data && (
-          <View style={styles.card}>
-            <Text style={styles.title}>{title}</Text>
-  
-            <View style={styles.row}>
-              <View>
-                <Text
-                  style={{
-                    fontFamily: "assistant-bold",
-                    fontSize: 75,
-                    color: getNextColor(),
-                    textAlign: "center"
-                  }}
-                >
-                  {data.value}
-                </Text>
-                <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: data.playerId
-                        }
-                      });
-                    }}
-                  >
-                    <Text style={styles.metaText}>
-                      {players[data.playerId].name}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate({
-                        routeName: "ViewFixture",
-                        params: {
-                          fixtureId: data.fixtureId,
-                          fixtureNumber: fixtures[data.fixtureId].number
-                        }
-                      });
-                    }}
-                  >
-                    <Text style={styles.metaText}>
-                      {"מחזור " + fixtures[data.fixtureId].number}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-        )
-      );
-    };
+  let lastFixture = filteredFixtures.length == 0?null:filteredFixtures[filteredFixtures.length-1];
 
-    const generatePlayerRecordComponent = (data, title) => {
-      return (
-        data && (
-          <View style={styles.card}>
-            <Text style={styles.title}>{title}</Text>
-  
-            <View style={styles.row}>
-              <View>
-                <Text
-                  style={{
-                    fontFamily: "assistant-bold",
-                    fontSize: 60,
-                    color: getNextColor(),
-                    textAlign: "center"
+  const generateFixturePlayerRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View style={lastFixture.id == data.fixtureId?styles.hotCard:styles.card}>
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 75,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent:"center" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "Player",
+                      params: {
+                        playerId: data.playerId
+                      }
+                    });
                   }}
                 >
-                  {data.value}
-                </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: data.playerId
-                        }
-                      });
-                    }}
-                  >
-                    <Text style={styles.metaText}>
-                      {players[data.playerId].name}
-                    </Text>
-                  </TouchableOpacity>
+                  <Text style={styles.metaText}>
+                    {players[data.playerId].name}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "ViewFixture",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        fixtureNumber: fixtures[data.fixtureId].number
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {"מחזור " + fixtures[data.fixtureId].number}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
-        )
-      );
-    };
+        </View>
+      )
+    );
+  };
+
+  const generatePlayerRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View style={styles.card}>
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 60,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate({
+                    routeName: "Player",
+                    params: {
+                      playerId: data.playerId
+                    }
+                  });
+                }}
+              >
+                <Text style={styles.metaText}>
+                  {players[data.playerId].name}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
+
+  const generateMatchRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View style={lastFixture.id == data.fixtureId?styles.hotCard:styles.card}>
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 50,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent:"center" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "ViewFixture",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        fixtureNumber: fixtures[data.fixtureId].number
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {"מחזור " + fixtures[data.fixtureId].number}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: Platform.OS=="web"?"WebMatch":"Match",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        matchId: data.matchId,
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {"מעבר למשחק >"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
 
   return (
     <ScrollView
@@ -164,8 +223,61 @@ let LeagueRecordsScreen = props => {
           )}
           {/* Player Records */}
           {generatePlayerRecordComponent(
+            records.playerRecords.mostPointsAvg,
+            "ממוצע נקודות למחזור"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostWinnerAvg,
+            "אחוז נצחונות במשחקונים"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostGoalsAvg,
+            "ממוצע שערים למחזור"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostGoalsForAvg,
+            "ממוצע שערי זכות למחזור"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostAssistsAvg,
+            "ממוצע בישולים למחזור"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostSavesAvg,
+            "ממוצע הצלות למחזור (שחקן)"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostSavesGkAvg,
+            "ממוצע הצלות למחזור (שוער)"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostCleansheetAvg,
+            "ממוצע שערים נקיים למחזור (שחקן)"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.mostCleansheetGkAvg,
+            "ממוצע שערים נקיים למחזור (שוער)"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.leastGoalsAgainstAvg,
+            "ממוצע ספיגות למחזור (שחקן)"
+          )}
+          {generatePlayerRecordComponent(
+            records.playerRecords.leastGoalsAgainstGkAvg,
+            "ממוצע ספיגות למחזור (שוער)"
+          )}
+          {generatePlayerRecordComponent(
             records.playerRecords.penaltyKing,
             "מלך דו קרב הפנדלים"
+          )}
+          {/* Match Records */}
+          {generateMatchRecordComponent(
+            records.matchRecords.longestMatch,
+            "המשחק הארוך ביותר"
+          )}
+          {generateMatchRecordComponent(
+            records.matchRecords.fastestMatch,
+            "המשחק הקצר ביותר"
           )}
         </View>
       )}
@@ -197,6 +309,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5
   },
+  hotCard: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.primary,
+    borderWidth:3,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    marginHorizontal: 5,
+    marginTop: 5,
+    marginBottom: 15,
+    borderRadius: 10,
+    padding: 10,
+    maxWidth: "92%",
+    width: 500,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5
+  },
   text: {
     fontFamily: "assistant-light",
     fontSize: 25,
@@ -213,7 +344,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-evenly",
     flexWrap: "wrap",
-    alignItems:"center",
+    alignItems: "center"
   },
   col: {
     flexDirection: "column",
@@ -226,7 +357,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 12,
     color: Colors.darkGray,
-    alignSelf:"center"
+    alignSelf: "center"
   },
   title: {
     fontFamily: "assistant-bold",

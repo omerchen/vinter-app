@@ -52,6 +52,7 @@ let MatchScreen = props => {
     ? fixture.matches.filter(m => !m.isRemoved && m.id != matchId && m.isOpen)
         .length > 0
     : false;
+  let reopanable = removable && !isOtherMathcesOpen;
 
   let calculateClock = () => {
     if (!match.startWhistleTime) {
@@ -150,7 +151,10 @@ let MatchScreen = props => {
     newMatch.winnerId = winnerId;
     newMatch.isOpen = false;
     newMatch.endTime = Date.now();
-    newMatch.startTime = newMatch.startTime == null || newMatch.startTime == undefined?newMatch.endTime:newMatch.startTime
+    newMatch.startTime =
+      newMatch.startTime == null || newMatch.startTime == undefined
+        ? newMatch.endTime
+        : newMatch.startTime;
     newMatch.startWhistleTime =
       match.startWhistleTime == null || match.startWhistleTime == undefined
         ? newMatch.startTime
@@ -490,7 +494,7 @@ let MatchScreen = props => {
             <Text style={styles.endMatchText}>שרוק לסיום!</Text>
           </TouchableOpacity>
         ) : (
-          !isOtherMathcesOpen && (
+          reopanable && (
             <TouchableOpacity onPress={reopenMatch} style={styles.endMatchView}>
               <MaterialCommunityIcons
                 name="restart"
