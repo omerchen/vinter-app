@@ -399,6 +399,10 @@ let LeagueRecordsScreen = props => {
             "ממוצע ספיגות למחזור (שוער)"
           )}
           {generatePlayerRecordComponent(
+            records.playerRecords.longestCleansheetTime,
+            "זמן שיא ללא ספיגות"
+          )}
+          {generatePlayerRecordComponent(
             records.playerRecords.penaltyKing,
             "מלך דו קרב הפנדלים"
           )}
