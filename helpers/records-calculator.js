@@ -3,7 +3,7 @@ import { parseSecondsToTime } from "./time-parser";
 import { EVENT_TYPE_GOAL } from "../constants/event-types";
 import { mergeSort } from "./mergeSort";
 
-const calculateFixturePlayerRecords = (players, fixtures) => {
+export const calculateFixturePlayerRecords = (players, fixtures) => {
   let playersTracker = [...players];
 
   // init playersTracker
@@ -162,18 +162,18 @@ const calculateFixturePlayerRecords = (players, fixtures) => {
   return fixturePlayerRecord;
 };
 
-const calculatePenaltyGrade = (wins, loses) => {
+export const calculatePenaltyGrade = (wins, loses) => {
   return (wins + 1) / (wins + loses + 2);
 };
 
 // if 2>1 => return +0, if 1>2 return -0, if 1=2 return 0
-const comparePenaltyStats = (wins1, loses1, wins2, loses2) => {
+export const comparePenaltyStats = (wins1, loses1, wins2, loses2) => {
   return (
     calculatePenaltyGrade(wins2, loses2) - calculatePenaltyGrade(wins1, loses1)
   );
 };
 
-const calculatePlayerRecords = (players, fixtures) => {
+export const calculatePlayerRecords = (players, fixtures) => {
   let playerRecords = {
     penaltyKing: undefined,
     mostPointsAvg: undefined,
@@ -725,7 +725,7 @@ const calculatePlayerRecords = (players, fixtures) => {
   return playerRecords;
 };
 
-const calculateMatchRecords = fixtures => {
+export const calculateMatchRecords = fixtures => {
   let matchRecord = {
     longestWin: undefined,
     fastestWin: undefined
@@ -777,7 +777,7 @@ const calculateMatchRecords = fixtures => {
   return matchRecord;
 };
 
-const calculateFixtureRecords = fixtures => {
+export const calculateFixtureRecords = fixtures => {
   let fixturesTracker = [...fixtures];
   let fixtureRecords = {
     mostGoals: undefined,
@@ -905,7 +905,7 @@ const calculateFixtureRecords = fixtures => {
   return fixtureRecords;
 };
 
-const calculateMatchPlayerRecords = (players, fixtures) => {
+export const calculateMatchPlayerRecords = (players, fixtures) => {
   let matchPlayerRecord = {
     fastestDouble: undefined,
     longestGoal: undefined,
@@ -996,7 +996,7 @@ const calculateMatchPlayerRecords = (players, fixtures) => {
   return matchPlayerRecord;
 };
 
-const calculateFixtureTeamRecords = fixtures => {
+export const calculateFixtureTeamRecords = fixtures => {
   let fixtureTeamRecords = {
     mostWinsInRow: undefined,
     mostGoalsFor: undefined,
