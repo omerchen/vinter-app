@@ -17,6 +17,11 @@ import {calculateRecords} from '../helpers/records-calculator'
 let LeagueRecordsScreen = props => {
   const COLOR_SET = ["#61d4b3", "#fdd365", "#fd2eb3", "#fb8d62"];
   const getColor = index => COLOR_SET[index%COLOR_SET.length]
+  let currentColorIndex = 0
+  const getNextColor = () => {
+    currentColorIndex+=1
+    return getColor(currentColorIndex-1)
+  }
 
   const fixtures = useSelector(state => state.fixtures);
   const players = useSelector(state => state.players);
@@ -27,61 +32,100 @@ let LeagueRecordsScreen = props => {
       )
     : [];
 
-  const generateFixturePlayerRecordComponent = (data, color, title) => {
-    return (
-      data && (
-        <View style={styles.card}>
-          <Text style={styles.title}>{title}</Text>
-
-          <View style={styles.row}>
-            <View>
-              <Text
-                style={{
-                  fontFamily: "assistant-bold",
-                  fontSize: 75,
-                  color: color,
-                  textAlign: "center"
-                }}
-              >
-                {data.value}
-              </Text>
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    props.navigation.navigate({
-                      routeName: "Player",
-                      params: {
-                        playerId: data.playerId
-                      }
-                    });
+    const generateFixturePlayerRecordComponent = (data, title) => {
+      return (
+        data && (
+          <View style={styles.card}>
+            <Text style={styles.title}>{title}</Text>
+  
+            <View style={styles.row}>
+              <View>
+                <Text
+                  style={{
+                    fontFamily: "assistant-bold",
+                    fontSize: 75,
+                    color: getNextColor(),
+                    textAlign: "center"
                   }}
                 >
-                  <Text style={styles.metaText}>
-                    {players[data.playerId].name}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    props.navigation.navigate({
-                      routeName: "ViewFixture",
-                      params: {
-                        fixtureId: data.fixtureId,
-                        fixtureNumber: fixtures[data.fixtureId].number
-                      }
-                    });
-                  }}
-                >
-                  <Text style={styles.metaText}>
-                    {"מחזור " + fixtures[data.fixtureId].number}
-                  </Text>
-                </TouchableOpacity>
+                  {data.value}
+                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: data.playerId
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText}>
+                      {players[data.playerId].name}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: data.fixtureId,
+                          fixtureNumber: fixtures[data.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText}>
+                      {"מחזור " + fixtures[data.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      )
-    );
-  };
+        )
+      );
+    };
+
+    const generatePlayerRecordComponent = (data, title) => {
+      return (
+        data && (
+          <View style={styles.card}>
+            <Text style={styles.title}>{title}</Text>
+  
+            <View style={styles.row}>
+              <View>
+                <Text
+                  style={{
+                    fontFamily: "assistant-bold",
+                    fontSize: 60,
+                    color: getNextColor(),
+                    textAlign: "center"
+                  }}
+                >
+                  {data.value}
+                </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: data.playerId
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText}>
+                      {players[data.playerId].name}
+                    </Text>
+                  </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )
+      );
+    };
 
   return (
     <ScrollView
@@ -97,30 +141,31 @@ let LeagueRecordsScreen = props => {
         </View>
       ) : (
         <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
+          {/* Fixture-Player Records */}
           {generateFixturePlayerRecordComponent(
             records.fixturePlayerRecord.mostGoals,
-            getColor(0),
             "הכי הרבה שערים לשחקן במחזור"
           )}
           {generateFixturePlayerRecordComponent(
             records.fixturePlayerRecord.mostAssists,
-            getColor(1),
             "הכי הרבה בישולים לשחקן במחזור"
           )}
           {generateFixturePlayerRecordComponent(
             records.fixturePlayerRecord.mostPoints,
-            getColor(2),
             "הכי הרבה נקודות לשחקן במחזור"
           )}
           {generateFixturePlayerRecordComponent(
             records.fixturePlayerRecord.mostSaves,
-            getColor(3),
             "הכי הרבה הצלות לשחקן במחזור"
           )}
           {generateFixturePlayerRecordComponent(
             records.fixturePlayerRecord.mostSavesGk,
-            getColor(4),
             "הכי הרבה הצלות לשוער במחזור"
+          )}
+          {/* Player Records */}
+          {generatePlayerRecordComponent(
+            records.playerRecords.penaltyKing,
+            "מלך דו קרב הפנדלים"
           )}
         </View>
       )}
@@ -147,7 +192,6 @@ const styles = StyleSheet.create({
     padding: 10,
     maxWidth: "92%",
     width: 500,
-    minHeight: 200,
     shadowColor: "black",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
@@ -168,7 +212,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-evenly",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    alignItems:"center",
   },
   col: {
     flexDirection: "column",
@@ -180,7 +225,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginHorizontal: 10,
     marginBottom: 12,
-    color: Colors.darkGray
+    color: Colors.darkGray,
+    alignSelf:"center"
   },
   title: {
     fontFamily: "assistant-bold",

@@ -254,6 +254,9 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     isGoalkeeper: false,
     mvp: false,
     matchWins:0,
+    matchWinsPenalty: 0,
+    matchLoses: 0,
+    matchLosesPenalty: 0,
     teamId: null,
     matches: 0,
     teamGoalsFor:0,
@@ -348,6 +351,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       return homeGoals == awayGoals;
     });
+    pointsObject.matchWinsPenalty+= penaltyWins.length
+
 
     // Team Lose
     let loses = closedMatches.filter(
@@ -357,6 +362,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         match.winnerId != undefined &&
         (match.homeId == i || match.awayId == i)
     );
+    pointsObject.matchLoses+=loses.length
     let penaltyLoses = loses.filter(match => {
       let homeGoals = match.events
         ? match.events.filter(
@@ -373,6 +379,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       return homeGoals == awayGoals;
     });
+    pointsObject.matchLosesPenalty+=penaltyLoses.length
 
     // Team tie
     let ties = closedMatches.filter(
@@ -497,6 +504,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       return homeGoals == awayGoals;
     });
+    pointsObject.matchWinsPenalty+= penaltyWins.length
 
     // Team Lose
     let loses = closedMatches.filter(
@@ -506,6 +514,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
         match.winnerId != undefined &&
         (match.homeId == i || match.awayId == i)
     );
+    pointsObject.matchLoses+=loses.length
     let penaltyLoses = loses.filter(match => {
       let homeGoals = match.events
         ? match.events.filter(
@@ -522,6 +531,7 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
 
       return homeGoals == awayGoals;
     });
+    pointsObject.matchLosesPenalty+=penaltyLoses.length
 
     // Team tie
     let ties = closedMatches.filter(
