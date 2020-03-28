@@ -97,6 +97,53 @@ let LeagueRecordsScreen = props => {
     );
   };
 
+  const generateFixtureTeamRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 60,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+
+              <TouchableOpacity
+                style={{ flexDirection: "row", justifyContent: "center" }}
+                onPress={() => {
+                  props.navigation.navigate({
+                    routeName: "ViewFixture",
+                    params: {
+                      fixtureId: data.fixtureId,
+                      fixtureNumber: fixtures[data.fixtureId].number
+                    }
+                  });
+                }}
+              >
+                <Text style={styles.metaText}>{data.teamLabel}</Text>
+                <Text style={styles.metaText}>
+                  {"מחזור " + fixtures[data.fixtureId].number}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
+
   const generateMatchPlayerRecordComponent = (data, title) => {
     return (
       data && (
@@ -440,11 +487,56 @@ let LeagueRecordsScreen = props => {
           {generateMatchPlayerRecordComponent(
             records.matchPlayerReacords.longestGoal,
             "השער המאוחר ביותר"
-          )}
+            )}
           {generateMatchPlayerRecordComponent(
             records.matchPlayerReacords.fastestDouble,
             "הצמד המהיר ביותר"
-          )}
+            )}
+            {/* Fixture-Team Records */}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostWins,
+              "הכי הרבה נצחונות במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostWinsInRow,
+              "הכי הרבה נצחונות ברצף"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.leastWins,
+              "הכי מעט נצחונות במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostGoalsFor,
+              "הכי הרבה שערי זכות במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.leastGoalsFor,
+              "הכי מעט שערי זכות במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostGoalsAgainst,
+              "הכי הרבה שערי חובה במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.leastGoalsAgainst,
+              "הכי מעט שערי חובה במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostGoalsDifference,
+              "מאזן השערים הטוב ביותר"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostTimeOnPitch,
+              "הקבוצה ששיחקה הכי הרבה זמן"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostSaves,
+              "הכי הרבה הצלות במחזור"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostCleansheets,
+              "הכי הרבה שערים נקיים במחזור"
+            )}
         </View>
       )}
       <View style={{ height: 50 }} />
