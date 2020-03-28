@@ -698,9 +698,18 @@ let PlayerStatisticsScreen = props => {
               {bestPlayedTogether != null &&
                 playerTracking[bestPlayedTogether].playedTogether > 0 && (
                   <View style={styles.dataView}>
-                    <Text style={styles.dataText5}>
-                      {playerTracking[bestPlayedTogether].name}
-                    </Text>
+                    <TouchableOpacity onPress={()=>{
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: bestPlayedTogether
+                        }
+                      })
+                    }}>
+                      <Text style={styles.dataText5}>
+                        {playerTracking[bestPlayedTogether].name}
+                      </Text>
+                    </TouchableOpacity>
                     <Text style={styles.metaText5}>
                       {"שיחקו הכי הרבה יחד (" +
                         playerTracking[bestPlayedTogether].playedTogether +
@@ -711,9 +720,18 @@ let PlayerStatisticsScreen = props => {
               {bestWinTogether != null &&
                 playerTracking[bestWinTogether].winTogether > 0 && (
                   <View style={styles.dataView}>
-                    <Text style={styles.dataText5}>
-                      {playerTracking[bestWinTogether].name}
-                    </Text>
+                    <TouchableOpacity onPress={()=>{
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: bestWinTogether
+                        }
+                      })
+                    }}>
+                      <Text style={styles.dataText5}>
+                        {playerTracking[bestWinTogether].name}
+                      </Text>
+                    </TouchableOpacity>
                     <Text style={styles.metaText5}>
                       {"ניצחו הכי הרבה יחד (" +
                         playerTracking[bestWinTogether].winTogether +
@@ -724,9 +742,18 @@ let PlayerStatisticsScreen = props => {
               {bestAssistToIndex != null &&
                 playerTracking[bestAssistToIndex].assistTo > 0 && (
                   <View style={styles.dataView}>
-                    <Text style={styles.dataText5}>
-                      {playerTracking[bestAssistToIndex].name}
-                    </Text>
+                    <TouchableOpacity onPress={()=>{
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: bestAssistToIndex
+                        }
+                      })
+                    }}>
+                      <Text style={styles.dataText5}>
+                        {playerTracking[bestAssistToIndex].name}
+                      </Text>
+                    </TouchableOpacity>
                     <Text style={styles.metaText5}>
                       {"בישל הכי הרבה גולים (" +
                         playerTracking[bestAssistToIndex].assistTo +
@@ -737,14 +764,24 @@ let PlayerStatisticsScreen = props => {
               {bestScoreFromIndex != null &&
                 playerTracking[bestScoreFromIndex].scoreFrom > 0 && (
                   <View style={styles.dataView}>
-                    <Text style={styles.dataText5}>
-                      {playerTracking[bestScoreFromIndex].name}
-                    </Text>
-                    <Text style={styles.metaText5}>
-                      {"הבקיע הכי הרבה בישולים (" +
-                        playerTracking[bestScoreFromIndex].scoreFrom +
-                        ")"}
-                    </Text>
+                    <TouchableOpacity onPress={()=>{
+                      props.navigation.navigate({
+                        routeName: "Player",
+                        params: {
+                          playerId: bestScoreFromIndex
+                        }
+                      })
+                    }}>
+                      <Text style={styles.dataText5}>
+                        {playerTracking[bestScoreFromIndex].name}
+                      </Text>
+                    </TouchableOpacity>
+                    
+                      <Text style={styles.metaText5}>
+                        {"הבקיע הכי הרבה בישולים (" +
+                          playerTracking[bestScoreFromIndex].scoreFrom +
+                          ")"}
+                      </Text>
                   </View>
                 )}
             </View>

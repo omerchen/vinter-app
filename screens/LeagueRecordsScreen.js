@@ -97,6 +97,65 @@ let LeagueRecordsScreen = props => {
     );
   };
 
+  const generateTwoPlayersRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 60,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "Player",
+                      params: {
+                        playerId: data.player1Id
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {data.player1Label?players[data.player1Id].name+" ("+data.player1Label+")":players[data.player1Id].name}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "Player",
+                      params: {
+                        playerId: data.player2Id
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                  {data.player2Label?players[data.player2Id].name+" ("+data.player2Label+")":players[data.player2Id].name}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
+
   const generateFixtureTeamRecordComponent = (data, title) => {
     return (
       data && (
@@ -536,6 +595,19 @@ let LeagueRecordsScreen = props => {
             {generateFixtureTeamRecordComponent(
               records.fixtureTeamRecords.mostCleansheets,
               "הכי הרבה שערים נקיים במחזור"
+            )}
+            {/* Two-Players Records */}
+            {generateTwoPlayersRecordComponent(
+              records.twoPlayersRecords.bestCouple,
+              "הצמד הקטלני ביותר"
+            )}
+            {generateTwoPlayersRecordComponent(
+              records.twoPlayersRecords.playedTogether,
+              "הצמד ששיחק הכי הרבה ביחד"
+            )}
+            {generateTwoPlayersRecordComponent(
+              records.twoPlayersRecords.winTogether,
+              "הצמד שניצח הכי הרבה ביחד"
             )}
         </View>
       )}

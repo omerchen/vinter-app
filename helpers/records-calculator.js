@@ -440,12 +440,12 @@ export const calculatePlayerRecords = (players, fixtures) => {
       (playerRecords.longestCleansheetTime == undefined ||
         playerRecords.longestCleansheetTime.realValue < playerLongestCSRecord)
     ) {
-      let parsedTime = parseSecondsToTime(playerLongestCSRecord)
+      let parsedTime = parseSecondsToTime(playerLongestCSRecord);
       playerRecords.longestCleansheetTime = {
         playerId: p,
         realValue: playerLongestCSRecord,
-        value: parsedTime.time+" "+parsedTime.unit
-      }
+        value: parsedTime.time + " " + parsedTime.unit
+      };
     }
   }
 
@@ -738,7 +738,13 @@ export const calculateMatchRecords = fixtures => {
       for (let m in fixtures[f].matches) {
         let match = fixtures[f].matches[m];
 
-        if (match.isRemoved || match.isOpen || match.winnerId == null || match.winnerId == undefined) continue;
+        if (
+          match.isRemoved ||
+          match.isOpen ||
+          match.winnerId == null ||
+          match.winnerId == undefined
+        )
+          continue;
 
         let matchTime = Math.floor(
           (match.endWhistleTime - match.startWhistleTime) / 1000
@@ -997,7 +1003,7 @@ export const calculateMatchPlayerRecords = (players, fixtures) => {
 };
 
 export const calculateFixtureTeamRecords = fixtures => {
-  let teamLabels = ["הכחולים", "הכתומים", "הירוקים"]
+  let teamLabels = ["הכחולים", "הכתומים", "הירוקים"];
 
   let fixtureTeamRecords = {
     mostWinsInRow: undefined,
@@ -1010,30 +1016,31 @@ export const calculateFixtureTeamRecords = fixtures => {
     mostWins: undefined,
     leastWins: undefined,
     mostTimeOnPitch: undefined,
-    mostGoalsDifference: undefined,
-  }
+    mostGoalsDifference: undefined
+  };
 
   for (let f in fixtures) {
     if (fixtures[f].isRemoved) continue;
 
     for (let t in teamLabels) {
-      let goalsFor = 0
-      let goalsAgainst = 0
-      let saves = 0
-      let cleansheets = 0
-      let wins = 0
-      let playTime = 0
-      let winsInRow = 0
-      let currentWinsInRow = 0
-      let matches = 0
-      
+      let goalsFor = 0;
+      let goalsAgainst = 0;
+      let saves = 0;
+      let cleansheets = 0;
+      let wins = 0;
+      let playTime = 0;
+      let winsInRow = 0;
+      let currentWinsInRow = 0;
+      let matches = 0;
+
       if (fixtures[f].matches) {
         for (let m in fixtures[f].matches) {
-          let match = fixtures[f].matches[m]
+          let match = fixtures[f].matches[m];
 
-          if (match.isRemoved || (match.homeId != t && match.awayId != t)) continue;
+          if (match.isRemoved || (match.homeId != t && match.awayId != t))
+            continue;
 
-          let isHome = match.homeId == t
+          let isHome = match.homeId == t;
 
           let matchTime = Math.floor(
             (match.endWhistleTime - match.startWhistleTime) / 1000
@@ -1043,134 +1050,296 @@ export const calculateFixtureTeamRecords = fixtures => {
             matchTime = match.time;
           }
 
-          let relevantEvents = match.events?match.events.filter(e=>!e.isRemoved):[]
+          let relevantEvents = match.events
+            ? match.events.filter(e => !e.isRemoved)
+            : [];
 
-          matches+=1
-          playTime+=matchTime
-          wins+=match.winnerId==t?1:0
-          goalsFor += relevantEvents.filter(e=>e.type==EVENT_TYPE_GOAL&&e.isHome==isHome).length
-          saves += relevantEvents.filter(e=>e.type==EVENT_TYPE_WALL&&e.isHome==isHome).length
-          goalsAgainst += relevantEvents.filter(e=>e.type==EVENT_TYPE_GOAL&&e.isHome!=isHome).length
-          cleansheets += relevantEvents.filter(e=>e.type==EVENT_TYPE_GOAL&&e.isHome!=isHome).length==0?1:0
+          matches += 1;
+          playTime += matchTime;
+          wins += match.winnerId == t ? 1 : 0;
+          goalsFor += relevantEvents.filter(
+            e => e.type == EVENT_TYPE_GOAL && e.isHome == isHome
+          ).length;
+          saves += relevantEvents.filter(
+            e => e.type == EVENT_TYPE_WALL && e.isHome == isHome
+          ).length;
+          goalsAgainst += relevantEvents.filter(
+            e => e.type == EVENT_TYPE_GOAL && e.isHome != isHome
+          ).length;
+          cleansheets +=
+            relevantEvents.filter(
+              e => e.type == EVENT_TYPE_GOAL && e.isHome != isHome
+            ).length == 0
+              ? 1
+              : 0;
 
           if (match.winnerId == t) {
-            currentWinsInRow+=1
+            currentWinsInRow += 1;
           } else {
-            if (currentWinsInRow > winsInRow) winsInRow = currentWinsInRow
-            currentWinsInRow = 0
+            if (currentWinsInRow > winsInRow) winsInRow = currentWinsInRow;
+            currentWinsInRow = 0;
           }
         }
       }
 
-      if (currentWinsInRow > winsInRow) winsInRow = currentWinsInRow
+      if (currentWinsInRow > winsInRow) winsInRow = currentWinsInRow;
 
       // compare to prev records
-      if (fixtureTeamRecords.mostCleansheets == undefined || fixtureTeamRecords.mostCleansheets.value < cleansheets) {
+      if (
+        fixtureTeamRecords.mostCleansheets == undefined ||
+        fixtureTeamRecords.mostCleansheets.value < cleansheets
+      ) {
         fixtureTeamRecords.mostCleansheets = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: cleansheets
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostGoalsAgainst == undefined || fixtureTeamRecords.mostGoalsAgainst.value < goalsAgainst) {
+      if (
+        fixtureTeamRecords.mostGoalsAgainst == undefined ||
+        fixtureTeamRecords.mostGoalsAgainst.value < goalsAgainst
+      ) {
         fixtureTeamRecords.mostGoalsAgainst = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: goalsAgainst
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostGoalsDifference == undefined || fixtureTeamRecords.mostGoalsDifference.value < goalsFor - goalsAgainst) {
+      if (
+        fixtureTeamRecords.mostGoalsDifference == undefined ||
+        fixtureTeamRecords.mostGoalsDifference.value < goalsFor - goalsAgainst
+      ) {
         fixtureTeamRecords.mostGoalsDifference = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: goalsFor - goalsAgainst
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostGoalsFor == undefined || fixtureTeamRecords.mostGoalsFor.value < goalsFor) {
+      if (
+        fixtureTeamRecords.mostGoalsFor == undefined ||
+        fixtureTeamRecords.mostGoalsFor.value < goalsFor
+      ) {
         fixtureTeamRecords.mostGoalsFor = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: goalsFor
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostSaves == undefined || fixtureTeamRecords.mostSaves.value < saves) {
+      if (
+        fixtureTeamRecords.mostSaves == undefined ||
+        fixtureTeamRecords.mostSaves.value < saves
+      ) {
         fixtureTeamRecords.mostSaves = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: saves
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostTimeOnPitch == undefined || fixtureTeamRecords.mostTimeOnPitch.realValue < playTime) {
-        let parsedTime = parseSecondsToTime(playTime)
+      if (
+        fixtureTeamRecords.mostTimeOnPitch == undefined ||
+        fixtureTeamRecords.mostTimeOnPitch.realValue < playTime
+      ) {
+        let parsedTime = parseSecondsToTime(playTime);
         fixtureTeamRecords.mostTimeOnPitch = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           realValue: playTime,
-          value: parsedTime.time+" "+parsedTime.unit
-        }
+          value: parsedTime.time + " " + parsedTime.unit
+        };
       }
 
-      if (fixtureTeamRecords.mostWins == undefined || fixtureTeamRecords.mostWins.value < wins) {
+      if (
+        fixtureTeamRecords.mostWins == undefined ||
+        fixtureTeamRecords.mostWins.value < wins
+      ) {
         fixtureTeamRecords.mostWins = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: wins
-        }
+        };
       }
 
-      if (fixtureTeamRecords.mostWinsInRow == undefined || fixtureTeamRecords.mostWinsInRow.value < winsInRow) {
+      if (
+        fixtureTeamRecords.mostWinsInRow == undefined ||
+        fixtureTeamRecords.mostWinsInRow.value < winsInRow
+      ) {
         fixtureTeamRecords.mostWinsInRow = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: winsInRow
-        }
+        };
       }
 
-      if (fixtureTeamRecords.leastGoalsAgainst == undefined || fixtureTeamRecords.leastGoalsAgainst.value > goalsAgainst) {
+      if (
+        fixtureTeamRecords.leastGoalsAgainst == undefined ||
+        fixtureTeamRecords.leastGoalsAgainst.value > goalsAgainst
+      ) {
         fixtureTeamRecords.leastGoalsAgainst = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: goalsAgainst
-        }
+        };
       }
 
-      if (fixtureTeamRecords.leastGoalsFor == undefined || fixtureTeamRecords.leastGoalsFor.value > goalsFor) {
+      if (
+        fixtureTeamRecords.leastGoalsFor == undefined ||
+        fixtureTeamRecords.leastGoalsFor.value > goalsFor
+      ) {
         fixtureTeamRecords.leastGoalsFor = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: goalsFor
-        }
+        };
       }
 
-      if (fixtureTeamRecords.leastWins == undefined || fixtureTeamRecords.leastWins.value > wins) {
+      if (
+        fixtureTeamRecords.leastWins == undefined ||
+        fixtureTeamRecords.leastWins.value > wins
+      ) {
         fixtureTeamRecords.leastWins = {
           fixtureId: f,
           teamId: t,
           teamLabel: teamLabels[t],
           value: wins
-        }
+        };
       }
-
     }
   }
 
-  return fixtureTeamRecords
-}
+  return fixtureTeamRecords;
+};
+
+export const calculateTwoPlayersRecords = (players, fixtures) => {
+  let twoPlayersRecords = {
+    bestCouple: undefined,
+    playedTogether: undefined,
+    winTogether: undefined
+  };
+
+  // init player tracker
+  let playersTracker = [];
+
+  let innerPlayerTracker = [];
+
+  for (let p in players) {
+    innerPlayerTracker.push({
+      goals: 0,
+      play: 0,
+      win: 0
+    });
+  }
+
+  for (let p in players) {
+    playersTracker.push({ ...innerPlayerTracker });
+  }
+
+  // calculate tracker
+  for (let p1 in players) {
+    if (players[p1].isRemoved) continue;
+
+    for (let f in fixtures) {
+      if (fixtures[f].isRemoved) continue;
+
+      let pointsObject = calculatePoints(players, fixtures, p1, f);
+
+      if (pointsObject.appearence) {
+        let teammates = fixtures[f].playersList[pointsObject.teamId].players;
+        for (let t in teammates) {
+          let p2 = teammates[t].id;
+
+          if (p1 == p2) continue;
+
+          playersTracker[p1][p2] = {...playersTracker[p1][p2], play: playersTracker[p1][p2].play+1};
+          if (pointsObject.teamWin) playersTracker[p1][p2] = {...playersTracker[p1][p2], win: playersTracker[p1][p2].win+1};;
+        }
+
+        if (fixtures[f].matches && pointsObject.goals > 0) {
+          for (let m in fixtures[f].matches) {
+            let match = fixtures[f].matches[m];
+
+            if (match.isRemoved) continue;
+
+            let goals = match.events
+              ? match.events.filter(
+                  e =>
+                    !e.isRemoved &&
+                    e.type == EVENT_TYPE_GOAL &&
+                    e.executerId == p1
+                )
+              : [];
+
+            for (let g in goals) {
+              let p2 = goals[g].helperId;
+
+              if (p2 == undefined || p2 == null || p1 == p2) continue;
+
+              playersTracker[p1][p2] = {...playersTracker[p1][p2], goals: playersTracker[p1][p2].goals+1};;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // find the best in any category
+  for (let p1 in players) {
+    for (let p2 in players) {
+      if (players[p1].isRemoved || players[p2].isRemoved || p1 == p2) continue;
+
+      if (playersTracker[p1][p2].goals>0&&(
+        twoPlayersRecords.bestCouple == undefined || twoPlayersRecords.bestCouple.realValue < playersTracker[p1][p2].goals
+      )){
+        twoPlayersRecords.bestCouple = {
+          player1Id: p1,
+          player2Id: p2,
+          player1Label: "כובש",
+          player2Label: "מבשל",
+          realValue: playersTracker[p1][p2].goals,
+          value: playersTracker[p1][p2].goals+" שערים"
+        }
+      }
+
+      if (playersTracker[p1][p2].play>0&&(
+        twoPlayersRecords.playedTogether == undefined || twoPlayersRecords.playedTogether.realValue < playersTracker[p1][p2].play
+      )){
+        twoPlayersRecords.playedTogether = {
+          player1Id: p1,
+          player2Id: p2,
+          realValue: playersTracker[p1][p2].play,
+          value: playersTracker[p1][p2].play+" משחקים"
+        }
+      }
+
+      if (playersTracker[p1][p2].win>0&&(
+        twoPlayersRecords.winTogether == undefined || twoPlayersRecords.winTogether.realValue < playersTracker[p1][p2].win
+      )){
+        twoPlayersRecords.winTogether = {
+          player1Id: p1,
+          player2Id: p2,
+          realValue: playersTracker[p1][p2].win,
+          value: playersTracker[p1][p2].win+" נצחונות",
+        }
+      }
+    }
+  }
+
+  return twoPlayersRecords;
+};
 
 export const calculateRecords = (players, fixtures) => {
   let records = {
@@ -1180,7 +1349,7 @@ export const calculateRecords = (players, fixtures) => {
     fixtureRecords: calculateFixtureRecords(fixtures),
     matchPlayerReacords: calculateMatchPlayerRecords(players, fixtures),
     fixtureTeamRecords: calculateFixtureTeamRecords(fixtures),
-    twoPlayersRecords: {}
+    twoPlayersRecords: calculateTwoPlayersRecords(players, fixtures)
   };
 
   return records;
