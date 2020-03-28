@@ -185,7 +185,7 @@ let LeagueRecordsScreen = props => {
                     });
                   }}
                 >
-                  <Text style={styles.metaText}>{"מעבר למשחק >"}</Text>
+                  <Text style={styles.metaText}>{"למשחק >"}</Text>
                 </TouchableOpacity>
               </View>
             </View>
