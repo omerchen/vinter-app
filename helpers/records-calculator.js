@@ -186,7 +186,8 @@ const calculatePlayerRecords = (players, fixtures) => {
     mostCleansheetGkAvg: undefined,
     leastGoalsAgainstAvg: undefined,
     leastGoalsAgainstGkAvg: undefined,
-    mostWinnerAvg: undefined
+    mostWinnerAvg: undefined,
+    mostDoubles: undefined
   };
 
   let playersTracker = [...players];
@@ -349,6 +350,31 @@ const calculatePlayerRecords = (players, fixtures) => {
           }
         }
       }
+
+      if (fixtures[f].matches) {
+        for (let m in fixtures[f].matches) {
+          let match = fixtures[f].matches[m];
+
+          if (match.isRemoved) continue;
+
+          if (match.events) {
+            if (
+              match.events.filter(
+                e =>
+                  !e.isRemoved && e.type == EVENT_TYPE_GOAL && e.executerId == p
+              ).length > 1
+            ) {
+              if (playersTracker[p].mostDoubles == undefined) {
+                playersTracker[p].mostDoubles = {
+                  value: 1
+                };
+              } else {
+                playersTracker[p].mostDoubles.value += 1;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -401,8 +427,6 @@ const calculatePlayerRecords = (players, fixtures) => {
           playersTracker[p].mostGoalsAvg.amount /
           playersTracker[p].mostGoalsAvg.appearences,
         playerId: p,
-        goals: playersTracker[p].mostGoalsAvg.amount,
-        app: playersTracker[p].mostGoalsAvg.appearences
       };
     }
 
@@ -422,8 +446,17 @@ const calculatePlayerRecords = (players, fixtures) => {
           playersTracker[p].mostAssistsAvg.amount /
           playersTracker[p].mostAssistsAvg.appearences,
         playerId: p,
-        goals: playersTracker[p].mostAssistsAvg.amount,
-        app: playersTracker[p].mostAssistsAvg.appearences
+      };
+    }
+
+    if (
+      playersTracker[p].mostDoubles != undefined &&
+      (playerRecords.mostDoubles == undefined ||
+        playerRecords.mostDoubles.value < playersTracker[p].mostDoubles.value)
+    ) {
+      playerRecords.mostDoubles = {
+        value: playersTracker[p].mostDoubles.value ,
+        playerId: p,
       };
     }
 
@@ -799,6 +832,13 @@ const calculateFixtureRecords = fixtures => {
   }
 
   return fixtureRecords;
+};
+
+const calculateMatchPlayerRecords = (players, fixtures) => {
+  let matchPlayerRecord = {
+    fastestDouble: undefined,
+    fastestGoal: undefined
+  };
 };
 
 export const calculateRecords = (players, fixtures) => {

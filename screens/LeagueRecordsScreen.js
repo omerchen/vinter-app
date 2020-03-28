@@ -286,6 +286,10 @@ let LeagueRecordsScreen = props => {
             "אחוז נצחונות במשחקונים"
           )}
           {generatePlayerRecordComponent(
+            records.playerRecords.mostDoubles,
+            "הכי הרבה צמדים"
+          )}
+          {generatePlayerRecordComponent(
             records.playerRecords.mostGoalsAvg,
             "ממוצע שערים למחזור"
           )}
