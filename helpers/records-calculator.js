@@ -1,5 +1,7 @@
 import { calculatePoints } from "./rules";
 import { parseSecondsToTime } from "./time-parser";
+import { EVENT_TYPE_GOAL } from "../constants/event-types";
+import { mergeSort } from "./mergeSort";
 
 const calculateFixturePlayerRecords = (players, fixtures) => {
   let playersTracker = [...players];
@@ -90,6 +92,8 @@ const calculateFixturePlayerRecords = (players, fixtures) => {
 
   // find the best record
   for (let p in playersTracker) {
+    if (playersTracker[p].isRemoved) continue;
+
     if (
       playersTracker[p].mostGoals != undefined &&
       (fixturePlayerRecord.mostGoals == undefined ||
@@ -350,6 +354,8 @@ const calculatePlayerRecords = (players, fixtures) => {
 
   // find the best penalty winner
   for (let p in playersTracker) {
+    if (playersTracker[p].isRemoved) continue;
+
     if (
       playersTracker[p].penaltyWins > 0 ||
       playersTracker[p].penaltyLoses > 0
@@ -667,14 +673,142 @@ const calculateMatchRecords = fixtures => {
   return matchRecord;
 };
 
+const calculateFixtureRecords = fixtures => {
+  let fixturesTracker = [...fixtures];
+  let fixtureRecords = {
+    mostGoals: undefined,
+    leastGoals: undefined,
+    mostPenalties: undefined,
+    biggestWin: undefined
+  };
+
+  // init tracker
+  for (let f in fixturesTracker) {
+    fixturesTracker[f] = {
+      ...fixturesTracker[f],
+      mostGoals: {
+        fixtureId: f,
+        value: 0
+      },
+      leastGoals: {
+        fixtureId: f,
+        value: 0
+      },
+      mostPenalties: undefined,
+      biggestWin: undefined
+    };
+  }
+
+  // calculate tracker
+  for (let f in fixturesTracker) {
+    if (fixturesTracker[f].isRemoved) continue;
+
+    if (fixturesTracker[f].matches) {
+      let wins = [0, 0, 0];
+      for (let m in fixturesTracker[f].matches) {
+        let match = fixturesTracker[f].matches[m];
+
+        if (match.isRemoved) continue;
+
+        if (match.winnerId != undefined && match.winnerId != null) {
+          wins[match.winnerId] += 1;
+        }
+
+        let goals = match.events
+          ? match.events.filter(e => !e.isRemoved && e.type == EVENT_TYPE_GOAL)
+          : [];
+
+        let homeGoals = goals.filter(e => e.isHome);
+        let awayGoals = goals.filter(e => !e.isHome);
+        let penalty =
+          match.winnerId != null &&
+          match.winnerId != undefined &&
+          homeGoals.length == awayGoals.length;
+
+        if (fixturesTracker[f].mostGoals == undefined) {
+          fixturesTracker[f].mostGoals = {
+            fixtureId: f,
+            value: goals.length
+          };
+        } else {
+          fixturesTracker[f].mostGoals.value += goals.length;
+        }
+
+        if (fixturesTracker[f].leastGoals == undefined) {
+          fixturesTracker[f].leastGoals = {
+            fixtureId: f,
+            value: goals.length
+          };
+        } else {
+          fixturesTracker[f].leastGoals.value += goals.length;
+        }
+
+        if (fixturesTracker[f].mostPenalties == undefined) {
+          fixturesTracker[f].mostPenalties = {
+            fixtureId: f,
+            value: penalty ? 1 : 0
+          };
+        } else {
+          fixturesTracker[f].mostPenalties.value += penalty ? 1 : 0;
+        }
+      }
+      wins = mergeSort(wins, (a, b) => a < b);
+      let difference = wins[0] - wins[1];
+      if (
+        difference > 0 &&
+        (fixtureRecords.biggestWin == undefined ||
+          fixtureRecords.biggestWin.realValue < difference)
+      ) {
+        fixtureRecords.biggestWin = {
+          fixtureId: f,
+          value: wins[2] + "-" + wins[1] + "-" + wins[0],
+          realValue: difference
+        };
+      }
+    }
+  }
+
+  // find the best
+  for (let f in fixturesTracker) {
+    if (fixturesTracker[f].isRemoved) continue;
+
+    if (
+      fixturesTracker[f].mostGoals != undefined &&
+      (fixtureRecords.mostGoals == undefined ||
+        fixtureRecords.mostGoals.value < fixturesTracker[f].mostGoals.value)
+    ) {
+      fixtureRecords.mostGoals = { ...fixturesTracker[f].mostGoals };
+    }
+
+    if (
+      fixturesTracker[f].leastGoals != undefined &&
+      (fixtureRecords.leastGoals == undefined ||
+        fixtureRecords.leastGoals.value > fixturesTracker[f].leastGoals.value)
+    ) {
+      fixtureRecords.leastGoals = { ...fixturesTracker[f].leastGoals };
+    }
+
+    if (
+      fixturesTracker[f].mostPenalties != undefined &&
+      (fixtureRecords.mostPenalties == undefined ||
+        fixtureRecords.mostPenalties.value <
+          fixturesTracker[f].mostPenalties.value)
+    ) {
+      fixtureRecords.mostPenalties = { ...fixturesTracker[f].mostPenalties };
+    }
+  }
+
+  return fixtureRecords;
+};
+
 export const calculateRecords = (players, fixtures) => {
   let records = {
     fixturePlayerRecord: calculateFixturePlayerRecords(players, fixtures),
     playerRecords: calculatePlayerRecords(players, fixtures),
     matchRecords: calculateMatchRecords(fixtures),
+    fixtureRecords: calculateFixtureRecords(fixtures),
     matchPlayerReacords: {},
     fixtureTeamRecords: {},
-    fixtureRecords: {},
     twoPlayersRecords: {}
   };
 

@@ -32,12 +32,19 @@ let LeagueRecordsScreen = props => {
       )
     : [];
 
-  let lastFixture = filteredFixtures.length == 0?null:filteredFixtures[filteredFixtures.length-1];
+  let lastFixture =
+    filteredFixtures.length == 0
+      ? null
+      : filteredFixtures[filteredFixtures.length - 1];
 
   const generateFixturePlayerRecordComponent = (data, title) => {
     return (
       data && (
-        <View style={lastFixture.id == data.fixtureId?styles.hotCard:styles.card}>
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
           <Text style={styles.title}>{title}</Text>
 
           <View style={styles.row}>
@@ -52,7 +59,7 @@ let LeagueRecordsScreen = props => {
               >
                 {data.value}
               </Text>
-              <View style={{ flexDirection: "row", justifyContent:"center" }}>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
                 <TouchableOpacity
                   onPress={() => {
                     props.navigation.navigate({
@@ -132,7 +139,11 @@ let LeagueRecordsScreen = props => {
   const generateMatchRecordComponent = (data, title) => {
     return (
       data && (
-        <View style={lastFixture.id == data.fixtureId?styles.hotCard:styles.card}>
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
           <Text style={styles.title}>{title}</Text>
 
           <View style={styles.row}>
@@ -147,7 +158,7 @@ let LeagueRecordsScreen = props => {
               >
                 {data.value}
               </Text>
-              <View style={{ flexDirection: "row", justifyContent:"center" }}>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
                 <TouchableOpacity
                   onPress={() => {
                     props.navigation.navigate({
@@ -166,16 +177,60 @@ let LeagueRecordsScreen = props => {
                 <TouchableOpacity
                   onPress={() => {
                     props.navigation.navigate({
-                      routeName: Platform.OS=="web"?"WebMatch":"Match",
+                      routeName: Platform.OS == "web" ? "WebMatch" : "Match",
                       params: {
                         fixtureId: data.fixtureId,
-                        matchId: data.matchId,
+                        matchId: data.matchId
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>{"מעבר למשחק >"}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
+
+  const generateFixtureRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 75,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "ViewFixture",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        fixtureNumber: fixtures[data.fixtureId].number
                       }
                     });
                   }}
                 >
                   <Text style={styles.metaText}>
-                    {"מעבר למשחק >"}
+                    {"מחזור " + fixtures[data.fixtureId].number}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -279,6 +334,23 @@ let LeagueRecordsScreen = props => {
             records.matchRecords.fastestMatch,
             "המשחק הקצר ביותר"
           )}
+          {/* Fixture Records */}
+          {generateFixtureRecordComponent(
+            records.fixtureRecords.biggestWin,
+            "ניצחון המחזור הגדול ביותר"
+          )}
+          {generateFixtureRecordComponent(
+            records.fixtureRecords.mostGoals,
+            "הכי הרבה שערים במחזור"
+          )}
+          {generateFixtureRecordComponent(
+            records.fixtureRecords.leastGoals,
+            "הכי מעט שערים במחזור"
+          )}
+          {generateFixtureRecordComponent(
+            records.fixtureRecords.mostPenalties,
+            "הכי הרבה פנדלים במחזור"
+          )}
         </View>
       )}
       <View style={{ height: 50 }} />
@@ -311,8 +383,8 @@ const styles = StyleSheet.create({
   },
   hotCard: {
     backgroundColor: Colors.white,
-    borderColor: Colors.primary,
-    borderWidth:3,
+    borderColor: 'gold',
+    borderWidth: 3,
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
