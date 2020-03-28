@@ -97,6 +97,79 @@ let LeagueRecordsScreen = props => {
     );
   };
 
+  const generateMatchPlayerRecordComponent = (data, title) => {
+    return (
+      data && (
+        <View
+          style={
+            lastFixture.id == data.fixtureId ? styles.hotCard : styles.card
+          }
+        >
+          <Text style={styles.title}>{title}</Text>
+
+          <View style={styles.row}>
+            <View>
+              <Text
+                style={{
+                  fontFamily: "assistant-bold",
+                  fontSize: 55,
+                  color: getNextColor(),
+                  textAlign: "center"
+                }}
+              >
+                {data.value}
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "Player",
+                      params: {
+                        playerId: data.playerId
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {players[data.playerId].name}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: "ViewFixture",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        fixtureNumber: fixtures[data.fixtureId].number
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>
+                    {"מחזור " + fixtures[data.fixtureId].number}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate({
+                      routeName: Platform.OS == "web" ? "WebMatch" : "Match",
+                      params: {
+                        fixtureId: data.fixtureId,
+                        matchId: data.matchId
+                      }
+                    });
+                  }}
+                >
+                  <Text style={styles.metaText}>{"למשחק >"}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    );
+  };
+
   const generatePlayerRecordComponent = (data, title) => {
     return (
       data && (
@@ -355,6 +428,19 @@ let LeagueRecordsScreen = props => {
             records.fixtureRecords.mostPenalties,
             "הכי הרבה פנדלים במחזור"
           )}
+          {/* Match-Player Records */}
+          {generateMatchPlayerRecordComponent(
+            records.matchPlayerReacords.fastestGoal,
+            "השער המהיר ביותר"
+          )}
+          {generateMatchPlayerRecordComponent(
+            records.matchPlayerReacords.longestGoal,
+            "השער המאוחר ביותר"
+          )}
+          {generateMatchPlayerRecordComponent(
+            records.matchPlayerReacords.fastestDouble,
+            "הצמד המהיר ביותר"
+          )}
         </View>
       )}
       <View style={{ height: 50 }} />
@@ -387,7 +473,7 @@ const styles = StyleSheet.create({
   },
   hotCard: {
     backgroundColor: Colors.white,
-    borderColor: 'gold',
+    borderColor: "gold",
     borderWidth: 3,
     justifyContent: "center",
     alignItems: "center",

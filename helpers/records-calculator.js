@@ -426,7 +426,7 @@ const calculatePlayerRecords = (players, fixtures) => {
         realValue:
           playersTracker[p].mostGoalsAvg.amount /
           playersTracker[p].mostGoalsAvg.appearences,
-        playerId: p,
+        playerId: p
       };
     }
 
@@ -445,7 +445,7 @@ const calculatePlayerRecords = (players, fixtures) => {
         realValue:
           playersTracker[p].mostAssistsAvg.amount /
           playersTracker[p].mostAssistsAvg.appearences,
-        playerId: p,
+        playerId: p
       };
     }
 
@@ -455,8 +455,8 @@ const calculatePlayerRecords = (players, fixtures) => {
         playerRecords.mostDoubles.value < playersTracker[p].mostDoubles.value)
     ) {
       playerRecords.mostDoubles = {
-        value: playersTracker[p].mostDoubles.value ,
-        playerId: p,
+        value: playersTracker[p].mostDoubles.value,
+        playerId: p
       };
     }
 
@@ -837,8 +837,76 @@ const calculateFixtureRecords = fixtures => {
 const calculateMatchPlayerRecords = (players, fixtures) => {
   let matchPlayerRecord = {
     fastestDouble: undefined,
+    longestGoal: undefined,
     fastestGoal: undefined
   };
+
+  // find records
+  for (let p in players) {
+    if (players[p].isRemoved) continue;
+
+    for (let f in fixtures) {
+      if (fixtures[f].isRemoved) continue;
+
+      if (fixtures[f].matches) {
+        for (let m in fixtures[f].matches) {
+          let match = fixtures[f].matches[m]
+
+          if (match.isRemoved) continue;
+
+          if (match.events) {
+            let goals = mergeSort(match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_GOAL&&e.executerId==p), (a,b)=>a.time>=b.time)
+
+            if (goals.length == 0) continue;
+
+            if (matchPlayerRecord.fastestGoal == undefined || matchPlayerRecord.fastestGoal.realValue > goals[0].time) {
+              let parsedTime = parseSecondsToTime(goals[0].time)
+              matchPlayerRecord.fastestGoal = {
+                playerId: p,
+                fixtureId: f,
+                matchId: m,
+                realValue: goals[0].time,
+                value: parsedTime.time+" "+parsedTime.unit
+              }
+            }
+
+            if (matchPlayerRecord.longestGoal == undefined || matchPlayerRecord.longestGoal.realValue < goals[goals.length-1].time) {
+              let parsedTime = parseSecondsToTime(goals[goals.length-1].time)
+              matchPlayerRecord.longestGoal = {
+                playerId: p,
+                fixtureId: f,
+                matchId: m,
+                realValue: goals[0].time,
+                value: parsedTime.time+" "+parsedTime.unit
+              }
+            }
+
+            for (let g in goals) {
+              if (g==0) continue;
+
+              if (matchPlayerRecord.fastestDouble == undefined || matchPlayerRecord.fastestDouble.realValue > (goals[g].time-goals[g-1].time)) {
+                let parsedTime = parseSecondsToTime((goals[g].time-goals[g-1].time))
+                matchPlayerRecord.fastestDouble = {
+                  playerId: p,
+                  fixtureId: f,
+                  matchId: m,
+                  realValue: goals[0].time,
+                  value: parsedTime.time+" "+parsedTime.unit
+                }
+              }
+
+            }
+
+
+            // TODO: IM HERE!!!
+
+          }
+        }
+      }
+    }
+  }
+
+  return matchPlayerRecord
 };
 
 export const calculateRecords = (players, fixtures) => {
@@ -847,7 +915,7 @@ export const calculateRecords = (players, fixtures) => {
     playerRecords: calculatePlayerRecords(players, fixtures),
     matchRecords: calculateMatchRecords(fixtures),
     fixtureRecords: calculateFixtureRecords(fixtures),
-    matchPlayerReacords: {},
+    matchPlayerReacords: calculateMatchPlayerRecords(players, fixtures),
     fixtureTeamRecords: {},
     twoPlayersRecords: {}
   };
