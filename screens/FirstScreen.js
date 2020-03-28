@@ -171,6 +171,14 @@ let FirstScreen = props => {
             style={styles.subButton}
           />
           <SubButton
+            title="היכל התהילה"
+            offline={!dataLoaded}
+            onPress={() => {
+              props.navigation.navigate("LeagueRecords");
+            }}
+            style={styles.subButton}
+          />
+          <SubButton
             title="למחזורים הקודמים"
             offline={
               !dataLoaded ||

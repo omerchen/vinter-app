@@ -37,6 +37,7 @@ import RatePlayerScreen from "../screens/RatePlayerScreen";
 import RatingTableScreen from "../screens/RatingTableScreen";
 import GenerateTeamsScreen from "../screens/GenerateTeamsScreen";
 import PlayerStatisticsScreen from "../screens/PlayerStatisticsScreen";
+import LeagueRecordsScreen from "../screens/LeagueRecordsScreen";
 
 const MainNavigator = createStackNavigator(
   {
@@ -75,6 +76,9 @@ const MainNavigator = createStackNavigator(
     },
     PreviousFixtures: {
       screen: PreviousFixturesScreen,
+    },
+    LeagueRecords: {
+      screen: LeagueRecordsScreen,
     },
     PreviousMatches: {
       screen: PreviousMatchesScreen,
