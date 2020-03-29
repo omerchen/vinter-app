@@ -19,6 +19,11 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { IoniconsHeaderButton } from "../components/HeaderButton";
 import { mergeSort } from "../helpers/mergeSort";
 import {
+  calculateFixturePlayerRecords,
+  calculateMatchPlayerRecords,
+  calculatePlayerRecords
+} from "../helpers/records-calculator";
+import {
   LineChart,
   BarChart,
   PieChart,
@@ -59,6 +64,17 @@ let PlayerStatisticsScreen = props => {
   let assistZeroGoals = 0;
   let assistOneGoal = 0;
   let assistMultiGoals = 0;
+  let playerRecords = calculatePlayerRecords(players, fixtures, playerId);
+  let fixturePlayerRecords = calculateFixturePlayerRecords(
+    players,
+    fixtures,
+    playerId
+  );
+  let matchPlayerRecords = calculateMatchPlayerRecords(
+    players,
+    fixtures,
+    playerId
+  );
   let playerTracking = players.map(p => ({
     ...p,
     playedTogether: 0,
@@ -1158,6 +1174,341 @@ let PlayerStatisticsScreen = props => {
               </View>
             </View>
           )}
+
+          {/* Players Records */}
+
+          <View style={styles.card}>
+            <Text style={styles.title}>השיאים של {players[playerId].name}</Text>
+
+            <View style={styles.col}>
+              {fixturePlayerRecords.mostPoints&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>הכי הרבה נקודות במחזור</Text>
+                  <Text style={styles.dataText7}>
+                    {fixturePlayerRecords.mostPoints.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: fixturePlayerRecords.mostPoints.fixtureId,
+                          fixtureNumber:
+                            fixtures[fixturePlayerRecords.mostPoints.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " +
+                        fixtures[fixturePlayerRecords.mostPoints.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>}
+                
+              {fixturePlayerRecords.mostGoals&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>הכי הרבה גולים במחזור</Text>
+                  <Text style={styles.dataText7}>
+                    {fixturePlayerRecords.mostGoals.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: fixturePlayerRecords.mostGoals.fixtureId,
+                          fixtureNumber:
+                            fixtures[fixturePlayerRecords.mostGoals.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " +
+                        fixtures[fixturePlayerRecords.mostGoals.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>}
+
+              {fixturePlayerRecords.mostAssists&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>הכי הרבה בישולים במחזור</Text>
+                  <Text style={styles.dataText7}>
+                    {fixturePlayerRecords.mostAssists.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: fixturePlayerRecords.mostAssists.fixtureId,
+                          fixtureNumber:
+                            fixtures[fixturePlayerRecords.mostAssists.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " +
+                        fixtures[fixturePlayerRecords.mostAssists.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>}
+
+              {fixturePlayerRecords.mostSaves&&<View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>הכי הרבה הצלות במחזור (כשחקן)</Text>
+                  <Text style={styles.dataText7}>
+                    {fixturePlayerRecords.mostSaves.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      props.navigation.navigate({
+                        routeName: "ViewFixture",
+                        params: {
+                          fixtureId: fixturePlayerRecords.mostSaves.fixtureId,
+                          fixtureNumber:
+                            fixtures[fixturePlayerRecords.mostSaves.fixtureId].number
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.metaText2}>
+                      {"מחזור " +
+                        fixtures[fixturePlayerRecords.mostSaves.fixtureId].number}
+                    </Text>
+                  </TouchableOpacity>
+                </View>}
+
+
+
+                {matchPlayerRecords.fastestDouble && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>
+                      הצמד המהיר ביותר
+                    </Text>
+                    <Text style={styles.dataText7}>{matchPlayerRecords.fastestDouble.value}</Text>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName: "ViewFixture",
+                            params: {
+                              fixtureId: matchPlayerRecords.fastestDouble.fixtureId,
+                              fixtureNumber:
+                                fixtures[matchPlayerRecords.fastestDouble.fixtureId].number
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>
+                          {"מחזור " + fixtures[matchPlayerRecords.fastestDouble.fixtureId].number}
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 20 }} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName:
+                              Platform.OS == "web" ? "WebMatch" : "Match",
+                            params: {
+                              fixtureId: matchPlayerRecords.fastestDouble.fixtureId,
+                              matchId: matchPlayerRecords.fastestDouble.matchId
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>{"למשחק >"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+
+                {matchPlayerRecords.fastestGoal && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>
+                      השער המהיר ביותר
+                    </Text>
+                    <Text style={styles.dataText7}>{matchPlayerRecords.fastestGoal.value}</Text>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName: "ViewFixture",
+                            params: {
+                              fixtureId: matchPlayerRecords.fastestGoal.fixtureId,
+                              fixtureNumber:
+                                fixtures[matchPlayerRecords.fastestGoal.fixtureId].number
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>
+                          {"מחזור " + fixtures[matchPlayerRecords.fastestGoal.fixtureId].number}
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 20 }} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName:
+                              Platform.OS == "web" ? "WebMatch" : "Match",
+                            params: {
+                              fixtureId: matchPlayerRecords.fastestGoal.fixtureId,
+                              matchId: matchPlayerRecords.fastestGoal.matchId
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>{"למשחק >"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+
+                {matchPlayerRecords.longestGoal && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>
+                      השער המאוחר ביותר
+                    </Text>
+                    <Text style={styles.dataText7}>{matchPlayerRecords.longestGoal.value}</Text>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName: "ViewFixture",
+                            params: {
+                              fixtureId: matchPlayerRecords.longestGoal.fixtureId,
+                              fixtureNumber:
+                                fixtures[matchPlayerRecords.longestGoal.fixtureId].number
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>
+                          {"מחזור " + fixtures[matchPlayerRecords.longestGoal.fixtureId].number}
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 20 }} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName:
+                              Platform.OS == "web" ? "WebMatch" : "Match",
+                            params: {
+                              fixtureId: matchPlayerRecords.longestGoal.fixtureId,
+                              matchId: matchPlayerRecords.longestGoal.matchId
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>{"למשחק >"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+
+                {matchPlayerRecords.mostSaves && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>
+                      הכי הרבה הצלות במשחק אחד (כשחקן)
+                    </Text>
+                    <Text style={styles.dataText7}>{matchPlayerRecords.mostSaves.value}</Text>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName: "ViewFixture",
+                            params: {
+                              fixtureId: matchPlayerRecords.mostSaves.fixtureId,
+                              fixtureNumber:
+                                fixtures[matchPlayerRecords.mostSaves.fixtureId].number
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>
+                          {"מחזור " + fixtures[matchPlayerRecords.mostSaves.fixtureId].number}
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 20 }} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName:
+                              Platform.OS == "web" ? "WebMatch" : "Match",
+                            params: {
+                              fixtureId: matchPlayerRecords.mostSaves.fixtureId,
+                              matchId: matchPlayerRecords.mostSaves.matchId
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>{"למשחק >"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+
+
+
+            </View>
+          </View>
+
+          {/* Extra Data */}
+
+          <View style={styles.card}>
+            <Text style={styles.title}>נתונים נוספים</Text>
+
+            <View style={styles.col}>
+              {playerRecords.penaltyKing&&<View style={styles.dataView}>
+                <Text style={styles.metaText2op}>
+                  מאזן פנדלים
+                </Text>
+                <Text style={styles.dataText8}>
+                  {playerRecords.penaltyKing.value}
+                </Text>
+              </View>}
+
+              {playerRecords.mostDoubles&&<View style={styles.dataView}>
+                <Text style={styles.metaText2op}>
+                  צמדים
+                </Text>
+                <Text style={styles.dataText8}>
+                  {playerRecords.mostDoubles.value}
+                </Text>
+              </View>}
+
+              {playerRecords.mostGoalsForAvg&&<View style={styles.dataView}>
+                <Text style={styles.metaText2op}>
+                  ממוצע שערי זכות למחזור
+                </Text>
+                <Text style={styles.dataText8}>
+                  {playerRecords.mostGoalsForAvg.value}
+                </Text>
+              </View>}
+
+              {playerRecords.leastGoalsAgainstAvg&&<View style={styles.dataView}>
+                <Text style={styles.metaText2op}>
+                  ממוצע שערי חובה למחזור
+                </Text>
+                <Text style={styles.dataText8}>
+                  {playerRecords.leastGoalsAgainstAvg.value}
+                </Text>
+              </View>}
+
+
+            </View>
+          </View>
         </View>
       )}
       <View style={{ height: 50 }} />
@@ -1252,6 +1603,20 @@ const styles = StyleSheet.create({
     fontFamily: "assistant-bold",
     fontSize: 70,
     color: "#fdd365",
+    textAlign: "center",
+    minWidth: 150
+  },
+  dataText8: {
+    fontFamily: "assistant-bold",
+    fontSize: 70,
+    color: "#fd2eb3",
+    textAlign: "center",
+    minWidth: 150
+  },
+  dataText7: {
+    fontFamily: "assistant-bold",
+    fontSize: 70,
+    color: "#fb8d62",
     textAlign: "center",
     minWidth: 150
   },

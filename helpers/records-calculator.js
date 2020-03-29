@@ -3,7 +3,7 @@ import { parseSecondsToTime } from "./time-parser";
 import { EVENT_TYPE_GOAL, EVENT_TYPE_WALL } from "../constants/event-types";
 import { mergeSort } from "./mergeSort";
 
-export const calculateFixturePlayerRecords = (players, fixtures) => {
+export const calculateFixturePlayerRecords = (players, fixtures, playerId) => {
   let playersTracker = [...players];
 
   // init playersTracker
@@ -20,6 +20,8 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
 
   // calculate each players best record
   for (let p in playersTracker) {
+    if (playerId!=null&&p!=playerId)continue;
+
     for (let f in fixtures) {
       if (fixtures[f].isRemoved) continue;
 
@@ -92,6 +94,8 @@ export const calculateFixturePlayerRecords = (players, fixtures) => {
 
   // find the best record
   for (let p in playersTracker) {
+    if (playerId!=null&&p!=playerId)continue;
+
     if (playersTracker[p].isRemoved) continue;
 
     if (
@@ -173,7 +177,7 @@ export const comparePenaltyStats = (wins1, loses1, wins2, loses2) => {
   );
 };
 
-export const calculatePlayerRecords = (players, fixtures) => {
+export const calculatePlayerRecords = (players, fixtures, playerId) => {
   let playerRecords = {
     penaltyKing: undefined,
     mostPointsAvg: undefined,
@@ -215,6 +219,8 @@ export const calculatePlayerRecords = (players, fixtures) => {
 
   // count penalties for each player
   for (let p in playersTracker) {
+    if (playerId!=null&&p!=playerId)continue;
+
     let playerLongestCSRecord = 0;
     let playerCurrentLongestCSRecord = 0;
 
@@ -451,6 +457,8 @@ export const calculatePlayerRecords = (players, fixtures) => {
 
   // find the best penalty winner
   for (let p in playersTracker) {
+    if (playerId!=null&&p!=playerId)continue;
+
     if (playersTracker[p].isRemoved) continue;
 
     if (
@@ -977,7 +985,7 @@ export const calculateFixtureRecords = fixtures => {
   return fixtureRecords;
 };
 
-export const calculateMatchPlayerRecords = (players, fixtures) => {
+export const calculateMatchPlayerRecords = (players, fixtures , playerId=null) => {
   let matchPlayerRecord = {
     fastestDouble: undefined,
     longestGoal: undefined,
@@ -988,6 +996,8 @@ export const calculateMatchPlayerRecords = (players, fixtures) => {
 
   // find records
   for (let p in players) {
+    if (playerId!=null&&p!=playerId)continue;
+
     if (players[p].isRemoved) continue;
 
     for (let f in fixtures) {
