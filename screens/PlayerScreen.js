@@ -72,40 +72,40 @@ let PlayerSreen = props => {
           style={styles.featureButton}
           title="מאזן כספי"
           onPress={() => {
-            props.navigation.navigate({
-              routeName: "PlayerTransactions",
-              params: { playerId: playerId, playerName: players[playerId].name }
-            });
+            props.navigation.push(
+              "PlayerTransactions",
+              { playerId: playerId, playerName: players[playerId].name }
+            );
           }}
         />
         <SubButton
           style={styles.featureButton}
           title="סטטיסטיקות אישיות"
           onPress={() => {
-            props.navigation.navigate({
-              routeName: "PlayerStatistics",
-              params: { playerId: playerId, playerName: players[playerId].name }
-            });
+            props.navigation.push(
+              "PlayerStatistics",
+              { playerId: playerId, playerName: players[playerId].name }
+            );
           }}
         />
         <SubButton
           style={styles.featureButton}
           title="צפייה במחזורים"
           onPress={() => {
-            props.navigation.navigate({
-              routeName: "PreviousFixtures",
-              params: { playerId: playerId, playerName: players[playerId].name }
-            });
+            props.navigation.push(
+              "PreviousFixtures",
+              { playerId: playerId, playerName: players[playerId].name }
+            );
           }}
         />
         <SubButton
           style={styles.featureButton}
           title="ניקוד נלווה"
           onPress={() => {
-            props.navigation.navigate({
-              routeName: "PlayerExtraPoints",
-              params: { playerId: playerId, playerName: players[playerId].name }
-            });
+            props.navigation.push(
+              "PlayerExtraPoints",
+              { playerId: playerId, playerName: players[playerId].name }
+            );
           }}
         />
         

@@ -699,12 +699,13 @@ let PlayerStatisticsScreen = props => {
                 playerTracking[bestPlayedTogether].playedTogether > 0 && (
                   <View style={styles.dataView}>
                     <TouchableOpacity onPress={()=>{
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: bestPlayedTogether
+                      props.navigation.push(
+                        "Player",
+                        {
+                          playerId: bestPlayedTogether,
+                          playerName: playerTracking[bestPlayedTogether].name,
                         }
-                      })
+                      );
                     }}>
                       <Text style={styles.dataText5}>
                         {playerTracking[bestPlayedTogether].name}
@@ -721,12 +722,13 @@ let PlayerStatisticsScreen = props => {
                 playerTracking[bestWinTogether].winTogether > 0 && (
                   <View style={styles.dataView}>
                     <TouchableOpacity onPress={()=>{
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: bestWinTogether
+                      props.navigation.push(
+                        "Player",
+                        {
+                          playerId: bestWinTogether,
+                          playerName: playerTracking[bestWinTogether].name,
                         }
-                      })
+                      );
                     }}>
                       <Text style={styles.dataText5}>
                         {playerTracking[bestWinTogether].name}
@@ -743,12 +745,13 @@ let PlayerStatisticsScreen = props => {
                 playerTracking[bestAssistToIndex].assistTo > 0 && (
                   <View style={styles.dataView}>
                     <TouchableOpacity onPress={()=>{
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: bestAssistToIndex
+                      props.navigation.push(
+                        "Player",
+                        {
+                          playerId: bestAssistToIndex,
+                          playerName: playerTracking[bestAssistToIndex].name,
                         }
-                      })
+                      );
                     }}>
                       <Text style={styles.dataText5}>
                         {playerTracking[bestAssistToIndex].name}
@@ -765,12 +768,13 @@ let PlayerStatisticsScreen = props => {
                 playerTracking[bestScoreFromIndex].scoreFrom > 0 && (
                   <View style={styles.dataView}>
                     <TouchableOpacity onPress={()=>{
-                      props.navigation.navigate({
-                        routeName: "Player",
-                        params: {
-                          playerId: bestScoreFromIndex
+                      props.navigation.push(
+                        "Player",
+                        {
+                          playerId: bestScoreFromIndex,
+                          playerName: playerTracking[bestScoreFromIndex].name,
                         }
-                      })
+                      );
                     }}>
                       <Text style={styles.dataText5}>
                         {playerTracking[bestScoreFromIndex].name}
