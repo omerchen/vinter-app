@@ -521,6 +521,18 @@ let LeagueRecordsScreen = props => {
             records.matchRecords.fastestWin,
             "הניצחון הקצר ביותר"
           )}
+          {generateMatchRecordComponent(
+            records.matchRecords.fastestRevolution,
+            "המהפך המהיר ביותר"
+          )}
+          {generateMatchRecordComponent(
+            records.matchRecords.mostSaves,
+            "הכי הרבה הצלות במשחק"
+          )}
+          {generateMatchRecordComponent(
+            records.matchRecords.mostSavesSingleTeam,
+            "הכי הרבה הצלות לקבוצה במשחק"
+          )}
           {/* Fixture Records */}
           {generateFixtureRecordComponent(
             records.fixtureRecords.biggestWin,

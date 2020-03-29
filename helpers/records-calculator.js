@@ -728,7 +728,10 @@ export const calculatePlayerRecords = (players, fixtures) => {
 export const calculateMatchRecords = fixtures => {
   let matchRecord = {
     longestWin: undefined,
-    fastestWin: undefined
+    fastestWin: undefined,
+    mostSaves: undefined,
+    mostSavesSingleTeam: undefined,
+    fastestRevolution: undefined,
   };
 
   for (let f in fixtures) {
@@ -775,6 +778,73 @@ export const calculateMatchRecords = fixtures => {
             realValue: matchTime,
             value: parsedTime.time + " " + parsedTime.unit
           };
+        }
+
+        if (match.events) {
+          let loserIsHome = !(match.winnerId==match.homeId)
+          let goals = mergeSort(match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_GOAL),
+          (a, b) => a.time >= b.time)
+          
+          if (goals.length > 0 && goals[0].isHome == loserIsHome) {
+            if (
+              matchRecord.fastestRevolution == undefined ||
+              matchRecord.fastestRevolution.realValue > matchTime - goals[0].time
+            ) {
+              let parsedTime = parseSecondsToTime(matchTime - goals[0].time)
+              matchRecord.fastestRevolution = {
+                fixtureId: f,
+                matchId: m,
+                realValue: matchTime - goals[0].time,
+                value: parsedTime.time + " " + parsedTime.unit
+              };
+            }
+          }
+
+          let savesAmount = match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_WALL).length
+          let savesAmountHome = match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_WALL&&e.isHome).length
+          let savesAmountAway = match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_WALL&&!e.isHome).length
+
+          if (savesAmount > 0) {
+            if (
+              matchRecord.mostSaves == undefined ||
+              matchRecord.mostSaves.realValue < savesAmount
+            ) {
+              matchRecord.mostSaves = {
+                fixtureId: f,
+                matchId: m,
+                realValue: savesAmount,
+                value: savesAmount
+              };
+            }
+          }
+
+          if (savesAmountHome > 0) {
+            if (
+              matchRecord.mostSavesSingleTeam == undefined ||
+              matchRecord.mostSavesSingleTeam.realValue < savesAmountHome
+            ) {
+              matchRecord.mostSavesSingleTeam = {
+                fixtureId: f,
+                matchId: m,
+                realValue: savesAmountHome,
+                value: savesAmountHome
+              };
+            }
+          }
+
+          if (savesAmountAway > 0) {
+            if (
+              matchRecord.mostSavesSingleTeam == undefined ||
+              matchRecord.mostSavesSingleTeam.realValue < savesAmountAway
+            ) {
+              matchRecord.mostSavesSingleTeam = {
+                fixtureId: f,
+                matchId: m,
+                realValue: savesAmountAway,
+                value: savesAmountAway
+              };
+            }
+          }
         }
       }
     }
@@ -1023,8 +1093,6 @@ export const calculateMatchPlayerRecords = (players, fixtures) => {
                 };
               }
             }
-
-            // TODO: IM HERE!!!
           }
         }
       }
