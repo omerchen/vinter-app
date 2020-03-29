@@ -551,6 +551,14 @@ let LeagueRecordsScreen = props => {
             records.matchPlayerReacords.fastestDouble,
             "הצמד המהיר ביותר"
             )}
+          {generateMatchPlayerRecordComponent(
+            records.matchPlayerReacords.mostSaves,
+            "הכי הרבה הצלות לשחקן במשחק"
+            )}
+          {generateMatchPlayerRecordComponent(
+            records.matchPlayerReacords.mostSavesGk,
+            "הכי הרבה הצלות לשוער במשחק"
+            )}
             {/* Fixture-Team Records */}
             {generateFixtureTeamRecordComponent(
               records.fixtureTeamRecords.mostWins,

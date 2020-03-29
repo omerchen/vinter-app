@@ -915,7 +915,9 @@ export const calculateMatchPlayerRecords = (players, fixtures) => {
   let matchPlayerRecord = {
     fastestDouble: undefined,
     longestGoal: undefined,
-    fastestGoal: undefined
+    fastestGoal: undefined,
+    mostSavesGk: undefined,
+    mostSaves: undefined,
   };
 
   // find records
@@ -932,6 +934,36 @@ export const calculateMatchPlayerRecords = (players, fixtures) => {
           if (match.isRemoved) continue;
 
           if (match.events) {
+            let saves = match.events.filter(e=>!e.isRemoved&&e.type==EVENT_TYPE_WALL&&e.executerId==p).length
+
+            if (saves > 0) {
+              let pointsObject = calculatePoints(players,fixtures,p,f)
+
+              if (pointsObject.appearence) {
+                if (pointsObject.isGoalkeeper) {
+                  if (matchPlayerRecord.mostSavesGk == undefined || matchPlayerRecord.mostSavesGk.realValue < saves) {
+                    matchPlayerRecord.mostSavesGk = {
+                      playerId: p,
+                      fixtureId: f,
+                      matchId: m,
+                      realValue: saves,
+                      value: saves
+                    }
+                  }
+                } else {
+                  if (matchPlayerRecord.mostSaves == undefined || matchPlayerRecord.mostSaves.realValue < saves) {
+                    matchPlayerRecord.mostSaves = {
+                      playerId: p,
+                      fixtureId: f,
+                      matchId: m,
+                      realValue: saves,
+                      value: saves
+                    }
+                  }
+                }
+              }
+            }
+
             let goals = mergeSort(
               match.events.filter(
                 e =>
