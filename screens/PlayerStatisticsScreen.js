@@ -53,6 +53,12 @@ let PlayerStatisticsScreen = props => {
   let goalsFor = 0;
   let goalAgaints = 0;
   let secondsPlayed = 0;
+  let goalZeroGoals = 0;
+  let goalOneGoal = 0;
+  let goalMultiGoals = 0;
+  let assistZeroGoals = 0;
+  let assistOneGoal = 0;
+  let assistMultiGoals = 0;
   let playerTracking = players.map(p => ({
     ...p,
     playedTogether: 0,
@@ -117,6 +123,32 @@ let PlayerStatisticsScreen = props => {
 
     // check global events
     for (let w in activeMatches) {
+      let goalEvents = activeMatches[w].events
+        ? activeMatches[w].events.filter(
+            e =>
+              !e.isRemoved &&
+              e.type == EVENT_TYPE_GOAL &&
+              e.executerId == playerId
+          )
+        : [];
+
+      if (goalEvents.length == 0) goalZeroGoals += 1;
+      else if (goalEvents.length == 1) goalOneGoal += 1;
+      else goalMultiGoals += 1;
+
+      let assistEvents = activeMatches[w].events
+        ? activeMatches[w].events.filter(
+            e =>
+              !e.isRemoved &&
+              e.type == EVENT_TYPE_GOAL &&
+              e.helperId == playerId
+          )
+        : [];
+
+      if (assistEvents.length == 0) assistZeroGoals += 1;
+      else if (assistEvents.length == 1) assistOneGoal += 1;
+      else assistMultiGoals += 1;
+
       let events = activeMatches[w].events
         ? activeMatches[w].events.filter(e => !e.isRemoved)
         : [];
@@ -249,7 +281,7 @@ let PlayerStatisticsScreen = props => {
   let gkBestGame = null;
 
   for (let i in fixturesGKPlayed) {
-    gkAppearences +=1
+    gkAppearences += 1;
     gkMatches += fixturesGKPlayed[i].matches;
     gkSaves += fixturesGKPlayed[i].saves;
     gkCleansheets += fixturesGKPlayed[i].cleansheets;
@@ -294,7 +326,15 @@ let PlayerStatisticsScreen = props => {
           continue;
         }
 
-        let gkMatchSaves = (currentFixture.matches[j].events?currentFixture.matches[j].events.filter(e=>!e.isRemoved&&e.executerId==playerId&&e.type==EVENT_TYPE_WALL):[]).length
+        let gkMatchSaves = (currentFixture.matches[j].events
+          ? currentFixture.matches[j].events.filter(
+              e =>
+                !e.isRemoved &&
+                e.executerId == playerId &&
+                e.type == EVENT_TYPE_WALL
+            )
+          : []
+        ).length;
 
         if (gkMatchSaves > 0) {
           if (gkBestGame == undefined || gkBestGame.value < gkMatchSaves) {
@@ -302,7 +342,7 @@ let PlayerStatisticsScreen = props => {
               fixtureId: fixturesGKPlayed[i].fixtureId,
               matchId: j,
               value: gkMatchSaves
-            }
+            };
           }
         }
 
@@ -506,6 +546,52 @@ let PlayerStatisticsScreen = props => {
       legendFontSize: 17
     }
   ];
+  let goalPieData = [
+    {
+      name: "כמה גולים",
+      population: goalMultiGoals,
+      color: "#ea728c",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "גול בודד",
+      population: goalOneGoal,
+      color: "#fc9d9d",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "אפס גולים",
+      color: "#f3d4d4",
+      population: goalZeroGoals,
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    }
+  ];
+  let assistPieData = [
+    {
+      name: "כמה בישולים",
+      population: assistMultiGoals,
+      color: "#ea728c",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "בישול בודד",
+      population: assistOneGoal,
+      color: "#fc9d9d",
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    },
+    {
+      name: "אפס בישולים",
+      color: "#f3d4d4",
+      population: assistZeroGoals,
+      legendFontColor: Colors.black,
+      legendFontSize: 17
+    }
+  ];
 
   if (Platform.OS == "android") {
     pieData = pieData.map(d => {
@@ -517,6 +603,22 @@ let PlayerStatisticsScreen = props => {
       return nd;
     });
     gkPieData = gkPieData.map(d => {
+      let nd = { ...d };
+      nd.name = nd.name
+        .split("")
+        .reverse()
+        .join("");
+      return nd;
+    });
+    goalPieData = goalPieData.map(d => {
+      let nd = { ...d };
+      nd.name = nd.name
+        .split("")
+        .reverse()
+        .join("");
+      return nd;
+    });
+    assistPieData = assistPieData.map(d => {
       let nd = { ...d };
       nd.name = nd.name
         .split("")
@@ -598,6 +700,38 @@ let PlayerStatisticsScreen = props => {
               height={300}
               chartConfig={savesChartConfig}
               bezier
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>התפלגות שערים במשחקים</Text>
+            <PieChart
+              data={goalPieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+              style={{
+                alignSelf: "center"
+              }}
+              absolute
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>התפלגות בישולים במשחקים</Text>
+            <PieChart
+              data={assistPieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+              style={{
+                alignSelf: "center"
+              }}
+              absolute
             />
           </View>
           <View style={styles.card}>
@@ -713,15 +847,14 @@ let PlayerStatisticsScreen = props => {
               {bestPlayedTogether != null &&
                 playerTracking[bestPlayedTogether].playedTogether > 0 && (
                   <View style={styles.dataView}>
-                    <TouchableOpacity onPress={()=>{
-                      props.navigation.push(
-                        "Player",
-                        {
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.push("Player", {
                           playerId: bestPlayedTogether,
-                          playerName: playerTracking[bestPlayedTogether].name,
-                        }
-                      );
-                    }}>
+                          playerName: playerTracking[bestPlayedTogether].name
+                        });
+                      }}
+                    >
                       <Text style={styles.dataText5}>
                         {playerTracking[bestPlayedTogether].name}
                       </Text>
@@ -736,15 +869,14 @@ let PlayerStatisticsScreen = props => {
               {bestWinTogether != null &&
                 playerTracking[bestWinTogether].winTogether > 0 && (
                   <View style={styles.dataView}>
-                    <TouchableOpacity onPress={()=>{
-                      props.navigation.push(
-                        "Player",
-                        {
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.push("Player", {
                           playerId: bestWinTogether,
-                          playerName: playerTracking[bestWinTogether].name,
-                        }
-                      );
-                    }}>
+                          playerName: playerTracking[bestWinTogether].name
+                        });
+                      }}
+                    >
                       <Text style={styles.dataText5}>
                         {playerTracking[bestWinTogether].name}
                       </Text>
@@ -759,15 +891,14 @@ let PlayerStatisticsScreen = props => {
               {bestAssistToIndex != null &&
                 playerTracking[bestAssistToIndex].assistTo > 0 && (
                   <View style={styles.dataView}>
-                    <TouchableOpacity onPress={()=>{
-                      props.navigation.push(
-                        "Player",
-                        {
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.push("Player", {
                           playerId: bestAssistToIndex,
-                          playerName: playerTracking[bestAssistToIndex].name,
-                        }
-                      );
-                    }}>
+                          playerName: playerTracking[bestAssistToIndex].name
+                        });
+                      }}
+                    >
                       <Text style={styles.dataText5}>
                         {playerTracking[bestAssistToIndex].name}
                       </Text>
@@ -782,25 +913,24 @@ let PlayerStatisticsScreen = props => {
               {bestScoreFromIndex != null &&
                 playerTracking[bestScoreFromIndex].scoreFrom > 0 && (
                   <View style={styles.dataView}>
-                    <TouchableOpacity onPress={()=>{
-                      props.navigation.push(
-                        "Player",
-                        {
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.push("Player", {
                           playerId: bestScoreFromIndex,
-                          playerName: playerTracking[bestScoreFromIndex].name,
-                        }
-                      );
-                    }}>
+                          playerName: playerTracking[bestScoreFromIndex].name
+                        });
+                      }}
+                    >
                       <Text style={styles.dataText5}>
                         {playerTracking[bestScoreFromIndex].name}
                       </Text>
                     </TouchableOpacity>
-                    
-                      <Text style={styles.metaText5}>
-                        {"הבקיע הכי הרבה בישולים (" +
-                          playerTracking[bestScoreFromIndex].scoreFrom +
-                          ")"}
-                      </Text>
+
+                    <Text style={styles.metaText5}>
+                      {"הבקיע הכי הרבה בישולים (" +
+                        playerTracking[bestScoreFromIndex].scoreFrom +
+                        ")"}
+                    </Text>
                   </View>
                 )}
             </View>
@@ -910,9 +1040,7 @@ let PlayerStatisticsScreen = props => {
                 </View>
 
                 <View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    הכי הרבה הצלות במחזור
-                  </Text>
+                  <Text style={styles.metaText2op}>הכי הרבה הצלות במחזור</Text>
                   <Text style={styles.dataText3}>
                     {gkBestFixtureSaves.value}
                   </Text>
@@ -934,7 +1062,6 @@ let PlayerStatisticsScreen = props => {
                   </TouchableOpacity>
                 </View>
 
-
                 <View style={styles.dataView}>
                   <Text style={styles.metaText2op}>
                     הכי הרבה שערים נקיים במחזור
@@ -955,16 +1082,14 @@ let PlayerStatisticsScreen = props => {
                     }}
                   >
                     <Text style={styles.metaText2}>
-                      {"מחזור " + fixtures[gkBestFixtureCleanSheet.fixtureId].number}
+                      {"מחזור " +
+                        fixtures[gkBestFixtureCleanSheet.fixtureId].number}
                     </Text>
                   </TouchableOpacity>
                 </View>
 
-
                 <View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    הכי פחות ספיגות במחזור
-                  </Text>
+                  <Text style={styles.metaText2op}>הכי פחות ספיגות במחזור</Text>
                   <Text style={styles.dataText3}>
                     {gkBestFixtureGoalAgainst.value}
                   </Text>
@@ -981,62 +1106,56 @@ let PlayerStatisticsScreen = props => {
                     }}
                   >
                     <Text style={styles.metaText2}>
-                      {"מחזור " + fixtures[gkBestFixtureGoalAgainst.fixtureId].number}
+                      {"מחזור " +
+                        fixtures[gkBestFixtureGoalAgainst.fixtureId].number}
                     </Text>
                   </TouchableOpacity>
                 </View>
 
-
-
-                {gkBestGame&&(
-                <View style={styles.dataView}>
-                  <Text style={styles.metaText2op}>
-                    המשחקון עם הכי הרבה הצלות
-                  </Text>
-                  <Text style={styles.dataText3}>
-                    {gkBestGame.value}
-                  </Text>
-                  <View style={{flexDirection:"row", justifyContent:"center"}}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        props.navigation.navigate({
-                          routeName: "ViewFixture",
-                          params: {
-                            fixtureId: gkBestGame.fixtureId,
-                            fixtureNumber:
-                              fixtures[gkBestGame.fixtureId].number
-                          }
-                        });
-                      }}
+                {gkBestGame && (
+                  <View style={styles.dataView}>
+                    <Text style={styles.metaText2op}>
+                      המשחקון עם הכי הרבה הצלות
+                    </Text>
+                    <Text style={styles.dataText3}>{gkBestGame.value}</Text>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
                     >
-                      <Text style={styles.metaText2}>
-                        {"מחזור " + fixtures[gkBestGame.fixtureId].number}
-                      </Text>
-                    </TouchableOpacity>
-                    <View style={{width:20}}/>
-                    <TouchableOpacity
-                      onPress={() => {
-                        props.navigation.navigate({
-                          routeName: Platform.OS=="web"?"WebMatch":"Match",
-                          params: {
-                            fixtureId: gkBestGame.fixtureId,
-                            matchId: gkBestGame.matchId
-                          }
-                        });
-                      }}
-                    >
-                      <Text style={styles.metaText2}>
-                        {"למשחק >"}
-                      </Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName: "ViewFixture",
+                            params: {
+                              fixtureId: gkBestGame.fixtureId,
+                              fixtureNumber:
+                                fixtures[gkBestGame.fixtureId].number
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>
+                          {"מחזור " + fixtures[gkBestGame.fixtureId].number}
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 20 }} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate({
+                            routeName:
+                              Platform.OS == "web" ? "WebMatch" : "Match",
+                            params: {
+                              fixtureId: gkBestGame.fixtureId,
+                              matchId: gkBestGame.matchId
+                            }
+                          });
+                        }}
+                      >
+                        <Text style={styles.metaText2}>{"למשחק >"}</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
                 )}
-
-
               </View>
-
-              
             </View>
           )}
         </View>
