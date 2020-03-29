@@ -375,8 +375,8 @@ export const parsePreList = (fixturePreList, players) => {
     )[0];
 
     let isGoalkeeper = occurrences(relevantLines[i], gkIdentifier) == 1;
-    let teamId = null; // TODO: implement later
-
+    let teamId = null;
+    
     if (relevantLines[i].indexOf(blueSign) != -1) {
       teamId = 0;
     } else if (relevantLines[i].indexOf(orangeSign) != -1) {

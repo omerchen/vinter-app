@@ -302,12 +302,12 @@ export const calculatePlayerRecords = (players, fixtures) => {
           if (playersTracker[p].mostCleansheetGkAvg == undefined) {
             playersTracker[p].mostCleansheetGkAvg = {
               amount: pointObject.cleansheets,
-              appearences: 1
+              appearences: pointObject.matchWins+pointObject.matchTies+pointObject.matchLoses
             };
           } else {
             playersTracker[p].mostCleansheetGkAvg.amount +=
               pointObject.cleansheets;
-            playersTracker[p].mostCleansheetGkAvg.appearences += 1;
+            playersTracker[p].mostCleansheetGkAvg.appearences += pointObject.matchWins+pointObject.matchTies+pointObject.matchLoses;
           }
 
           if (playersTracker[p].leastGoalsAgainstGkAvg == undefined) {
@@ -384,12 +384,12 @@ export const calculatePlayerRecords = (players, fixtures) => {
           if (playersTracker[p].mostCleansheetAvg == undefined) {
             playersTracker[p].mostCleansheetAvg = {
               amount: pointObject.cleansheets,
-              appearences: 1
+              appearences: pointObject.matchWins+pointObject.matchTies+pointObject.matchLoses
             };
           } else {
             playersTracker[p].mostCleansheetAvg.amount +=
               pointObject.cleansheets;
-            playersTracker[p].mostCleansheetAvg.appearences += 1;
+            playersTracker[p].mostCleansheetAvg.appearences += pointObject.matchWins+pointObject.matchTies+pointObject.matchLoses;
           }
 
           if (playersTracker[p].leastGoalsAgainstAvg == undefined) {
@@ -646,15 +646,13 @@ export const calculatePlayerRecords = (players, fixtures) => {
     ) {
       playerRecords.mostCleansheetAvg = {
         value: (
-          playersTracker[p].mostCleansheetAvg.amount /
+          (playersTracker[p].mostCleansheetAvg.amount*100) /
           playersTracker[p].mostCleansheetAvg.appearences
-        ).toFixed(1),
+        ).toFixed(0)+"%",
         realValue:
           playersTracker[p].mostCleansheetAvg.amount /
           playersTracker[p].mostCleansheetAvg.appearences,
         playerId: p,
-        goals: playersTracker[p].mostCleansheetAvg.amount,
-        app: playersTracker[p].mostCleansheetAvg.appearences
       };
     }
 
@@ -667,15 +665,13 @@ export const calculatePlayerRecords = (players, fixtures) => {
     ) {
       playerRecords.mostCleansheetGkAvg = {
         value: (
-          playersTracker[p].mostCleansheetGkAvg.amount /
+          (playersTracker[p].mostCleansheetGkAvg.amount *100) /
           playersTracker[p].mostCleansheetGkAvg.appearences
-        ).toFixed(1),
+        ).toFixed(0)+"%",
         realValue:
           playersTracker[p].mostCleansheetGkAvg.amount /
           playersTracker[p].mostCleansheetGkAvg.appearences,
         playerId: p,
-        goals: playersTracker[p].mostCleansheetGkAvg.amount,
-        app: playersTracker[p].mostCleansheetGkAvg.appearences
       };
     }
 
@@ -1116,7 +1112,8 @@ export const calculateFixtureTeamRecords = fixtures => {
     mostWins: undefined,
     leastWins: undefined,
     mostTimeOnPitch: undefined,
-    mostGoalsDifference: undefined
+    mostGoalsDifference: undefined,
+    mostRevolutions: undefined,
   };
 
   for (let f in fixtures) {
@@ -1132,6 +1129,7 @@ export const calculateFixtureTeamRecords = fixtures => {
       let winsInRow = 0;
       let currentWinsInRow = 0;
       let matches = 0;
+      let revolutions = 0;
 
       if (fixtures[f].matches) {
         for (let m in fixtures[f].matches) {
@@ -1178,6 +1176,14 @@ export const calculateFixtureTeamRecords = fixtures => {
           } else {
             if (currentWinsInRow > winsInRow) winsInRow = currentWinsInRow;
             currentWinsInRow = 0;
+          }
+
+          // calculate revolution
+          let goals = mergeSort(relevantEvents.filter(
+            e => e.type == EVENT_TYPE_GOAL
+          ),(a,b)=>a.time>=b.time)
+          if (goals.length > 0 && goals[0].isHome != isHome && match.winnerId == t) {
+            revolutions += 1
           }
         }
       }
@@ -1317,6 +1323,15 @@ export const calculateFixtureTeamRecords = fixtures => {
           teamLabel: teamLabels[t],
           value: wins
         };
+      }
+
+      if (revolutions > 0 && (fixtureTeamRecords.mostRevolutions == undefined || fixtureTeamRecords.mostRevolutions.value < revolutions)) {
+        fixtureTeamRecords.mostRevolutions = {
+          fixtureId: f,
+          teamId: t,
+          teamLabel: teamLabels[t],
+          value: revolutions
+        }
       }
     }
   }

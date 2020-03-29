@@ -60,7 +60,6 @@ let GenerateTeamsScreen = props => {
   };
 
   let generateTeams = useCallback(() => {
-    // TODO: implement later
     let playersArray = parsePreList(fixturePreList, players);
     if (playersArray == null) {
       setFixtureListValidation(false);

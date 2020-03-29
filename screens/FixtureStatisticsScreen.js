@@ -282,14 +282,16 @@ let FixtureStatisticsScreen = props => {
     "נצ׳ (בפנדל׳)",
     "הפ׳ (בפנדל׳)",
     // "תיקו",
-    "שערי זכות",
-    "שערי חובה",
+    "מאזן שערים",
+    "מהפכים",
     "שערים נקיים",
     "זמן נצ׳ ממוצע",
     "זמן הפ׳ ממוצע",
     "הניצחון המהיר",
     "רצף נצ׳ שיא"
   ];
+
+  const teamFlexArr = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
   const teamsTableData = [];
 
@@ -359,12 +361,23 @@ let FixtureStatisticsScreen = props => {
     // goals
     let goalsFor = 0;
     let goalsAgainst = 0;
+    let revolutions = 0;
 
     for (let j in closedMatches) {
       if (closedMatches[j].homeId == i && closedMatches[j].events) {
-        let goalEvents = closedMatches[j].events.filter(
-          item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+        let goalEvents = mergeSort(
+          closedMatches[j].events.filter(
+            item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+          ),
+          (a, b) => a.time >= b.time
         );
+        if (
+          closedMatches[j].winnerId == i &&
+          goalEvents.length > 0 &&
+          !goalEvents[0].isHome
+        ) {
+          revolutions += 1;
+        }
         for (let w in goalEvents) {
           if (goalEvents[w].isHome) {
             goalsFor++;
@@ -373,9 +386,19 @@ let FixtureStatisticsScreen = props => {
           }
         }
       } else if (closedMatches[j].awayId == i && closedMatches[j].events) {
-        let goalEvents = closedMatches[j].events.filter(
-          item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+        let goalEvents = mergeSort(
+          closedMatches[j].events.filter(
+            item => !item.isRemoved && item.type == EVENT_TYPE_GOAL
+          ),
+          (a, b) => a.time >= b.time
         );
+        if (
+          closedMatches[j].winnerId == i &&
+          goalEvents.length > 0 &&
+          goalEvents[0].isHome
+        ) {
+          revolutions += 1;
+        }
         for (let w in goalEvents) {
           if (!goalEvents[w].isHome) {
             goalsFor++;
@@ -386,7 +409,14 @@ let FixtureStatisticsScreen = props => {
       }
     }
 
-    row.push(goalsFor, goalsAgainst, getCleanSheetFromTeam(i));
+    // Add goals
+    row.push(goalsAgainst + "-" + goalsFor);
+
+    // Add revolutions
+    row.push(revolutions);
+
+    /// Add Clean sheets
+    row.push(getCleanSheetFromTeam(i));
 
     // avg time
     let minWin = null;
@@ -461,8 +491,13 @@ let FixtureStatisticsScreen = props => {
           data={teamsTableHead}
           style={{ ...styles.head, backgroundColor: "#f1f8ff" }}
           textStyle={styles.text}
+          flexArr={teamFlexArr}
         />
-        <Rows data={teamsTableData} textStyle={styles.text} />
+        <Rows
+          data={teamsTableData}
+          textStyle={styles.text}
+          flexArr={teamFlexArr}
+        />
       </Table>
       <View style={{ height: 50 }} />
       <Text style={styles.tableTitle}>נתונים אישיים</Text>

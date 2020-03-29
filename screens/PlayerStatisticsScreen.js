@@ -235,6 +235,7 @@ let PlayerStatisticsScreen = props => {
   let gkCleansheets = 0;
   let gkSaves = 0;
   let gkMatches = 0;
+  let gkAppearences = 0;
   let gkCleanSheetmaxTime = 0;
   let gkCurrentRecord = 0;
   let gkRecordStillActive = false;
@@ -245,8 +246,10 @@ let PlayerStatisticsScreen = props => {
   let gkBestFixtureSaves = null;
   let gkBestFixtureCleanSheet = null;
   let gkBestFixtureGoalAgainst = null;
+  let gkBestGame = null;
 
   for (let i in fixturesGKPlayed) {
+    gkAppearences +=1
     gkMatches += fixturesGKPlayed[i].matches;
     gkSaves += fixturesGKPlayed[i].saves;
     gkCleansheets += fixturesGKPlayed[i].cleansheets;
@@ -289,6 +292,18 @@ let PlayerStatisticsScreen = props => {
           currentFixture.matches[j].isOpen
         ) {
           continue;
+        }
+
+        let gkMatchSaves = (currentFixture.matches[j].events?currentFixture.matches[j].events.filter(e=>!e.isRemoved&&e.executerId==playerId&&e.type==EVENT_TYPE_WALL):[]).length
+
+        if (gkMatchSaves > 0) {
+          if (gkBestGame == undefined || gkBestGame.value < gkMatchSaves) {
+            gkBestGame = {
+              fixtureId: fixturesGKPlayed[i].fixtureId,
+              matchId: j,
+              value: gkMatchSaves
+            }
+          }
         }
 
         let isHome = false;
@@ -809,16 +824,16 @@ let PlayerStatisticsScreen = props => {
 
                 <View style={styles.dataView}>
                   <Text style={styles.dataText6}>
-                    {(gkGoalsAgainst / gkMatches).toFixed(2)}
+                    {(gkGoalsAgainst / gkAppearences).toFixed(2)}
                   </Text>
-                  <Text style={styles.metaText2}>ספיגות למשחקון</Text>
+                  <Text style={styles.metaText2}>ספיגות למחזור</Text>
                 </View>
 
                 <View style={styles.dataView}>
                   <Text style={styles.dataText6}>
-                    {(gkSaves / gkMatches).toFixed(2)}
+                    {(gkSaves / gkAppearences).toFixed(2)}
                   </Text>
-                  <Text style={styles.metaText2}>הצלות למשחקון</Text>
+                  <Text style={styles.metaText2}>הצלות למחזור</Text>
                 </View>
 
                 {gkGoalsAgainst > 0 && (
@@ -970,6 +985,53 @@ let PlayerStatisticsScreen = props => {
                     </Text>
                   </TouchableOpacity>
                 </View>
+
+
+
+                {gkBestGame&&(
+                <View style={styles.dataView}>
+                  <Text style={styles.metaText2op}>
+                    המשחקון עם הכי הרבה הצלות
+                  </Text>
+                  <Text style={styles.dataText3}>
+                    {gkBestGame.value}
+                  </Text>
+                  <View style={{flexDirection:"row", justifyContent:"center"}}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.navigate({
+                          routeName: "ViewFixture",
+                          params: {
+                            fixtureId: gkBestGame.fixtureId,
+                            fixtureNumber:
+                              fixtures[gkBestGame.fixtureId].number
+                          }
+                        });
+                      }}
+                    >
+                      <Text style={styles.metaText2}>
+                        {"מחזור " + fixtures[gkBestGame.fixtureId].number}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={{width:20}}/>
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.navigate({
+                          routeName: Platform.OS=="web"?"WebMatch":"Match",
+                          params: {
+                            fixtureId: gkBestGame.fixtureId,
+                            matchId: gkBestGame.matchId
+                          }
+                        });
+                      }}
+                    >
+                      <Text style={styles.metaText2}>
+                        {"למשחק >"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                )}
 
 
               </View>

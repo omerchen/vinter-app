@@ -490,11 +490,11 @@ let LeagueRecordsScreen = props => {
           )}
           {generatePlayerRecordComponent(
             records.playerRecords.mostCleansheetAvg,
-            "ממוצע שערים נקיים למחזור (שחקן)"
+            "אחוז שערים נקיים (שחקן)"
           )}
           {generatePlayerRecordComponent(
             records.playerRecords.mostCleansheetGkAvg,
-            "ממוצע שערים נקיים למחזור (שוער)"
+            "אחוז שערים נקיים (שוער)"
           )}
           {generatePlayerRecordComponent(
             records.playerRecords.leastGoalsAgainstAvg,
@@ -579,6 +579,10 @@ let LeagueRecordsScreen = props => {
             {generateFixtureTeamRecordComponent(
               records.fixtureTeamRecords.mostWinsInRow,
               "הכי הרבה נצחונות ברצף"
+            )}
+            {generateFixtureTeamRecordComponent(
+              records.fixtureTeamRecords.mostRevolutions,
+              "הכי הרבה מהפכים"
             )}
             {generateFixtureTeamRecordComponent(
               records.fixtureTeamRecords.leastWins,
