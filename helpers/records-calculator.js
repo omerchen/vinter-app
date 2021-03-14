@@ -1094,7 +1094,7 @@ export const calculateMatchPlayerRecords = (players, fixtures , playerId=null) =
                   playerId: p,
                   fixtureId: f,
                   matchId: m,
-                  realValue: goals[0].time,
+                  realValue: goals[g].time - goals[g - 1].time,
                   value: parsedTime.time + " " + parsedTime.unit
                 };
               }
