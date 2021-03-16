@@ -37,11 +37,11 @@ let PlayerTransactionsScreen = props => {
     let bArr = b.date.split(".").reverse();
 
     for (let i in aArr) {
-      if (aArr[i] > bArr[i]) return true;
-      else if (bArr[i] > aArr[i]) return false;
+      if (aArr[i] > bArr[i]) return -1;
+      else if (bArr[i] > aArr[i]) return 1;
     }
 
-    return true;
+    return -1;
   };
 
   let numOfColumn = 1;

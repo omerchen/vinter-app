@@ -492,6 +492,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostGoalsAvg != undefined &&
+      playersTracker[p].mostGoalsAvg.appearences > 0 &&
       (playerRecords.mostGoalsAvg == undefined ||
         playerRecords.mostGoalsAvg.realValue <
           playersTracker[p].mostGoalsAvg.amount /
@@ -511,6 +512,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostAssistsAvg != undefined &&
+      playersTracker[p].mostAssistsAvg.appearences > 0 &&
       (playerRecords.mostAssistsAvg == undefined ||
         playerRecords.mostAssistsAvg.realValue <
           playersTracker[p].mostAssistsAvg.amount /
@@ -541,6 +543,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostPointsAvg != undefined &&
+      playersTracker[p].mostPointsAvg.appearences > 0 &&
       (playerRecords.mostPointsAvg == undefined ||
         playerRecords.mostPointsAvg.realValue <
           playersTracker[p].mostPointsAvg.amount /
@@ -562,6 +565,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostSavesAvg != undefined &&
+      playersTracker[p].mostSavesAvg.appearences > 0 &&
       (playerRecords.mostSavesAvg == undefined ||
         playerRecords.mostSavesAvg.realValue <
           playersTracker[p].mostSavesAvg.amount /
@@ -583,6 +587,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostSavesGkAvg != undefined &&
+      playersTracker[p].mostSavesGkAvg.appearences > 0 &&
       (playerRecords.mostSavesGkAvg == undefined ||
         playerRecords.mostSavesGkAvg.realValue <
           playersTracker[p].mostSavesGkAvg.amount /
@@ -604,6 +609,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostGoalsForAvg != undefined &&
+      playersTracker[p].mostGoalsForAvg.appearences > 0 &&
       (playerRecords.mostGoalsForAvg == undefined ||
         playerRecords.mostGoalsForAvg.realValue <
           playersTracker[p].mostGoalsForAvg.amount /
@@ -625,6 +631,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostWinnerAvg != undefined &&
+      playersTracker[p].mostWinnerAvg.appearences > 0 &&
       (playerRecords.mostWinnerAvg == undefined ||
         playerRecords.mostWinnerAvg.realValue <
           playersTracker[p].mostWinnerAvg.amount /
@@ -647,6 +654,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostCleansheetAvg != undefined &&
+      playersTracker[p].mostCleansheetAvg.appearences > 0 &&
       (playerRecords.mostCleansheetAvg == undefined ||
         playerRecords.mostCleansheetAvg.realValue <
           playersTracker[p].mostCleansheetAvg.amount /
@@ -666,6 +674,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].mostCleansheetGkAvg != undefined &&
+      playersTracker[p].mostCleansheetGkAvg.appearences > 0 &&
       (playerRecords.mostCleansheetGkAvg == undefined ||
         playerRecords.mostCleansheetGkAvg.realValue <
           playersTracker[p].mostCleansheetGkAvg.amount /
@@ -685,6 +694,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].leastGoalsAgainstAvg != undefined &&
+      playersTracker[p].leastGoalsAgainstAvg.appearences > 0 &&
       (playerRecords.leastGoalsAgainstAvg == undefined ||
         playerRecords.leastGoalsAgainstAvg.realValue >
           playersTracker[p].leastGoalsAgainstAvg.amount /
@@ -706,6 +716,7 @@ export const calculatePlayerRecords = (players, fixtures, playerId) => {
 
     if (
       playersTracker[p].leastGoalsAgainstGkAvg != undefined &&
+      playersTracker[p].leastGoalsAgainstGkAvg.appearences > 0 &&
       (playerRecords.leastGoalsAgainstGkAvg == undefined ||
         playerRecords.leastGoalsAgainstGkAvg.realValue >
           playersTracker[p].leastGoalsAgainstGkAvg.amount /

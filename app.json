@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "3.4.6",
+    "version": "3.4.7",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,13 +25,13 @@
     ],
     "ios": {
       "bundleIdentifier": "com.football.vinter",
-      "buildNumber": "3.4.6",
+      "buildNumber": "3.4.7",
       "supportsTablet": true,
       "icon":"./assets/ios-icon.png"
     },
     "android": {
       "package": "com.omerchen.vinterapp",
-      "versionCode": 26
+      "versionCode": 27
     }
   }
 }

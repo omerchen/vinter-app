@@ -46,8 +46,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 10,
     width: 300,
-    height: 150,
-    margin: 20
+    height: 180,
+    margin: 20,
+    paddingRight:5,
+    paddingLeft:5,
   },
   greenView: {
     backgroundColor: Colors.green,
@@ -74,9 +76,10 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: "assistant-semi-bold",
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.black,
-    opacity:.6
+    opacity:.6,
+    textAlign: "center"
   },
   date: {
     fontFamily: "assistant-bold",

@@ -1,6 +1,7 @@
 import {
   FIXTURE_TYPE_STANDARD,
   FIXTURE_TYPE_FINAL,
+  FIXTURE_TYPE_FRIENDLY,
 } from "../constants/fixture-properties";
 import {
   EVENT_TYPE_GOAL,
@@ -72,12 +73,16 @@ const getNoPenaltyWins = (fixture, teamId) => {
     ? fixture.matches.filter(
         (m) =>
           !m.isRemoved &&
-          (m.events!=undefined?m.events.filter(
-            (e) => !e.isRemoved && e.type == EVENT_TYPE_GOAL && e.isHome
-          ).length:0) !=
-            (m.events!=undefined?m.events.filter(
-              (e) => !e.isRemoved && e.type == EVENT_TYPE_GOAL && !e.isHome
-            ).length:0)
+          (m.events != undefined
+            ? m.events.filter(
+                (e) => !e.isRemoved && e.type == EVENT_TYPE_GOAL && e.isHome
+              ).length
+            : 0) !=
+            (m.events != undefined
+              ? m.events.filter(
+                  (e) => !e.isRemoved && e.type == EVENT_TYPE_GOAL && !e.isHome
+                ).length
+              : 0)
       )
     : [];
   return matches.filter((match) => !match.isRemoved && match.winnerId == teamId)
@@ -293,7 +298,8 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
     fixtures.length <= fixtureId ||
     players.length <= playerId ||
     fixtures[fixtureId].isRemoved ||
-    players[playerId].isRemoved
+    players[playerId].isRemoved ||
+    fixtures[fixtureId].type == FIXTURE_TYPE_FRIENDLY // don't calc statistics on friendly matches
   ) {
     return pointsObject;
   }
@@ -491,7 +497,10 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
           (playerObject.isCaptain
             ? RULES_FIXTURE_WIN_CAPTAIN
             : RULES_FIXTURE_WIN);
-      } else if (teamWins == maxRivalWins && teamNoPenaltyWins == maxRivalNoPenaltyWins) {
+      } else if (
+        teamWins == maxRivalWins &&
+        teamNoPenaltyWins == maxRivalNoPenaltyWins
+      ) {
         // team tie fixture
         pointsObject.teamTie = true;
         points +=
@@ -657,7 +666,10 @@ export const calculatePoints = (players, fixtures, playerId, fixtureId) => {
           (playerObject.isCaptain
             ? RULES_FIXTURE_WIN_FINAL_CAPTAIN
             : RULES_FIXTURE_WIN_FINAL);
-      } else if (teamWins == maxRivalWins && teamNoPenaltyWins == maxRivalNoPenaltyWins) {
+      } else if (
+        teamWins == maxRivalWins &&
+        teamNoPenaltyWins == maxRivalNoPenaltyWins
+      ) {
         // team tie fixture
         pointsObject.teamTie = true;
         points +=
