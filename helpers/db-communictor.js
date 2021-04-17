@@ -5,7 +5,7 @@ class DBCommunicator {
   url = "https://vinter-app.firebaseio.com/";
   backupUrl = "https://vinter-app-back-up.firebaseio.com/";
   playersTableName = "players";
-  fixturesTableName = isDebug ? "fixturesDebug" : "fixturesprepilot";
+  fixturesTableName = isDebug ? "fixturesDebug" : "fixtures2021_official";
   visitsTableName = isDebug ? "visitsDebug" : "visits";
 
   getPlayers = () => {
