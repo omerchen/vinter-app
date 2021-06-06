@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "3.4.9",
+    "version": "3.4.10",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,7 +25,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.football.vinter",
-      "buildNumber": "3.4.9",
+      "buildNumber": "3.4.10",
       "supportsTablet": true,
       "icon":"./assets/ios-icon.png"
     },
