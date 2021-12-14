@@ -4,12 +4,8 @@
     "slug": "vinter-app",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "version": "3.4.10",
+    "platforms": ["ios", "android", "web"],
+    "version": "3.4.12",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
@@ -20,18 +16,16 @@
     "updates": {
       "fallbackToCacheTimeout": 10
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.football.vinter",
-      "buildNumber": "3.4.10",
+      "buildNumber": "3.4.12",
       "supportsTablet": true,
-      "icon":"./assets/ios-icon.png"
+      "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.omerchen.vinterapp",
-      "versionCode": 29
+      "versionCode": 31
     }
   }
 }
